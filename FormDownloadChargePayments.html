@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    
+  </body>
+</html>
+
+<script>
+  function onLoad(){
+    google.script.run.withSuccessHandler(downloadAll)
+                     .withFailureHandler(onFailure)
+                     .getChargePaymentDownloadList();
+  }
+  
+  function downloadAll(result){
+    for (let id of result){
+      google.script.run.withSuccessHandler(pdfSave)
+                       .withFailureHandler(onFailure)
+                       .ChargePaymentDownloadBase64Encoded(id);                                    
+    }
+  }
+  
+  function pdfSave(pdfObject){
+      download(pdfObject.id + ".pdf", pdfObject.content);
+  }
+
+  function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:application/pdf;base64,' + (text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
+  }
+  
+  function onFailure(error) {
+    console.log(error)
+  }
+
+  function save() {
+     let teamSelected = document.getElementById("team-selector").value;  
+     google.script.run.withSuccessHandler(saveSuccess)
+                      .withFailureHandler(onFailure)
+                      .SendOrder(teamSelected);
+  }
+  
+  window.onload = onLoad;
+</script>
