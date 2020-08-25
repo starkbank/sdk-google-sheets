@@ -26,3 +26,6 @@ function goHomeSheet() {
   SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Principal'));
 }
 
+function goSendTransferSheet() {
+ SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Transferência sem Aprovação')) 
+}
