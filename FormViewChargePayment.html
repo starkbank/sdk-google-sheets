@@ -11,7 +11,9 @@
     <body>
         <div id="alert" class="alert alert-dismissible fade show alert-danger front" role="alert">
           <a id="alert-message"></a>
-          <a class="close" data-dismiss="alert" aria-label="close" onclick="hideAlert()">&times;</a>
+          <button type="button" class="close" onclick="hideAlert()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <div class="container">
             <div class="row">

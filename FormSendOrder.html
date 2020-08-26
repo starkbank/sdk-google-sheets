@@ -11,7 +11,9 @@
     <body>
         <div id="alert" class="alert alert-dismissible fade show alert-danger front" role="alert">
             <a id="alert-message"></a>
-            <a class="close" data-dismiss="alert" aria-label="close" onclick="hideAlert()">&times;</a>
+            <button type="button" class="close" onclick="hideAlert()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
           </div>
         <div class="container">
             <div class="row">
@@ -21,17 +23,33 @@
                        <br>
                        <br>
                        <p>Digite sua senha</p>
-                       <input type="password" class="input-password">
+                       <input type="password" id="password" class="input-password">
                        <br>
                        <br>
                        <button type="submit" class="btn btn-primary btn-block" onclick="send()">Enviar</button>
                 </div>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary" role="status" style="display:none;">
+                        <span class="sr-only">Loading...</span>
+                     </div>
+                 </div>
             </div>      
         </div>
     </body>
 </html>
 
 <script>
+
+  
+function startLoading() {
+    $('.btn').hide();
+    $('.spinner-border').show();
+}
+  
+function stopLoading() {
+    $('.btn').show();
+    $('.spinner-border').hide();
+}
 function hideAlert() {
     $("#alert").hide();
 }
@@ -41,8 +59,24 @@ function loadPrivateKey() {
 }
 
 function send() {
-    //console.log(user.email);
-    console.log("enviado");
+    let password = document.getElementById("password").value;
+    startLoading();
+    google.script.run.withSuccessHandler(onSuccess)
+        .withFailureHandler(onFailure)
+        .verifyPassword(password);
+}
+
+function onSuccess() {
+    stopLoading();
+}
+
+function onFailure(error) {
+    console.log("Deu erro");
+    stopLoading();
+    let message = JSON.parse(error["message"])["message"];
+    $("#alert").show();
+    var alertMessage = document.getElementById("alert-message");
+    alertMessage.innerHTML = message;
 }
 
 window.onload = hideAlert();
