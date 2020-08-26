@@ -1,6 +1,11 @@
 {
   "timeZone": "America/Argentina/Buenos_Aires",
   "dependencies": {
+    "libraries": [{
+      "userSymbol": "ecdsags",
+      "libraryId": "1jF-69QLp4biqnV6cg-mvzHIPBloc8MlZG1aBIZ05x6_FZVBojDTsvyLv",
+      "version": "1"
+    }]
   },
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8"

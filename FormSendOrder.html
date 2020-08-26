@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     </head>
-    <body>
+    <body onload="init()">
         <div id="alert" class="alert alert-dismissible fade show alert-danger front" role="alert">
             <a id="alert-message"></a>
             <button type="button" class="close" onclick="hideAlert()" aria-label="Close">
@@ -19,7 +19,7 @@
             <div class="row">
                 <div class="col-6">
                        <p>Entre com o arquivo da chave privada.</p>
-                       <input type="file" class="file-input" onchange="loadPrivateKey()">
+                       <input type="file" id="file-input" name="file" name="PK">
                        <br>
                        <br>
                        <p>Digite sua senha</p>
@@ -40,7 +40,8 @@
 
 <script>
 
-  
+let privateKey = "";
+
 function startLoading() {
     $('.btn').hide();
     $('.spinner-border').show();
@@ -54,12 +55,17 @@ function hideAlert() {
     $("#alert").hide();
 }
 
-function loadPrivateKey() {
-    console.log("lido");
+function loadPrivateKey(event) {
+    let reader = new FileReader();
+    reader.onload = function(event) {
+        privateKey = event.target.result;
+    };
+    reader.readAsText(event.target.files[0]);
 }
 
 function send() {
     let password = document.getElementById("password").value;
+    console.log(privateKey);
     startLoading();
     google.script.run.withSuccessHandler(onSuccess)
         .withFailureHandler(onFailure)
@@ -79,6 +85,10 @@ function onFailure(error) {
     alertMessage.innerHTML = message;
 }
 
-window.onload = hideAlert();
+function init()
+{
+    hideAlert();
+    document.getElementById('file-input').addEventListener('change', loadPrivateKey, false);
+}
 
 </script>
