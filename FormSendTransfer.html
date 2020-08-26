@@ -18,6 +18,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-6">
+                    <p>ExternalId - Identificador único para a transação</p>
+                    <input type="text" id="externalId" class="input-text">
+                    <p>Descrição da transação</p>
+                    <input type="text" id="description" class="input-text">
+                </div>
+            </div> 
+            <br><br>
+            <div class="row">
+                <div class="col-6">
                        <p>Entre com o arquivo da chave privada.</p>
                        <input type="file" id="file-input" name="file" name="PK">
                        <br>
@@ -33,7 +42,7 @@
                         <span class="sr-only">Loading...</span>
                      </div>
                  </div>
-            </div>      
+            </div>     
         </div>
     </body>
 </html>
@@ -63,26 +72,44 @@ function loadPrivateKey(event) {
     reader.readAsText(event.target.files[0]);
 }
 
+function showMessage(message)
+{
+    $("#alert").show();
+    var alertMessage = document.getElementById("alert-message");
+    alertMessage.innerHTML = message;
+    window.scrollTo(0,0);
+}
+
 function send() {
     let password = document.getElementById("password").value;
-    console.log(privateKey);
+    let externalId = document.getElementById("externalId").value;
+    let description = document.getElementById("description").value;
+    let tags = null;
+    if(privateKey === "")
+    {
+        let message = "Por favor, insira um arquivo válido.";
+        showMessage(message);
+        privateKey = "";
+        return;
+    }
+
     startLoading();
     google.script.run.withSuccessHandler(onSuccess)
         .withFailureHandler(onFailure)
-        .verifyPassword(password);
+        .executeTransfer(password, privateKey, description, externalId, tags);
 }
 
 function onSuccess() {
     stopLoading();
+    privateKey = "";
 }
 
 function onFailure(error) {
     console.log("Deu erro");
+    console.log(error);
     stopLoading();
     let message = JSON.parse(error["message"])["message"];
-    $("#alert").show();
-    var alertMessage = document.getElementById("alert-message");
-    alertMessage.innerHTML = message;
+    showMessage(message);
 }
 
 function init()
