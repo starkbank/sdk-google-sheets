@@ -90,13 +90,23 @@ function send() {
         let message = "Por favor, insira um arquivo válido.";
         showMessage(message);
         privateKey = "";
+        document.getElementById("file-input").value = "";
         return;
     }
+    else{
+        try {
+            ecdsags.PrivateKey.fromPem(privateKey);
+            startLoading();
+            google.script.run.withSuccessHandler(onSuccess)
+            .withFailureHandler(onFailure)
+            .executeTransfer(password, privateKey, description, externalId, tags);
+        } catch(e){
+            let message = "Chave privada inválida. Por favor, tente outra";
+            showMessage(message);
+            privateKey = "";
+        }
+    }
 
-    startLoading();
-    google.script.run.withSuccessHandler(onSuccess)
-        .withFailureHandler(onFailure)
-        .executeTransfer(password, privateKey, description, externalId, tags);
 }
 
 function onSuccess() {
