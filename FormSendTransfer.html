@@ -94,19 +94,25 @@ function send() {
         return;
     }
     else{
-        try {
-            ecdsags.PrivateKey.fromPem(privateKey);
-            startLoading();
+        google.script.run.withSuccessHandler(pkCheckSuccess(password, privateKey, description, externalId, tags))
+            .withFailureHandler(pkCheckFailure)
+            .checkPrivateKey(privateKey);       
+    }
+
+}
+
+function pkCheckSuccess(password, privateKey, description, externalId, tags)
+{
+    startLoading();
             google.script.run.withSuccessHandler(onSuccess)
             .withFailureHandler(onFailure)
             .executeTransfer(password, privateKey, description, externalId, tags);
-        } catch(e){
-            let message = "Chave privada inválida. Por favor, tente outra";
-            showMessage(message);
-            privateKey = "";
-        }
-    }
+}
 
+function pkCheckFailure()
+{
+    let message = "Chave privada inválida. Por favor, tente outra.";
+            showMessage(message);
 }
 
 function onSuccess() {
@@ -115,11 +121,12 @@ function onSuccess() {
 }
 
 function onFailure(error) {
-    console.log("Deu erro");
-    console.log(error);
     stopLoading();
-    let message = JSON.parse(error["message"])["message"];
-    showMessage(message);
+    if(error.constructor == Object)
+    {
+        let message = JSON.parse(error["message"])["message"];
+        showMessage(message);
+    }
 }
 
 function init()

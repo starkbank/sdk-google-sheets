@@ -82,6 +82,12 @@ function clearSheet(sheet){
     
   }
 }
+
+function checkPrivateKey(key)
+{
+  ecdsags.PrivateKey.fromPem(key);
+}
+
 //
 //function onOpen(e) {
 //  signOut(false);
