@@ -42,12 +42,5 @@ function sendTransfer(privateKeyPem, description, externalId, tags)
         transfers: transfers
     }
     
-    let payloadString = JSON.stringify(payload);
-
-    let signature = ecdsags.easySign(payloadString, privateKeyPem);
-    const headers = {
-        "Digital-Signature": signature
-    }
-
-    json = JSON.parse(fetch("/v1/transfer", method = 'POST', body = payload, headers = headers).content);
+    json = JSON.parse(fetch("/transfer", method = 'POST', payload, null, 'v1', null, privateKeyPem).content);
 }

@@ -122,10 +122,16 @@ function onSuccess() {
 
 function onFailure(error) {
     stopLoading();
+    
     if(error.constructor == Object)
     {
-        let message = JSON.parse(error["message"])["message"];
+        let message = JSON.parse(error)["message"];
         showMessage(message);
+    }
+    else
+    {
+        console.log(error);
+        console.log(error.message);
     }
 }
 

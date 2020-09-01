@@ -11,7 +11,9 @@ function getHostname(environment, version = "v1"){
   }[environment.toLowerCase()];
 }
 
-function fetch(path, method='GET', payload=null, query=null, version='v1', environment=null) {
+
+
+function fetch(path, method='GET', payload=null, query=null, version='v1', environment=null, privateKeyPem=null) {
   let user = new getDefaultUser();
   if (!user.accessToken && (path != "/auth/access-token")) {
     throw JSON.stringify({"message": "Erro de autenticação! Por favor, faça login novamente."});
@@ -36,15 +38,23 @@ function fetch(path, method='GET', payload=null, query=null, version='v1', envir
     }
     url += queryString;
   }
-  if (payload && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-    options['payload'] = JSON.stringify(payload);
-  }
   options['headers'] = {
     'Access-Token': user.accessToken,
     'User-Agent': 'GoogleSheets-SDK-0.1.0',
     'Accept-Language': 'pt-BR',
     'Content-Type': 'application/json'
   };
+  if (payload && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+    options['payload'] = JSON.stringify(payload);
+    if(privateKeyPem != null)
+    {
+      let signature = ecdsags.easySign(options['payload'], privateKeyPem);
+      options['headers']['Digital-Signature'] = signature;
+      //throw new Error(user.accessToken);
+    }
+  }
+
+
   let response = UrlFetchApp.fetch(url, options);
   let content = response.getContentText();
   let status = response.getResponseCode();
