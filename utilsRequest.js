@@ -50,7 +50,6 @@ function fetch(path, method='GET', payload=null, query=null, version='v1', envir
     {
       let signature = ecdsags.easySign(options['payload'], privateKeyPem);
       options['headers']['Digital-Signature'] = signature;
-      //throw new Error(user.accessToken);
     }
   }
 

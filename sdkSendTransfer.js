@@ -6,7 +6,7 @@ function sendTransferDialog() {
 
 function executeTransfer(password, privateKeyPem, description, externalId, tags)
 {
-    //verifyPassword(password);
+    verifyPassword(password);
     sendTransfer(privateKeyPem, description, externalId, tags);
 }
 

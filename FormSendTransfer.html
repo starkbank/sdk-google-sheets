@@ -16,33 +16,42 @@
               </button>
           </div>
         <div class="container">
-            <div class="row">
-                <div class="col-6">
+            <div class="form-row">
+                <div class="form-group col-md-6">
                     <p>ExternalId - Identificador único para a transação</p>
-                    <input type="text" id="externalId" class="input-text">
+                    <input type="text" class="form-control" id="externalId" placeholder="ExternalId">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
                     <p>Descrição da transação</p>
-                    <input type="text" id="description" class="input-text">
+                    <input type="text" class="form-control" id="description" placeholder="Descrição">
                 </div>
             </div> 
-            <br><br>
-            <div class="row">
-                <div class="col-6">
-                       <p>Entre com o arquivo da chave privada.</p>
-                       <input type="file" id="file-input" name="file" name="PK">
-                       <br>
-                       <br>
-                       <p>Digite sua senha</p>
-                       <input type="password" id="password" class="input-password">
-                       <br>
-                       <br>
-                       <button type="submit" class="btn btn-primary btn-block" onclick="send()">Enviar</button>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <p>Entre com o arquivo da chave privada.</p>
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="file-input" aria-describedby="inputGroupFileAddon01">
+                          <label class="custom-file-label" for="file-input" id="file-input-label">Insira um arquivo</label>
+                        </div>
+                      </div>
                 </div>
-                <div class="d-flex justify-content-center">
-                    <div class="spinner-border text-primary" role="status" style="display:none;">
-                        <span class="sr-only">Loading...</span>
-                     </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <p>Digite sua senha</p>
+                    <input type="password" class="form-control" id="password" placeholder="Senha">
+                    <br>
+                    <button type="submit" class="btn btn-primary btn-block" onclick="send()">Enviar</button>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-primary" role="status" style="display:none;">
+                    <span class="sr-only">Loading...</span>
                  </div>
-            </div>     
+             </div>     
         </div>
     </body>
 </html>
@@ -66,6 +75,8 @@ function hideAlert() {
 
 function loadPrivateKey(event) {
     let reader = new FileReader();
+    let fullPath = document.getElementById("file-input").value;
+    document.getElementById("file-input-label").innerHTML = fullPath.split(/(\\|\/)/g).pop();
     reader.onload = function(event) {
         privateKey = event.target.result;
     };
@@ -90,6 +101,7 @@ function send() {
         let message = "Por favor, insira um arquivo válido.";
         showMessage(message);
         privateKey = "";
+        document.getElementById("file-input-label").innerHTML = "Insira um arquivo";
         document.getElementById("file-input").value = "";
         return;
     }
@@ -123,13 +135,12 @@ function onSuccess() {
 function onFailure(error) {
     stopLoading();
     
-    if(error.constructor == Object)
+    try
     {
-        let message = JSON.parse(error)["message"];
+        let message = JSON.parse(error.message)["message"];
         showMessage(message);
-    }
-    else
-    {
+    } catch(e) {
+        //console.log(e.message);
         console.log(error);
         console.log(error.message);
     }
