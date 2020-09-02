@@ -155,8 +155,21 @@ function onFailure(error) {
     
     try
     {
-        let message = JSON.parse(error.message)["message"];
+        let parsed = JSON.parse(error.message);
+        let message = parsed["message"];
+        if("errors" in parsed)
+        {
+            for(let suberror of parsed["errors"]) {
+                let suberrorMessage = suberror["message"];
+                let splitMessage = suberrorMessage.split(":");
+                splitMessage[0] = splitMessage[0].replace("Element ", "");
+                splitMessage[0] = "Linha " + (11 - (-splitMessage[0]));
+                let newMessage = splitMessage.join(":");
+                message += "<br>" + newMessage;
+            }
+        }
         showMessage(message);
+        
     } catch(e) {
         //console.log(e.message);
         console.log(error);
