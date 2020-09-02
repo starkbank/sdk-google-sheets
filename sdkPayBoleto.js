@@ -6,7 +6,7 @@ function payBoletosDialog() {
 
 function executeBoletoPayment(password, privateKeyPem)
 {
-    //verifyPassword(password);
+    verifyPassword(password);
     sendPayments(privateKeyPem);
 }
 
@@ -14,6 +14,8 @@ function sendPayments(privateKeyPem)
 {
     let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Pagamento de Boletos');
     let payments = [];
+
+    formatHeader(sheet);
 
     for(let i=11; i<=sheet.getLastRow(); i++) {
         let paymentItem  = {

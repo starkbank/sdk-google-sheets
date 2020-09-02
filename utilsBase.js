@@ -15,6 +15,8 @@ function getHeaderColumns(sheet){
     'Consulta de Boleto': ["Data de Emissão", "Nome", "CPF/CNPJ", "Status", "Valor", "Vencimento", "Linha digitável", "Id Boleto", "Tarifa", "Tags", "Link PDF"],
     'Consulta de Pagamento Boleto': ["Data de Criação", "Id Pagamento", "Valor", "Status", "Data de Agendamento", "Linha Digitável", "Descrição", "Tags"],
     'Consulta de Transferência': ["Data de Criação", "Id Transferência", "Valor", "Status", "Nome", "CPF/CNPJ", "Código do Banco", "Agência", "Número da Conta", "Ids de Transação (Saída, Estorno)"],
+    'Pagamento de Boletos': ["Linha Digitável ou Código de Barras", "CPF/CPNJ do Beneficiário", "Data de Agendamento", "Descrição", "Tags"],
+    'Consulta de Clientes': ["Id do Cliente", "Nome", "CPF/CNPJ", "E-Mail", "Telefone", "Logradouro", "Complemento", "Bairro", "Cidade", "Estado", "CEP", "Tags"]
   }[sheet.getName()];
 }
 

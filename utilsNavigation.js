@@ -34,3 +34,8 @@ function goPayBoletos()
 {
   SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Pagamento de Boletos'));
 }
+
+function goViewCustomers()
+{
+  SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Clientes'));
+}
