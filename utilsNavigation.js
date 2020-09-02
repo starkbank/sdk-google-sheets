@@ -39,3 +39,8 @@ function goViewCustomers()
 {
   SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Clientes'));
 }
+
+function goCreateBoleto()
+{
+  SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Emissão de Boletos'));
+}

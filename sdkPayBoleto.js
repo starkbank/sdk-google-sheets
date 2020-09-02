@@ -20,7 +20,7 @@ function sendPayments(privateKeyPem)
     for(let i=11; i<=sheet.getLastRow(); i++) {
         let paymentItem  = {
             taxId: sheet.getRange('B' + i.toString()).getValue(),
-            scheduled: sheet.getRange('C' + i.toString()).getValue().replace(/(\d{2})\/(\d{2})\/(\d{4})*/, '$3-$2-$1'),
+            scheduled: formatDateToISO(sheet.getRange('C' + i.toString()).getValue()),
             description: sheet.getRange('D' + i.toString()).getValue(),
             tags: sheet.getRange('E' + i.toString()).getValue().split(",")
         };
