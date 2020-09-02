@@ -1,6 +1,6 @@
 function sendTransferDialog() {
     var html = HtmlService.createHtmlOutputFromFile('FormSendTransfer');
-    SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
+    SpreadsheetApp.getUi()
     .showModalDialog(html, 'Envio de Transferência sem Aprovação');
 }
 

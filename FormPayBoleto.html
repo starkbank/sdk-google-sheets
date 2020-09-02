@@ -24,18 +24,6 @@
         <div class="container">
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <p>ExternalId - Identificador único para a transação</p>
-                    <input type="text" class="form-control" id="externalId" placeholder="ExternalId">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <p>Descrição da transação</p>
-                    <input type="text" class="form-control" id="description" placeholder="Descrição">
-                </div>
-            </div> 
-            <div class="form-row">
-                <div class="form-group col-md-6">
                     <p>Entre com o arquivo da chave privada.</p>
                     <div class="input-group mb-3">
                         <div class="custom-file">
@@ -105,8 +93,6 @@ function showMessage(message)
 
 function send() {
     let password = document.getElementById("password").value;
-    let externalId = document.getElementById("externalId").value;
-    let description = document.getElementById("description").value;
     let tags = null;
     if(privateKey === "")
     {
@@ -118,19 +104,19 @@ function send() {
         return;
     }
     else{
-        google.script.run.withSuccessHandler(pkCheckSuccess(password, privateKey, description, externalId, tags))
+        google.script.run.withSuccessHandler(pkCheckSuccess(password, privateKey))
             .withFailureHandler(pkCheckFailure)
             .checkPrivateKey(privateKey);       
     }
 
 }
 
-function pkCheckSuccess(password, privateKey, description, externalId, tags)
+function pkCheckSuccess(password, privateKey)
 {
     startLoading();
-            google.script.run.withSuccessHandler(onSuccess)
+    google.script.run.withSuccessHandler(onSuccess)
             .withFailureHandler(onFailure)
-            .executeTransfer(password, privateKey, description, externalId, tags);
+            .executeBoletoPayment(password, privateKey);
 }
 
 function pkCheckFailure()
@@ -142,11 +128,12 @@ function pkCheckFailure()
 function onSuccess() {
     stopLoading();
     privateKey = "";
+    privateKey = "";
     hideAlert();
     hideSuccessAlert();
     $("#alert-success").show();
     var alertMessage = document.getElementById("alert-success-message");
-    alertMessage.innerHTML = "Transferências enviadas com sucesso!";
+    alertMessage.innerHTML = "Pagamentos enviados com sucesso!";
     window.scrollTo(0,0);
 }
 

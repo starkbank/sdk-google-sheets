@@ -29,3 +29,8 @@ function goHomeSheet() {
 function goSendTransferSheet() {
  SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Transferência sem Aprovação')) 
 }
+
+function goPayBoletos()
+{
+  SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Pagamento de Boletos'));
+}
