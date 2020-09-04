@@ -44,3 +44,8 @@ function goCreateBoleto()
 {
   SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Emissão de Boletos'));
 }
+
+function goTransaction()
+{
+  SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Transferência Interna'));
+}
