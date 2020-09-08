@@ -49,3 +49,8 @@ function goTransaction()
 {
   SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Transferência Interna'));
 }
+
+function goViewChargeEvent()
+{
+  SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Histórico de Boletos Emitidos'));
+}

@@ -18,7 +18,9 @@ function getHeaderColumns(sheet){
     'Pagamento de Boletos': ["Linha Digitável ou Código de Barras", "CPF/CPNJ do Beneficiário", "Data de Agendamento", "Descrição", "Tags"],
     'Consulta de Clientes': ["Id do Cliente", "Nome", "CPF/CNPJ", "E-Mail", "Telefone", "Logradouro", "Complemento", "Bairro", "Cidade", "Estado", "CEP", "Tags"],
     'Emissão de Boletos': ["Id do Cliente", "Valor", "Data de Vencimento", "Multa", "Juros ao Mês", "Dias para Baixa Automática", "Desconto", "Data Limite do Desconto", "Descrição 1", "Valor 1", "Descrição 2", "Valor 2", "Descrição 3", "Valor 3", "Tags"],
-    'Transferência Interna': ["Id do Recebedor", "Valor", "Descrição", "Identificador externo único", "Tags"]
+    'Transferência Interna': ["Id do Recebedor", "Valor", "Descrição", "Identificador externo único", "Tags"],
+    'Histórico de Boletos Emitidos': ["Data do Evento", "Evento", "Nome", "CPF/CPNJ", "Valor", "Valor de Emissão", "Desconto", "Multa", "Juros", "Data de Emissão", "Vencimento", "Linha Digitável", "Id do Boleto", "Tarifa", "Tags", "Link PDF",
+  "Logradouro", "Complemento", "Bairro", "Cidade", "Estado", "CEP"]
   }[sheet.getName()];
 }
 
