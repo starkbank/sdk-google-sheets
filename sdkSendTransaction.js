@@ -4,26 +4,26 @@ function sendTransactionDialog() {
     .showModalDialog(html, 'Envio de Transferência Interna');
 }
 
-function executeTransaction(password, privateKeyPem)
+function executeTransaction(password, privateKeyPem, receiverId, amount, description, externalId, tags)
 {
     verifyPassword(password);
+    sendTransaction(privateKeyPem, receiverId, amount, description, externalId, tags);
 }
 
-function sendTransaction(privateKeyPem)
+function sendTransaction(privateKeyPem, receiverId, amount, description, externalId, tags)
 {
-    let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Transferência Interna');
+  
+    let transaction = {
+        receiverId: receiverId,
+        amount: parseInt(100*amount, 10),
+        description: description,
+        externalId: externalId,
+        tags: tags.split(",")
+    };
 
-    formatHeader(sheet);
+    let payload = {
+        transaction: transaction
+    };
 
-    for(let i=11; i<=sheet.getLastRow(); i++) {
-        let transaction = {
-            receiverId: sheet.getRange('A' + i.toString()).getValue(),
-            amount: parseInt(100*sheet.getRange('B' + i.toString()).getValue(), 10),
-            description: sheet.getRange('C' + i.toString()).getValue(),
-            externalId: sheet.getRange('D' + i.toString()).getValue(),
-            tags: sheet.getRange('E' + i.toString()).getValue().split(",")
-        };
-        
-    }
-
+    json = JSON.parse(fetch("/bank/transaction", method = 'POST', payload, null, 'v1', null, privateKeyPem).content);
 }

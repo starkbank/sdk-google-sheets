@@ -136,8 +136,12 @@ function showMessage(message)
 
 function send() {
     let receiverId = document.getElementById("receiverId").value;
-
+    let amount = document.getElementById("amount").value;
+    let description = document.getElementById("description").value;
+    let externalId = document.getElementById("externalId").value;
+    let tags = document.getElementById("tags").value;
     let password = document.getElementById("password").value;
+
     if(privateKey === "")
     {
         let message = "Por favor, insira um arquivo válido.";
@@ -148,19 +152,19 @@ function send() {
         return;
     }
     else{
-        // google.script.run.withSuccessHandler(pkCheckSuccess(password, privateKey, description, externalId, tags))
-        //     .withFailureHandler(pkCheckFailure)
-        //     .checkPrivateKey(privateKey);       
+        google.script.run.withSuccessHandler(pkCheckSuccess(password, privateKey, receiverId, amount, description, externalId, tags))
+            .withFailureHandler(pkCheckFailure)
+            .checkPrivateKey(privateKey);       
     }
 
 }
 
-function pkCheckSuccess(password, privateKey, description, externalId, tags)
+function pkCheckSuccess(password, privateKey, receiverId, amount, description, externalId, tags)
 {
-    // startLoading();
-    //         google.script.run.withSuccessHandler(onSuccess)
-    //         .withFailureHandler(onFailure)
-    //         .executeTransfer(password, privateKey, description, externalId, tags);
+    startLoading();
+            google.script.run.withSuccessHandler(onSuccess)
+            .withFailureHandler(onFailure)
+            .executeTransaction(password, privateKey, receiverId, amount, description, externalId, tags);
 }
 
 function pkCheckFailure()

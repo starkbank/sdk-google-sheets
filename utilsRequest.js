@@ -40,7 +40,7 @@ function fetch(path, method='GET', payload=null, query=null, version='v1', envir
   }
   options['headers'] = {
     'Access-Token': user.accessToken,
-    'User-Agent': 'GoogleSheets-SDK-0.1.0',
+    'User-Agent': 'GoogleSheets-SDK-0.3.1',
     'Accept-Language': 'pt-BR',
     'Content-Type': 'application/json'
   };
