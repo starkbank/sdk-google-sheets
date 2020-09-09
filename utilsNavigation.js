@@ -54,3 +54,8 @@ function goViewChargeEvent()
 {
   SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Histórico de Boletos Emitidos'));
 }
+
+function goCreateCustomers()
+{
+  SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Cadastro de Clientes'));
+}
