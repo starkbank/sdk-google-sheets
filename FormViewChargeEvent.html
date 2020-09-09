@@ -78,6 +78,15 @@
   function hideAlert() {
     $("#alert").hide();
   }
+
+  function showMessage(message)
+{
+    hideAlert();
+    $("#alert").show();
+    var alertMessage = document.getElementById("alert-message");
+    alertMessage.innerHTML = message;
+    window.scrollTo(0,0);
+}
   
   function onSuccess() {
       stopLoading();
@@ -85,12 +94,28 @@
   }
   
   function onFailure(error) {
-      stopLoading();
-      let message = JSON.parse(error["message"])["message"];
-      $("#alert").show();
-      
-      var alertMessage = document.getElementById("alert-message");
-      alertMessage.innerHTML = message
+    stopLoading();
+    try{
+        let parsed = JSON.parse(error.message);
+        let message = parsed["message"];
+        if("errors" in parsed)
+        {
+            for(let suberror of parsed["errors"]) {
+                let suberrorMessage = suberror["message"];
+                let splitMessage = suberrorMessage.split(":");
+                splitMessage[0] = splitMessage[0].replace("Element ", "");
+                splitMessage[0] = "Linha " + (11 - (-splitMessage[0]));
+                let newMessage = splitMessage.join(":");
+                message += "<br>" + newMessage;
+            }
+        }
+        showMessage(message);
+        
+    } catch(e) {
+        //console.log(e.message);
+        console.log(error);
+        console.log(error.message);
+    }
   }
   
   function save() {
@@ -109,9 +134,9 @@
     }
 
     startLoading();
-    // google.script.run.withSuccessHandler(onSuccess)
-    //                  .withFailureHandler(onFailure)
-    //                  .ViewCharge(startDate, endDate, status);
+    google.script.run.withSuccessHandler(onSuccess)
+                      .withFailureHandler(onFailure)
+                      .viewChargeEvents(startDate, endDate, option);
   }
   
   function startLoading() {
