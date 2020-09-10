@@ -37,6 +37,7 @@ function formatHeader(sheet) {
 
 function SetAllGreetings(){
   user = new getDefaultUser();
+  getBalance();
   for (sheet of SpreadsheetApp.getActiveSpreadsheet().getSheets()) {
     if (sheet.getSheetName().toLowerCase() != "credentials") {
       DisplayGreeting(user, sheet);
@@ -60,6 +61,7 @@ function clearGreeting(sheet) {
     sheet.getRange("A4").setValue(null);
     sheet.getRange("A5").setValue(null);
     sheet.getRange("A6").setValue(null);
+    sheet.getRange("A7").setValue(null);
   }
 }
 
