@@ -59,3 +59,8 @@ function goCreateCustomers()
 {
   SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Cadastro de Clientes'));
 }
+
+function goDigitalSignature()
+{
+  SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Assinatura Digital'));
+}
