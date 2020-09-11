@@ -1,5 +1,5 @@
 function sendTransactionDialog() {
-    var html = HtmlService.createHtmlOutputFromFile('FormSendTransaction');
+    var html = HtmlService.createHtmlOutputFromFile('FormSendTransaction').setWidth(1000).setHeight(450);
     SpreadsheetApp.getUi()
     .showModalDialog(html, 'Envio de Transferência Interna');
 }

@@ -59,7 +59,7 @@ function SaveCredentials(workspace, email, environment, accessToken, membername,
 }
 
 function signInDialog() {
-  var html = HtmlService.createHtmlOutputFromFile('FormCredentials');
+  var html = HtmlService.createHtmlOutputFromFile('FormCredentials').setHeight(400);
   SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
   .showModalDialog(html, 'Dados de Acesso');
 }

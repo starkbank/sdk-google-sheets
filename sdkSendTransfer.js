@@ -1,5 +1,5 @@
 function sendTransferDialog() {
-    var html = HtmlService.createHtmlOutputFromFile('FormSendTransfer');
+    var html = HtmlService.createHtmlOutputFromFile('FormSendTransfer').setHeight(500);
     SpreadsheetApp.getUi()
     .showModalDialog(html, 'Envio de Transferência sem Aprovação');
 }

@@ -1,6 +1,6 @@
 function selectChargeEventDialog()
 {
-    let html = HtmlService.createHtmlOutputFromFile('FormViewChargeEvent');
+    let html = HtmlService.createHtmlOutputFromFile('FormViewChargeEvent').setHeight(400);
     SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
     .showModalDialog(html, 'Histórico de Boletos Emitidos')
 }
