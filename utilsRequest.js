@@ -141,3 +141,44 @@ function fetchMath(){
   }
   return new Response(status, content);
 }
+
+function sendPublicKey(token, publicKeyPem)
+{
+  let user = new getDefaultUser();
+  let environment = user.environment.toLowerCase();
+  let hostname = getHostname(environment, "v1");
+  let url = hostname + "/auth/public-key";
+
+  let options = {
+    'method': 'post',
+    'muteHttpExceptions': true
+  };
+  options['headers'] = {
+    'Access-Token': user.accessToken,
+    'User-Agent': 'GoogleSheets-SDK-0.3.1',
+    'Accept-Language': 'pt-BR',
+  };
+
+  let pkFile = Utilities.newBlob(publicKeyPem, 'text/plain', 'publicKey.pem');
+  let formData = {
+    'workspaceId': user.workspaceId,
+    'token': token,
+    'publicKey': pkFile
+  };
+
+  options['payload'] = formData;
+  
+  let response = UrlFetchApp.fetch(url, options);
+  let content = response.getContentText();
+  let status = response.getResponseCode();
+  switch (status) {
+    case 200:
+      return new Response(status, content);
+    case 400:
+    case 404:
+    case 500:
+      throw JSON.stringify(JSON.parse(content)["error"]);
+    default:
+      throw e;
+  }
+}
