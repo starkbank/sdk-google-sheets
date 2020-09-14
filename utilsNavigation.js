@@ -64,3 +64,8 @@ function goDigitalSignature()
 {
   SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Assinatura Digital'));
 }
+
+function goHelp()
+{
+  SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Ajuda'));
+}
