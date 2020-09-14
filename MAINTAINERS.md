@@ -3,7 +3,7 @@ To synchronize the Google AppScript with your computer, you use Google Clasp. It
 npm install -g @google/clasp
 ``` 
 
-If the installation is successful, login to your GSuite account, using ```clasp login```.
+If the installation was successful, login to your GSuite account, using ```clasp login```.
 
 Every Google AppScript has an ID, which is saved on ```.clasp.json```. This ID is associated with a Google AppScript, with which the whole code is sychronized. Creating a new Google Sheet will generate another ID and will not sync to the current code, unless the ID is updated on ```.clasp.json```.
 
