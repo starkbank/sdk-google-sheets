@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <base target="_top">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </head>
+    <body onload="init()">
+        <div id="alert" class="alert alert-dismissible fade show alert-danger front" role="alert">
+            <a id="alert-message"></a>
+            <button type="button" class="close" onclick="hideAlert()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div id="alert-success" class="alert alert-dismissible fade show alert-success front" role="alert">
+            <a id="alert-success-message"></a>
+            <button type="button" class="close" onclick="hideSuccessAlert()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+        <div class="container">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <p>Entre com o arquivo da chave pública.</p>
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="file-input" aria-describedby="inputGroupFileAddon01">
+                          <label class="custom-file-label" for="file-input" id="file-input-label">Insira um arquivo</label>
+                        </div>
+                      </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <p>Token recebido no e-mail</p>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Token" aria-describedby="getEmailToken" id="token">
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="button" id="getEmailToken" onclick="requestEmailToken()">Solicitar Token</button>
+                    </div>
+                  </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <p>Digite sua senha</p>
+                    <input type="password" class="form-control" id="password" placeholder="Senha">
+                    <br>
+                    <button type="submit" class="btn btn-primary btn-block" onclick="send()">Enviar</button>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-primary" role="status" style="display:none;">
+                    <span class="sr-only">Loading...</span>
+                 </div>
+             </div>     
+        </div>
+    </body>
+</html>
+
+<script>
+
+let publicKey = "";
+
+function startLoading() {
+    $('.btn').hide();
+    $('.spinner-border').show();
+}
+  
+function stopLoading() {
+    $('.btn').show();
+    $('.spinner-border').hide();
+}
+function hideAlert() {
+    $("#alert").hide();
+}
+
+function hideSuccessAlert(){
+    $("#alert-success").hide();
+}
+
+function loadPublicKey(event) {
+    let reader = new FileReader();
+    let fullPath = document.getElementById("file-input").value;
+    document.getElementById("file-input-label").innerHTML = fullPath.split(/(\\|\/)/g).pop();
+    reader.onload = function(event) {
+        publicKey = event.target.result;
+    };
+    reader.readAsText(event.target.files[0]);
+}
+
+function showMessage(message)
+{
+    hideAlert();
+    hideSuccessAlert();
+    $("#alert").show();
+    var alertMessage = document.getElementById("alert-message");
+    alertMessage.innerHTML = message;
+    window.scrollTo(0,0);
+}
+
+function send() {
+    let password = document.getElementById("password").value;
+    let token = document.getElementById("token").value;
+
+    let tags = null;
+    if(publicKey === "")
+    {
+        let message = "Por favor, insira um arquivo válido.";
+        showMessage(message);
+        publicKey = "";
+        document.getElementById("file-input-label").innerHTML = "Insira um arquivo";
+        document.getElementById("file-input").value = "";
+        return;
+    }
+    else{
+        startLoading();
+        google.script.run.withFailureHandler(onFailure)
+            .withSuccessHandler(onSuccess)
+            .registerPublicKey(password, token, publicKey);       
+    }
+}
+
+
+function requestEmailToken()
+{
+    startLoading();
+    google.script.run.withSuccessHandler(onSuccess)
+                    .withFailureHandler(onFailure)
+                        .getEmailToken();
+}
+
+
+function onSuccess() {
+    stopLoading();
+    privateKey = "";
+    hideAlert();
+    hideSuccessAlert();
+    $("#alert-success").show();
+    var alertMessage = document.getElementById("alert-success-message");
+    alertMessage.innerHTML = "Operação realizada com sucesso!";
+    window.scrollTo(0,0);
+}
+
+function onFailure(error) {
+    stopLoading();
+    
+    try
+    {
+        let parsed = JSON.parse(error.message);
+        let message = parsed["message"];
+        if("errors" in parsed)
+        {
+            for(let suberror of parsed["errors"]) {
+                let suberrorMessage = suberror["message"];
+                let splitMessage = suberrorMessage.split(":");
+                splitMessage[0] = splitMessage[0].replace("Element ", "");
+                splitMessage[0] = "Linha " + (11 - (-splitMessage[0]));
+                let newMessage = splitMessage.join(":");
+                message += "<br>" + newMessage;
+            }
+        }
+        showMessage(message);
+        
+    } catch(e) {
+        //console.log(e.message);
+        console.log(error);
+        console.log(error.message);
+    }
+}
+
+function init()
+{
+    hideAlert();
+    hideSuccessAlert();
+    document.getElementById('file-input').addEventListener('change', loadPublicKey, false);
+}
+
+</script>

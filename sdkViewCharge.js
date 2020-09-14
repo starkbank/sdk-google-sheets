@@ -5,7 +5,7 @@ function ViewCharge(after, before, status) {
   let cursor = "";
   let query = {};
   if (after){
-    query["after"] = after
+    query["after"] = after;
   }
   if (before){
     query["before"] = before;

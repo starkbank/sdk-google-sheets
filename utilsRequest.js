@@ -11,7 +11,9 @@ function getHostname(environment, version = "v1"){
   }[environment.toLowerCase()];
 }
 
-function fetch(path, method='GET', payload=null, query=null, version='v1', environment=null) {
+
+
+function fetch(path, method='GET', payload=null, query=null, version='v1', environment=null, privateKeyPem=null) {
   let user = new getDefaultUser();
   if (!user.accessToken && (path != "/auth/access-token")) {
     throw JSON.stringify({"message": "Erro de autenticação! Por favor, faça login novamente."});
@@ -36,15 +38,22 @@ function fetch(path, method='GET', payload=null, query=null, version='v1', envir
     }
     url += queryString;
   }
-  if (payload && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-    options['payload'] = JSON.stringify(payload);
-  }
   options['headers'] = {
     'Access-Token': user.accessToken,
-    'User-Agent': 'GoogleSheets-SDK-0.1.0',
+    'User-Agent': 'GoogleSheets-SDK-0.3.1',
     'Accept-Language': 'pt-BR',
     'Content-Type': 'application/json'
   };
+  if (payload && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+    options['payload'] = JSON.stringify(payload);
+    if(privateKeyPem != null)
+    {
+      let signature = ecdsags.easySign(options['payload'], privateKeyPem);
+      options['headers']['Digital-Signature'] = signature;
+    }
+  }
+
+
   let response = UrlFetchApp.fetch(url, options);
   let content = response.getContentText();
   let status = response.getResponseCode();
@@ -131,4 +140,45 @@ function fetchMath(){
       throw e;
   }
   return new Response(status, content);
+}
+
+function sendPublicKey(token, publicKeyPem)
+{
+  let user = new getDefaultUser();
+  let environment = user.environment.toLowerCase();
+  let hostname = getHostname(environment, "v1");
+  let url = hostname + "/auth/public-key";
+
+  let options = {
+    'method': 'post',
+    'muteHttpExceptions': true
+  };
+  options['headers'] = {
+    'Access-Token': user.accessToken,
+    'User-Agent': 'GoogleSheets-SDK-0.3.1',
+    'Accept-Language': 'pt-BR',
+  };
+
+  let pkFile = Utilities.newBlob(publicKeyPem, 'text/plain', 'publicKey.pem');
+  let formData = {
+    'workspaceId': user.workspaceId,
+    'token': token,
+    'publicKey': pkFile
+  };
+
+  options['payload'] = formData;
+  
+  let response = UrlFetchApp.fetch(url, options);
+  let content = response.getContentText();
+  let status = response.getResponseCode();
+  switch (status) {
+    case 200:
+      return new Response(status, content);
+    case 400:
+    case 404:
+    case 500:
+      throw JSON.stringify(JSON.parse(content)["error"]);
+    default:
+      throw e;
+  }
 }

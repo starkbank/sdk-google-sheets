@@ -11,29 +11,29 @@
     <body>
        <div id="alert" class="alert alert-dismissible fade show alert-danger front" role="alert">
           <a id="alert-message"></a>
-          <a class="close" data-dismiss="alert" aria-label="close" onclick="hideAlert()">&times;</a>
+          <button type="button" class="close" onclick="hideAlert()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-6">
-                        <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <label>Time para Transferência:</label>
-                                    <div style="display: flex;">
-                                    <select class="form-control" id="team-selector" style="margin-right: 4px;"></select> 
-                                    <div class="spinner-border text-primary mini" role="status"></div>
-                                    </div>
-                                 </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block" onclick="save()">Enviar</button>
-                        
-                        <div class="d-flex justify-content-center">
-                           <div class="spinner-border text-primary" role="status" style="display:none;">
-                               <span class="sr-only">Loading...</span>
-                            </div>
-                        </div>
-                </div>
-            </div>      
+        <div class="container">   
+          <div class="form-row">
+            <br>
+                  <div class="form-group col-md-12">
+                      <label>Time para Transferência:</label>
+                      <div style="display: flex;">
+                      <select class="form-control" id="team-selector" style="margin-right: 4px;"></select> 
+                      <div class="spinner-border text-primary mini" role="status"></div>
+                      </div>
+                    </div>
+          </div>
+          <br>
+          <button type="submit" class="btn btn-primary btn-block" onclick="save()">Enviar</button>
+          
+          <div class="d-flex justify-content-center">
+              <div class="spinner-border text-primary" role="status" style="display:none;">
+                  <span class="sr-only">Loading...</span>
+              </div>
+            </div>   
         </div>
     </body>
 </html>
