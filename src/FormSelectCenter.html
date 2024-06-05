@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <base target="_top">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </head>
+    <body>
+       <div id="alert" class="alert alert-dismissible fade show alert-danger front" role="alert">
+          <a id="alert-message"></a>
+          <button type="button" class="close" onclick="hideAlert()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="container">   
+          <div class="form-row">
+            <br>
+                  <div class="form-group col-md-12">
+                      <label>Centro de custo para Transferência:</label>
+                      <div style="display: flex;">
+                      <select class="form-control" id="team-selector" style="margin-right: 4px;"></select> 
+                      <div class="spinner-border text-primary mini" role="status"></div>
+                      </div>
+                    </div>
+          </div>
+          <br>
+          <button type="submit" class="btn btn-primary btn-block" onclick="save()">Enviar</button>
+          
+          <div class="d-flex justify-content-center">
+              <div class="spinner-border text-primary" role="status" style="display:none;">
+                  <span class="sr-only">Loading...</span>
+              </div>
+            </div>   
+        </div>
+    </body>
+</html>
+
+<script>
+  function hideAlert() {
+    $("#alert").hide();
+  }
+
+  function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
+  }
+
+  function save() {
+     startLoading();
+     let teamSelected = document.getElementById("team-selector").value;  
+     google.script.run.withSuccessHandler(saveSuccess)
+                      .withFailureHandler(onFailure)
+                      .SendOrder(teamSelected);
+  }
+  
+  function addTeam(team) {
+      var teamSelector = document.getElementById("team-selector");    
+      var z = document.createElement("option");
+      z.setAttribute("value", team["id"]);
+      var t = document.createTextNode(team["name"]);
+      z.appendChild(t);
+      document.getElementById("team-selector").appendChild(z);
+  }
+  
+  function onSuccess(teams) {
+    $(".mini").hide()
+    for (var index in teams) {
+      addTeam(teams[index]);
+    }
+  }
+  
+  function onFailure(error) {
+    stopLoading();
+    let message = JSON.parse(error["message"])["message"];
+    let suberrors = JSON.parse(error["message"])["errors"];
+    if (suberrors){
+      for (let suberror of suberrors){
+        let suberrorMessage = suberror["message"];
+        let splitMessage = suberrorMessage.split(":");
+        splitMessage[0] = splitMessage[0].replace("Element ", "");
+        splitMessage[0] = "Linha " + (11 - (-splitMessage[0]));
+        let newMessage = splitMessage.join(":");
+        message += "<br>" + newMessage;
+      }
+    }
+    $("#alert").show();
+    var alertMessage = document.getElementById("alert-message");
+    alertMessage.innerHTML = message
+  }
+  
+  function saveSuccess() {
+        stopLoading();
+        google.script.host.close();
+  }
+  
+  function loadTeams() {
+    $(".mini").show()
+    hideAlert()
+    google.script.run.withSuccessHandler(onSuccess)
+                     .withFailureHandler(onFailure)
+          .getUserCenterId();
+  }
+  
+  function startLoading() {
+     $('.btn').hide();
+     $('.spinner-border').show();
+  }
+  
+  function stopLoading() {
+     $('.btn').show();
+     $('.spinner-border').hide();
+  }
+  
+  window.onload = loadTeams;
+</script>
+
+<style>
+  .input {
+     width: 220px;
+     
+  }
+  
+  .mini {
+      display:none;
+      margin-top: 10px;
+      width: 1rem; 
+      height: 1rem;
+  }
+</style>

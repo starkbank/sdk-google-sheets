@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <base target="_top">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div class="container">   
+          <div class="form-row">
+          <p>Clique no botão abaixo e acesse sua solicitação para confirmar o pedido.</p>
+          <button type="submit" class="btn btn-primary btn-block" onclick="send()">Acessar Pedido</button>
+          <div class="spinner-border text-primary mini" role="status"></div>  
+        </div>
+    </body>
+</html>
+
+<script>
+  function onSuccess(teams) {
+    $(".mini").hide()
+  }
+
+  function onSuccessFunc(link) {
+    stopLoading()
+    window.open(link, "_blank")
+}
+  
+  function send() {
+    startLoading()
+    google.script.run.withSuccessHandler(onSuccessFunc)
+              .withFailureHandler(onFailure)
+              .redirect();
+
+  }
+
+  function onFailure(error) {
+    google.script.host.close();
+    let message = JSON.parse(error["message"])["message"];
+    let suberrors = JSON.parse(error["message"])["errors"];
+    if (suberrors){
+      for (let suberror of suberrors){
+        let suberrorMessage = suberror["message"];
+        let splitMessage = suberrorMessage.split(":");
+        splitMessage[0] = splitMessage[0].replace("Element ", "");
+        splitMessage[0] = "Linha " + (11 - (-splitMessage[0]));
+        let newMessage = splitMessage.join(":");
+        message += "<br>" + newMessage;
+      }
+    }
+    $("#alert").show();
+    alertMessage.innerHTML = message
+  }
+
+  function startLoading() {
+     $('.btn').hide();
+     $('.spinner-border').show();
+  }
+  
+  function stopLoading() {
+     $('.btn').show();
+     $('.spinner-border').hide();
+  }
+
+</script>
+
+<style>
+  .input {
+     width: 220px;
+     
+  }
+
+  .mini {
+      display:none;
+      margin-top: 10px;
+      width: 1rem; 
+      height: 1rem;
+  }
+</style>
