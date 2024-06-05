@@ -1,0 +1,22 @@
+{
+  "name": "sdk-google-sheets",
+  "version": "0.6.3",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/starkbank/sdk-google-sheets.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/starkbank/sdk-google-sheets/issues"
+  },
+  "homepage": "https://github.com/starkbank/sdk-google-sheets#readme",
+  "dependencies": {
+    "@types/google-apps-script": "^1.0.83"
+  }
+}

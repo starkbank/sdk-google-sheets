@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <base target="_top">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </head>
+    <body onload="init()">
+        <div id="alert" class="alert alert-dismissible fade show alert-danger front" role="alert">
+            <a id="alert-message"></a>
+            <button type="button" class="close" onclick="hideAlert()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div id="alert-success" class="alert alert-dismissible fade show alert-success front" role="alert">
+            <a id="alert-success-message"></a>
+            <button type="button" class="close" onclick="hideSuccessAlert()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+        <div class="container">
+            <div style="width: 100%; overflow: hidden;">
+                <div style="display: inline-block; width: 500; margin-left: 10;">
+                    <div class="form-group">
+                        <p>ID do numérico do Workspace de destino</p>
+                        <input type="text" class="form-control" id="receiverId" placeholder="ID do Workspace">
+                    </div>
+
+                    <div class="form-group">
+                        <p>Valor a ser transferido</p>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text">R$</span>
+                            </div>
+                            <input type="number" id="amount" class="form-control" placeholder="Valor em Reais" aria-label="Username" aria-describedby="basic-addon1" onchange="formatNumber()">
+                          </div>
+                    </div>
+                    <div class="form-group">
+                        <p>Entre com o arquivo da chave privada.</p>
+                        <div class="input-group mb-3">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="file-input" aria-describedby="inputGroupFileAddon01">
+                                <label class="custom-file-label" for="file-input" id="file-input-label">Insira um arquivo</label>
+                            </div>
+                            </div>
+                    </div>
+                    <div class="form-group">
+                        <p>Identificador único (utilizado para evitar transferências duplicadas)</p>
+                        <input type="text" class="form-control" id="externalId" placeholder="ExternalId">
+                    </div>
+
+                    
+                </div>
+                <div style="display: inline-block; margin-left: 20px; width: 400;">
+                    <div class="form-group">
+                        <p>Descrição para a transferência (mínimo de dez caracteres)</p>
+                        <input type="text" class="form-control" id="description" placeholder="Descrição">
+                    </div>
+                    <div class="form-group">
+                            <p>Tags opcionais para a transferências (separadas por vírgula)</p>
+                            <input type="text" class="form-control" id="tags" placeholder="Tags">
+                        </div>
+                        <div class="form-group">
+                            <p>Digite sua senha</p>
+                            <input type="password" class="form-control" id="password" placeholder="Senha">
+                            <br>
+                            <button type="submit" class="btn btn-primary btn-block" onclick="send()">Enviar</button>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border text-primary" role="status" style="display:none;">
+                                <span class="sr-only">Loading...</span>
+                             </div>
+                         </div> 
+
+                </div>
+            </div>
+
+         
+        </div>
+    </body>
+</html>
+
+<script>
+function formatNumber() {
+    let value = document.getElementById("amount").value;
+    let n = parseFloat(value);
+    if(!value.includes(".")) {
+       n = n/100;
+    }
+
+    document.getElementById("amount").value = n.toFixed(2);
+
+}
+
+let privateKey = "";
+
+function startLoading() {
+    $('.btn').hide();
+    $('.spinner-border').show();
+}
+  
+function stopLoading() {
+    $('.btn').show();
+    $('.spinner-border').hide();
+}
+function hideAlert() {
+    $("#alert").hide();
+}
+
+function hideSuccessAlert(){
+    $("#alert-success").hide();
+}
+
+function loadPrivateKey(event) {
+    let reader = new FileReader();
+    let fullPath = document.getElementById("file-input").value;
+    document.getElementById("file-input-label").innerHTML = fullPath.split(/(\\|\/)/g).pop();
+    reader.onload = function(event) {
+        privateKey = event.target.result;
+    };
+    reader.readAsText(event.target.files[0]);
+}
+
+function showMessage(message)
+{
+    hideAlert();
+    hideSuccessAlert();
+    $("#alert").show();
+    var alertMessage = document.getElementById("alert-message");
+    alertMessage.innerHTML = message;
+    window.scrollTo(0,0);
+}
+
+function send() {
+    let receiverId = document.getElementById("receiverId").value;
+    let amount = document.getElementById("amount").value;
+    let description = document.getElementById("description").value;
+    let externalId = document.getElementById("externalId").value;
+    let tags = document.getElementById("tags").value;
+    let password = document.getElementById("password").value;
+
+    if(privateKey === "")
+    {
+        let message = "Por favor, insira um arquivo válido.";
+        showMessage(message);
+        privateKey = "";
+        document.getElementById("file-input-label").innerHTML = "Insira um arquivo";
+        document.getElementById("file-input").value = "";
+        return;
+    }
+    else{
+        google.script.run.withSuccessHandler(pkCheckSuccess(password, privateKey, receiverId, amount, description, externalId, tags))
+            .withFailureHandler(pkCheckFailure)
+            .checkPrivateKey(privateKey);       
+    }
+
+}
+
+function pkCheckSuccess(password, privateKey, receiverId, amount, description, externalId, tags)
+{
+    startLoading();
+            google.script.run.withSuccessHandler(onSuccess)
+            .withFailureHandler(onFailure)
+            .executeTransaction(password, privateKey, receiverId, amount, description, externalId, tags);
+}
+
+function pkCheckFailure()
+{
+    let message = "Chave privada inválida. Por favor, tente outra.";
+            showMessage(message);
+}
+
+function onSuccess() {
+    stopLoading();
+    privateKey = "";
+    hideAlert();
+    hideSuccessAlert();
+    $("#alert-success").show();
+    var alertMessage = document.getElementById("alert-success-message");
+    alertMessage.innerHTML = "Transferências enviadas com sucesso!";
+    window.scrollTo(0,0);
+}
+
+function onFailure(error) {
+    stopLoading();
+    
+    try
+    {
+        let parsed = JSON.parse(error.message);
+        let message = parsed["message"];
+        if("errors" in parsed)
+        {
+            for(let suberror of parsed["errors"]) {
+                let suberrorMessage = suberror["message"];
+                let splitMessage = suberrorMessage.split(":");
+                splitMessage[0] = splitMessage[0].replace("Element ", "");
+                splitMessage[0] = "Linha " + (11 - (-splitMessage[0]));
+                let newMessage = splitMessage.join(":");
+                message += "<br>" + newMessage;
+            }
+        }
+        showMessage(message);
+        
+    } catch(e) {
+        console.log(error);
+        console.log(error.message);
+    }
+}
+
+function init()
+{
+    hideAlert();
+    hideSuccessAlert();
+    document.getElementById('file-input').addEventListener('change', loadPrivateKey, false);
+}
+
+</script>

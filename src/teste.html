@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <base target="_top">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </head>
+    <body>
+      <div id="qrcode" style="text-align: center;">
+          <div>
+            <div class="qrcode-container">
+              <div class="qrcode-information-section">
+                  <div class="qrcode-information-header-section">
+                      <div class="signin-header text-title-color text-align-center">Acessar Stark Auth</div>
+                      <div id="user-email" class="signin-subtitle text-default-color text-align-center"></div>
+                  </div>
+                  <div class="qrcode-information-instructions-section">
+                      <div class="instruction-element-list">
+                          <div>1.</div>
+                          <div class="signin-instruction-description">Para autentificar seu login, abra o app do <span>Stark Auth</span> no seu dispositivo;</div>
+                      </div>
+                      <div class="instruction-element-list">
+                          <div>2.</div>
+                          <div class="signin-instruction-description">Acesse utilizando o mesmo e-mail, caso ainda não tenha adicionado seu e-mail, efetue o passo a passo do cadastro;</div>
+                      </div>
+                      <div class="instruction-element-list">
+                          <div>3.</div>
+                          <div class="signin-instruction-description">Foque a câmera no <span>QR Code</span> ao lado.</div>
+                      </div>
+                  </div>
+                  <div class="qrcode-information-body-section">
+                      <div class="small-qrcode-title text-align-center">Ainda não baixou o Stark Auth?</div>
+                      <div class="stark-auth-description text-default-color text-align-center">Acesse a loja no seu dispositivo e baixe o app Stark Auth para autenticar e proteger sua conta.</div>
+                  </div>
+              </div>
+              <div class="section-divider"></div>
+              <div class="qrcode-image-section">
+                  <div class="signin-title">Escanear <br>QR Code</div>
+
+                  <div class="qrcode-image-container">
+                      <div>
+                          <div style="display: block;"></div>
+                          <div class="loading-ring flex-align-horizontally">
+                              <div></div><div></div><div></div><div></div>
+                          </div>
+                          <div id="qrcode-refresh" style="display: block;">
+                            <div class="qrcode-refresh-container">
+                                <div class="qrcode-refresh-content">
+                                    <div class="qrcode-refresh-icon">
+                                        <svg class="svg-inline--fa fa-redo-alt fa-w-16" focusable="false" data-prefix="fas" data-icon="redo-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M256.455 8c66.269.119 126.437 26.233 170.859 68.685l35.715-35.715C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.75c-30.864-28.899-70.801-44.907-113.23-45.273-92.398-.798-170.283 73.977-169.484 169.442C88.764 348.009 162.184 424 256 424c41.127 0 79.997-14.678 110.629-41.556 4.743-4.161 11.906-3.908 16.368.553l39.662 39.662c4.872 4.872 4.631 12.815-.482 17.433C378.202 479.813 319.926 504 256 504 119.034 504 8.001 392.967 8 256.002 7.999 119.193 119.646 7.755 256.455 8z"></path></svg>
+                                    </div>
+                                    <div class="qrcode-refresh-text">
+                                        Recarregar QR Code
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                          <img id="dynamicImage" alt="Base64 Image" class="qrcode-image-container" >
+                      </div>
+                  </div>
+                  <div class="button signin-button-text xxlarge-margin-bottom" style="display: none;">Autenticar com o Stark Auth</div>
+              </div>
+          </div>
+          </div>
+      </div>
+    </body>
+</html>
+
+<script>
+
+  let polling = null
+
+  function hideAlert() {
+    $("#qrcode-container").hide()
+    // $("#qrcode").hide()
+    $("#alert").hide()
+  }
+  
+  function closeHost(){
+    google.script.host.close();
+  }
+
+  function onSuccess() {
+      stopLoading();
+      google.script.run.withSuccessHandler(closeHost)
+                       .SetAllGreetings();
+  }
+
+  function getQrcode(b64) {
+    $("#form").hide()
+    $("#qrcode").show()
+
+    var imgElement = document.getElementById('dynamicImage');
+    imgElement.src = b64;
+    stopLoading();
+
+    polling = setInterval(pollingFunc, 500)
+
+  }
+
+  function pollingHandler(status) {
+    if (status == "approved") {
+      stopFunction()
+      google.script.run.withSuccessHandler(onSuccess)
+                     .withFailureHandler(onFailure)
+                     .postSessionChallenge()
+      
+    }
+    if (status == "denied") {
+      $("#qrcode").hide()
+      stopFunction()
+      stopLoading();
+      let message = "Autorização Negada"
+      $("#alert").show();
+      var alertMessage = document.getElementById("alert-message");
+      alertMessage.innerHTML = message
+    }
+  }
+
+  function pollingFunc() {
+    google.script.run.withSuccessHandler(pollingHandler)
+                     .withFailureHandler(onFailure)
+                     .getChallengeApprove()
+  }
+
+  function stopFunction() {
+    clearInterval(polling);
+  }
+  
+  function onFailure(error) {
+    stopLoading()
+    let message = JSON.parse(error["message"])["message"];
+    $("#alert").show();
+    var alertMessage = document.getElementById("alert-message");
+    alertMessage.innerHTML = message
+  }
+
+  function qrcode() {
+  let workspace = document.getElementById("workspace").value;
+  let email = document.getElementById("email").value;
+  let password = document.getElementById("password").value;
+  
+  let environment = "";
+  
+  let sandbox = document.getElementById("sandbox");
+  let development = document.getElementById("development");
+  let production = document.getElementById("production");
+  
+  $('#user-email').text(email)
+
+
+  if (sandbox.checked) {
+    environment = "sandbox"
+  }
+
+  // if (development.checked) {
+  //   environment = "development"
+  // }
+
+  if (production.checked) {
+    environment = "production"
+  }
+  
+  startLoading();
+  google.script.run.withSuccessHandler(getQrcode)
+                    .withFailureHandler(onFailure)
+                    .getUserInputCredential(email, workspace, password, environment);
+
+  }
+
+
+  window.onload = hideAlert;
+  
+  function startLoading() {
+     $('.btn').hide();
+     $('.spinner-border').show();
+  }
+  
+  function stopLoading() {
+     $('.btn').show();
+     $('.spinner-border').hide();
+  }
+</script>
+
+<style>
+.front {
+   position: fixed;
+   z-index: 2;
+   width: 100%;
+}
+.qrcode-container {
+  height: fit-content;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  border: 1px solid var(--line-color);
+  border-radius: 10px;
+  background-color: var(--view-background-color);
+  padding: 40px;
+  display: flex;
+  width: 100%;
+}
+.qrcode-information-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+  gap: 2rem;
+  padding: 40px;
+}
+#qrcode-refresh {
+  position: absolute;
+  border-radius: 16px;
+  padding: 16px;
+  height: 85px;
+  width: 85px;
+  background-color: var(--action-or-selection-color);
+  cursor: pointer;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.qrcode-refresh-container {
+  height: -webkit-fill-available;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.qrcode-refresh-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 5px;
+}
+.qrcode-refresh-text {
+  font-family: "Mundial-Demibold";
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--line-color);
+}
+.qrcode-refresh-icon {
+  font-size: 20px;
+  color: var(--line-color);
+}
+.qrcode-information-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+  gap: 2rem;
+  padding: 40px;
+}
+@media (max-width: 1080px) {
+  .qrcode-information-section {
+    display: none;
+  }
+}
+.signin-header {
+  font-family: "Mundial-Demibold";
+  font-size: 26px;
+  line-height: 32px;
+}
+@media (max-width: 1080px) {
+  .signin-header {
+    font-size: 24px;
+    text-align: start;
+  }
+}
+.text-title-color {
+  color: var(--title-color);
+}
+
+.text-align-center {
+  text-align: center;
+}
+.signin-subtitle {
+  font-family: "Mundial-Hair";
+  font-size: 16px;
+  line-height: 20px;
+}
+@media (max-width: 1080px) {
+  .signin-subtitle {
+    text-align: start;
+  }
+}
+.text-default-color {
+  color: var(--text-color);
+}
+.qrcode-information-instructions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.instruction-element-list {
+  display: flex;
+  gap: 10px;
+}
+.signin-instruction-description {
+  font-family: "Mundial-Hair";
+  font-size: 16px;
+  line-height: 20px;
+  color: #333;
+}
+.qrcode-information-body-section {
+  margin-bottom: 15px;
+}
+.small-qrcode-title {
+  font-family: "Mundial-Demibold";
+  font-size: 18px;
+  line-height: 17px;
+  margin-bottom: 15px;
+}
+
+.stark-auth-description {
+  font-family: "Mundial-Hair";
+  font-size: 14px;
+  line-height: 20px;
+}
+.section-divider {
+  border: 1px solid var(--line-color);
+}
+
+@media (max-width: 1080px) {
+  .section-divider {
+    margin: 20px 0;
+    border: transparent;
+  }
+}
+.signin-title {
+  font-family: "Mundial-Demibold";
+  font-size: 40px;
+  line-height: 48px;
+  text-align: center;
+}
+@media (max-width: 1080px) {
+  .signin-title {
+    text-align: start;
+    font-size: 24px;
+  }
+}
+
+.qrcode-image-container {
+  width: 250px;
+  height: 250px;
+  border-radius: 10px;
+  background-color: var(--menu-background-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.button {
+  height: 44px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: var(--view-background-color);
+  background-color: var(--action-or-selection-color);
+  border: 1px solid var(--action-or-selection-color);
+  text-align: center;
+  font-weight: 600;
+  line-height: 44px;
+  padding: 0 16px;
+  user-select: none;
+}
+
+.signin-button-text {
+  font-family: "Mundial-Demibold";
+  font-size: 16px;
+  line-height: 44px;
+  text-align: center;
+}
+
+.xxlarge-margin-bottom {
+  margin-bottom: 24px;
+}
+
+.qrcode-image-section {
+  padding: 40px;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+}
+@media (max-width: 1080px) {
+  .qrcode-image-section {
+    width: 100%;
+    padding: 0;
+    gap: 1rem;
+  }
+}
+
+:root {
+  --action-or-selection-color: #0070e0;
+  --title-color: #1b2733;
+  --text-color: #637282;
+  --line-color: #e6e8eb;
+  --border-color: #bdc4c9;
+  --view-background-color: #fff;
+  --menu-background-color: #f7f9fa;
+  --error-border-color: #d46d6d;
+  --delete-or-cancel-color: #ed3d5d;
+  --success-text-color: #157f3c;
+  --success-background-color: #e8f7ed;
+  --success-border-color: #30b661;
+  --fail-text-color: #d46d6d;
+  --fail-background-color: #fef1f1;
+  --fail-border-color: #e2a8a8;
+  --dark-green: #17dd8c;
+  --light-green: #6effba;
+  --light-blue: #63b1ff;
+  --dark-pink: #ff7592;
+  --light-pink: #ff92b1;
+  --dark-yellow: #ffb828;
+  --light-yellow: #ffcc5e;
+}
+</style>
