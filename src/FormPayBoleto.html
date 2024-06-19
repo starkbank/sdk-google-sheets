@@ -81,9 +81,10 @@
 
   function onSuccessFunc() {
     stopLoading();
+    google.script.host.close();
     alertMessage.innerHTML = "Pagamentos enviados com sucesso!";
     window.scrollTo(0,0);
-}
+  }
   
   function send() {
     let teamSelected = document.getElementById("team-selector").value;
