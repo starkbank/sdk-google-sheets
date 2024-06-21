@@ -13,6 +13,8 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 
 
 ## [Unreleased]
+### Fixed
+- getCostCenter function
 
 ## [0.6.4] - 2024-06-13
 ### Added
