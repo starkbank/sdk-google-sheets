@@ -99,31 +99,29 @@ function getUserCenterId(){
 }
 
 function getCenter(){
-    checkLogin();
-    let centers = [];
-    let query = {};
-    let cursor = "";
+      let centers = [];
+      let query = {};
+      let cursor = "";
+      do {
+          query["cursor"] = cursor;
+          query["fields"] = "id,name,badgeCount";
+          let responseApi = fetch("/cost-center", method = 'GET', null, query);
 
-    do {
-        query["cursor"] = cursor;
-        query["fields"] = "id,name,badgeCount";
-        let responseApi = fetch("/cost-center", method = 'GET', null, query);
+          if (parseResponse(responseApi)[1] != 200) {
+            Browser.msgBox(parseResponse(responseApi)[0]["errors"][0]["message"])
+            throw new Error()
+          }
 
-        if (parseResponse(responseApi)[1] != 200) {
-          Browser.msgBox(parseResponse(responseApi)[0]["errors"][0]["message"])
-          throw new Error()
-        }
+          let [json, status] = parseResponse(responseApi);
 
-        let [json, status] = parseResponse(responseApi);
+          elementList = json["centers"];
+          cursor = json["cursor"];
 
-        elementList = json["centers"];
-        cursor = json["cursor"];
-
-        for (let center of elementList){
-            centers.push(center);
-        }
-    } while (cursor);
-    return centers;
+          for (let center of elementList){
+              centers.push(center);
+          }
+      } while (cursor);
+      return centers;
 }
 
 function checkLogin(){
