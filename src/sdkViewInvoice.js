@@ -25,8 +25,7 @@ function ViewInvoice(after, before, status) {
     json = parseResponse(fetch("/invoice", method = 'GET', null, query));
 
     if (json[1] != 200) {
-      Browser.msgBox(json[0]["errors"][0]["message"])
-      throw new Error()
+      throw new Error(json[0]["errors"][0]["message"])
     }
     console.log(json)
     json = json[0]

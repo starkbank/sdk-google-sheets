@@ -53,10 +53,10 @@ function maskFetch(path, method='GET', payload=null, query=null, version="v2", e
     let accessTime = Math.round((new Date()).getTime() / 1000).toString();
     options['headers'] = {
         'Access-Id': accessId,
-        'User-Agent': 'App-StarkBank-GSheets-v0.6.4b',
-        'User-Agent-Override': 'App-StarkBank-GSheets-v0.6.4b',        
+        'User-Agent': 'App-StarkBank-GSheets-v0.6.5b',
+        'User-Agent-Override': 'App-StarkBank-GSheets-v0.6.5b',        
         'PlatFormId' : 'gsheets',
-        'PlatFormVersion' : '0.6.4',
+        'PlatFormVersion' : '0.6.5',
         'Accept-Language': 'pt-BR',
         'Content-Type': 'application/json',
         'Access-Time': accessTime

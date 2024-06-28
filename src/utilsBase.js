@@ -94,12 +94,13 @@ function formatHeader(sheet) {
 
 function SetAllGreetings(){
   user = new getDefaultUser();
-  getBalance();
   for (sheet of SpreadsheetApp.getActiveSpreadsheet().getSheets()) {
     if (sheet.getSheetName().toLowerCase() != "credentials") {
+      clearGreeting(sheet)
       DisplayGreeting(user, sheet);
     }
   }
+  getBalance();
 }
 
 

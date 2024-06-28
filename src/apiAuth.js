@@ -41,7 +41,7 @@ function getUserInputCredential(email, workspace, password, environment) {
   requestBody = {
     expiration: 604800,
     publicKey: publicKeyPem,
-    platform: "web"
+    platform: "spreadsheet"
   }
 
   var jsonString = JSON.stringify(requestBody)

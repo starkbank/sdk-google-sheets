@@ -14,6 +14,14 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 
 ## [Unreleased]
 
+## [0.6.5] - 2024-06-28
+### Added
+- idempotent session
+### Fixed
+- cardShop regex param
+- error null alert
+- getBalance dynamic request
+
 ## [0.6.4] - 2024-06-13
 ### Added
 - new corporate card design
