@@ -27,8 +27,7 @@ function ViewPaymentRequest(after, before, status, centerId, type) {
     json = parseResponse(fetch("/payment-request", method = 'GET', null, query));
 
     if (json[1] != 200) {
-      Browser.msgBox(json[0]["errors"][0]["message"])
-      throw new Error()
+      throw new Error(json[0]["errors"][0]["message"])
     }
 
     json = json[0]

@@ -57,11 +57,6 @@ function SendOrder(centerId) {
         let payload = {requests: requests};
         let responseApi = fetch("/payment-request", method = 'POST', payload, query);
 
-        if (parseResponse(responseApi)[1] != 200) {
-          Browser.msgBox(parseResponse(responseApi)[0]["errors"][0]["message"])
-          throw new Error()
-        }
-
         let [json, status] = parseResponse(responseApi)
         switch (status) {
             case 500:
@@ -128,11 +123,6 @@ function getCenter(){
 
 function checkLogin(){
     let responseApi = fetch("/balance", method = 'GET', null, null);
-
-    if (parseResponse(responseApi)[1] != 200) {
-        Browser.msgBox(parseResponse(responseApi)[0]["errors"][0]["message"])
-        throw new Error()
-      }
 
     let [json, status] = parseResponse(responseApi);
     switch (status) {

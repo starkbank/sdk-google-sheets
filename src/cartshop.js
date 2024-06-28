@@ -45,7 +45,7 @@ function cartShop() {
       var displayName2 = removeDiacritics(sheet.getRange('B' + line.toString()).getValue().toString());
       var displayName1 = removeDiacritics(sheet.getRange('C' + line.toString()).getValue().toString());
       var holderName = removeDiacritics(sheet.getRange('C' + line.toString()).getValue().toString());
-      var shippingPhone = sheet.getRange('D' + line.toString()).getValue().toString();
+      var shippingPhone = removeDiacritics(sheet.getRange('D' + line.toString()).getValue().toString().replace(/\u202C/g, ''));
       var shippingStreetLine1 = removeDiacritics(sheet.getRange('E' + line.toString()).getValue().toString());
       var shippingStreetLine2 = removeDiacritics(sheet.getRange('F' + line.toString()).getValue().toString());
       var shippingDistrict = removeDiacritics(sheet.getRange('G' + line.toString()).getValue().toString());
