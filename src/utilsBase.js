@@ -161,6 +161,6 @@ function formatDateToISO(stringDate)
 }
 
 
-// function onOpen(e) {
-//  Browser.msgBox("Hello!!");
-// }
+function calculateExternalId(amount, name, taxId, bankCode, branchCode, accountNumber){
+  return bankCode + branchCode + accountNumber + name + taxId + amount.toString() 
+}
