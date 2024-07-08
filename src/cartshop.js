@@ -43,15 +43,15 @@ function cartShop() {
       var cartId = id;
       var kitId = kitSelector[sheet.getRange('A' + line.toString()).getValue()];
       var displayName2 = removeDiacritics(sheet.getRange('B' + line.toString()).getValue().toString());
-      var displayName1 = removeDiacritics(sheet.getRange('C' + line.toString()).getValue().toString());
       var holderName = removeDiacritics(sheet.getRange('C' + line.toString()).getValue().toString());
-      var shippingPhone = removeDiacritics(sheet.getRange('D' + line.toString()).getValue().toString().replace(/\u202C/g, ''));
-      var shippingStreetLine1 = removeDiacritics(sheet.getRange('E' + line.toString()).getValue().toString());
-      var shippingStreetLine2 = removeDiacritics(sheet.getRange('F' + line.toString()).getValue().toString());
-      var shippingDistrict = removeDiacritics(sheet.getRange('G' + line.toString()).getValue().toString());
-      var shippingCity = removeDiacritics(sheet.getRange('H' + line.toString()).getValue().toString());
-      var shippingStateCode = sheet.getRange('I' + line.toString()).getValue().toString().trim().toUpperCase();
-      var shippingZipCode = sheet.getRange('J' + line.toString()).getValue().toString();
+      var displayName1 = removeDiacritics(sheet.getRange('D' + line.toString()).getValue().toString());
+      var shippingPhone = removeDiacritics(sheet.getRange('E' + line.toString()).getValue().toString().replace(/\u202C/g, ''));
+      var shippingStreetLine1 = removeDiacritics(sheet.getRange('F' + line.toString()).getValue().toString());
+      var shippingStreetLine2 = removeDiacritics(sheet.getRange('G' + line.toString()).getValue().toString());
+      var shippingDistrict = removeDiacritics(sheet.getRange('H' + line.toString()).getValue().toString());
+      var shippingCity = removeDiacritics(sheet.getRange('I' + line.toString()).getValue().toString());
+      var shippingStateCode = sheet.getRange('J' + line.toString()).getValue().toString().trim().toUpperCase();
+      var shippingZipCode = sheet.getRange('K' + line.toString()).getValue().toString();
       var shippingCountryCode = "BRA";
 
       let hasError = false;
@@ -186,14 +186,14 @@ function onEdit(e) {
       sheet.getRange("B11").setValue("Ex: StarkBank");
     }
 
-    if (removeDiacritics(sheet.getRange("D11").getValue()) == "") {
-      sheet.getRange("D11").setFontColor("grey");
-      sheet.getRange("D11").setValue("Ex: (11) 99999-9999");
+    if (removeDiacritics(sheet.getRange("E11").getValue()) == "") {
+      sheet.getRange("E11").setFontColor("grey");
+      sheet.getRange("E11").setValue("Ex: (11) 99999-9999");
     }
 
-    if (removeDiacritics(sheet.getRange("J11").getValue()) == "") {
-      sheet.getRange("J11").setFontColor("grey");
-      sheet.getRange("J11").setValue("Ex: 20018-183");
+    if (removeDiacritics(sheet.getRange("K11").getValue()) == "") {
+      sheet.getRange("K11").setFontColor("grey");
+      sheet.getRange("K11").setValue("Ex: 20018-183");
     }
 
   }
