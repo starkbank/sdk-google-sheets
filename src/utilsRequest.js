@@ -102,53 +102,69 @@ function parseResponse(responseApi) {
 }
 
 
-function fetchBuffer(path, method = 'GET', payload = null, query = null, version = 'v2') {
+function fetchBuffer(path, method='GET', payload=null, query=null, version="v2", environment=null, privateKeyPem=null, challengeId=null) {
   let user = new getDefaultUser();
-  let hostname = getHostname(user.environment.toLowerCase(), version);
-  let options = {method: method};
+  if (!user.privateKey) {
+      throw JSON.stringify({"message": "Erro de autenticação! Por favor, faça login novamente."});
+  }
+  if (!environment) {
+      environment = environment || user.environment.toLowerCase();
+  }
+  let hostname = getHostname(environment, version);
+  let options = {
+      method: method,
+      muteHttpExceptions: true,
+  };
   let url = hostname + path;
   
   if (query) {
-    let queryString = '';
-    let separator = '?';
-    for (let key in query) {
-      if (query[key]) {
-        queryString += separator + key + '=' + query[key];
-        separator = '&';
+      let queryString = '';
+      let separator = '?';
+      for (let key in query) {
+          if (query[key]) {
+              queryString += separator + key + '=' + query[key];
+              separator = '&';
+          }
       }
-    }
-    url += queryString;
+      url += queryString;
   }
 
-   paths = ["/session", "/boleto-payment"]
+  if (privateKeyPem) {
+    var accessId = KeyGen.generateMemberAccessId(user.workspaceId, user.email)
+  } else {
+    var accessId = user.accessId;
+  }
 
-    if (paths.includes(path) && method != "GET") {
-      var accessId = KeyGen.generateMemberAccessId(user.workspaceId, user.email)
-    } else {
-      var accessId = user.accessId;
-    }
-    
-    let accessTime = Math.round((new Date()).getTime() / 1000).toString();
-    options['headers'] = {
-        'Access-Id': accessId,
-        'User-Agent': 'GoogleSheets-SDK-0.4.3',
-        'Accept-Language': 'pt-BR',
-        'Content-Type': 'application/json',
-        'Access-Time': accessTime
-    };
-    
-    let body = JSON.stringify(payload);
-    if (!payload) {
-        body = "";
-    }
-
-    options['payload'] = body;
-  
   if (!privateKeyPem) {
-      var privateKeyPem = user.privateKey;
+    var privateKeyPem = user.privateKey;
   }
-    
-  let message = accessId + ':' + accessTime + ':' + body;
+  
+  let accessTime = Math.round((new Date()).getTime() / 1000).toString();
+  options['headers'] = {
+      'Access-Id': accessId,
+      'User-Agent': 'App-StarkBank-GSheets-v0.6.5b',
+      'User-Agent-Override': 'App-StarkBank-GSheets-v0.6.5b',        
+      'PlatFormId' : 'gsheets',
+      'PlatFormVersion' : '0.6.5',
+      'Accept-Language': 'pt-BR',
+      'Content-Type': 'application/pdf',
+      'Access-Time': accessTime
+  };
+
+  let body = ""
+  if (payload) {
+      body = payload;
+  }
+
+  options['payload'] = body;
+
+  let message = accessId + ':' + accessTime + ':' + body
+
+  if (challengeId) {
+    message += ":" + challengeId
+    options['headers']['Access-Challenge-Ids'] = challengeId
+  }
+
   let signature = easySign(message, privateKeyPem); 
   options['headers']['Access-Signature'] = signature;
 

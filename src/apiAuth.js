@@ -124,6 +124,9 @@ function postSessionChallenge() {
     json = content[0];
 
     SaveSession(sheet.getRange('B16').getValue(), sheet.getRange('B17').getValue(), json["session"]["id"])
+
+    let paymentRequestExternalIdsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
+    paymentRequestExternalIdsheet.getRange("C1").setValue("{}")
   }
 
 }
@@ -198,5 +201,8 @@ function signOut(displayMessage = true) {
     sheet.getRange("B11").setValue("Ex: StarkBank")
     sheet.getRange("D11").setValue("Ex: (11) 99999-9999")
     sheet.getRange("J11").setValue("Ex: 20018-183")
+
+    let paymentRequestExternalIdsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
+    paymentRequestExternalIdsheet.getRange("C1").setValue("{}")
   }
 }
