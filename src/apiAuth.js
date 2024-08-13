@@ -192,11 +192,11 @@ function signOut(displayMessage = true) {
     }
     let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Solicitação de Cartões');
     sheet.getRange("B11").setFontColor("grey")
-    sheet.getRange("D11").setFontColor("grey")
-    sheet.getRange("J11").setFontColor("grey")
+    sheet.getRange("E11").setFontColor("grey")
+    sheet.getRange("K11").setFontColor("grey")
 
     sheet.getRange("B11").setValue("Ex: StarkBank")
-    sheet.getRange("D11").setValue("Ex: (11) 99999-9999")
-    sheet.getRange("J11").setValue("Ex: 20018-183")
+    sheet.getRange("E11").setValue("Ex: (11) 99999-9999")
+    sheet.getRange("K11").setValue("Ex: 20018-183")
   }
 }
