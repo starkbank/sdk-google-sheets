@@ -13,6 +13,9 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 
 
 ## [Unreleased]
+### Fixed
+- paymentRequest duplicated payment
+- download transfer locally
 
 ## [0.6.5] - 2024-06-28
 ### Added

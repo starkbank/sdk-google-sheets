@@ -66,9 +66,6 @@ function getTransferDownloadList(){
       break;
     }
   }
-  if (idList.length == 0) {
-    Browser.msgBox("Nenhuma transferência válida (sucesso) para download listada.")
-  }
   return idList;
 }
 

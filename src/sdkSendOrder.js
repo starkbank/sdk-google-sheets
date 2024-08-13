@@ -1,87 +1,158 @@
 
 function SendOrder(centerId) {
     let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Transferência com Aprovação');
+    let externalSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
     let line = 10;
     let query = {};
     let request = {};
     let requests = [];
     let payment = {};
     let errorMessages = "";
-    
+    let sentItems = "";
+    let bactchLineExternalId = 11;
     formatHeader(sheet);
     
     const initialLine = 11;
     const batchSize = 100;
+
+    let stringJson = ""
+
+    if (externalSheet.getRange('C1').getValue().toString().length < 2) {
+        stringJson = "{}";
+    }
+
+    if (externalSheet.getRange('C1').getValue().toString().length >= 2) {
+        stringJson = externalSheet.getRange('C1').getValue().toString().trim()
+    }
+
+    let jsonExternalId = JSON.parse(stringJson);
+
     for (let batchInitialLine = initialLine; batchInitialLine <= sheet.getLastRow(); batchInitialLine = line){
         requests = [];
         request = {};
+        externalIds = [];
+        anysent = true;
+
         for (line = batchInitialLine; line < batchInitialLine + batchSize && line <= sheet.getLastRow(); line++){
-            payment = {
-                name: removeDiacritics(sheet.getRange('A' + line.toString()).getValue()),
-                taxId: sheet.getRange('B' + line.toString()).getValue(),
-                amount: parseInt(Math.round(100*sheet.getRange('C' + line.toString()).getValue()), 10),
-                bankCode: sheet.getRange('D' + line.toString()).getValue(),
-                branchCode: sheet.getRange('E' + line.toString()).getValue(),
-                accountNumber: sheet.getRange('F' + line.toString()).getValue()
-            };
 
-            var schedule = sheet.getRange('G' + line.toString()).getValue();
+            let customerName = removeDiacritics(sheet.getRange('A' + line.toString()).getValue());
+            let taxId = removeDiacritics(sheet.getRange('B' + line.toString()).getValue());
+            let amount = parseInt(Math.round(100*sheet.getRange('C' + line.toString()).getValue()), 10);
+            let bankCode = removeDiacritics(sheet.getRange('D' + line.toString()).getValue());
+            let branchCode = removeDiacritics(sheet.getRange('E' + line.toString()).getValue());
+            let accountNumber = removeDiacritics(sheet.getRange('F' + line.toString()).getValue());
 
-            accountType = sheet.getRange('H' + line.toString()).getValue();
-            if (accountType) {
-                payment["accountType"] = accountType;
+            let calculatedExternalId = calculateExternalId(amount, customerName, taxId, bankCode, branchCode, accountNumber)
+
+            if (jsonExternalId[calculatedExternalId]) {
+                bactchLineExternalId += 1;
+                jsonExternalId[calculatedExternalId] = line
+                externalIds.push(calculatedExternalId)
             }
 
-            tags = removeDiacritics(sheet.getRange('I' + line.toString()).getValue());
-            if (tags) {
-                request["tags"] = tags.split(",");
-            }
+            if (!jsonExternalId[calculatedExternalId]) {
 
-            description = removeDiacritics(sheet.getRange('J' + line.toString()).getValue())
-            if (description) {
-                payment["description"] = description;
-            }
-            
-            request = {
-                centerId: centerId,
-                type: "transfer",
-                payment: payment,
-            };
+                jsonExternalId[calculatedExternalId] = line
 
-            if (schedule != "") {
-              request["due"] = formatToLocalDatetime(schedule)
+                externalIds.push(calculatedExternalId)
+                payment = {
+                    name: customerName,
+                    taxId: taxId,
+                    amount: amount,
+                    bankCode: bankCode,
+                    branchCode: branchCode,
+                    accountNumber: accountNumber
+                };
+    
+                var schedule = sheet.getRange('G' + line.toString()).getValue();
+    
+                accountType = sheet.getRange('H' + line.toString()).getValue();
+                if (accountType) {
+                    payment["accountType"] = accountType;
+                }
+    
+                tags = removeDiacritics(sheet.getRange('I' + line.toString()).getValue());
+                if (tags) {
+                    request["tags"] = tags.split(",");
+                }
+    
+                description = removeDiacritics(sheet.getRange('J' + line.toString()).getValue())
+                if (description) {
+                    payment["description"] = description;
+                }
+                
+                request = {
+                    centerId: centerId,
+                    type: "transfer",
+                    payment: payment,
+                };
+    
+                if (schedule != "") {
+                    request["due"] = formatToLocalDatetime(schedule)
+                }
+                
+                requests.push(request);
             }
-            
-            requests.push(request);
         }
-        let payload = {requests: requests};
-        let responseApi = fetch("/payment-request", method = 'POST', payload, query);
 
-        let [json, status] = parseResponse(responseApi)
-        switch (status) {
-            case 500:
-                throw new Error(JSON.parse(json)["errors"]["message"]);
-            case 400:
-                let errors = Array.from(json["errors"]);   
-                errors.forEach(error => {
-                    if (error.code == "invalidCredentials") {
-                        sendMessage("Sessão expirada! \nFaça o login novamente");
-                        return;
-                    };
-                    let errorMessage = error.message;
+        if (requests.length > 0) {
+            let payload = {requests: requests};
+            let responseApi = fetch("/payment-request", method = 'POST', payload, query);
 
-                    let message = errorMessage + "\n"
-                    if (/Element [0-9]*:/.test(errorMessage)) {
-                        let requestNumber = errorMessage.split('Element ').pop().split(':')[0];
-                        let lineNumber = parseInt(requestNumber) + batchInitialLine;
-                        message = "Erro - Linha " + lineNumber + ":" + errorMessage.split(':')[1] + "\n";
-                    };
-                    errorMessages = errorMessages.concat(message);
-                })
+            let [json, status] = parseResponse(responseApi)
+            if (status == 200) {
+                let lastExternalIdRow = 11
+                if (externalSheet.getLastRow() > 7) {
+                    lastExternalIdRow = externalSheet.getLastRow() + 1
+                }
+
+                for (let c in jsonExternalId) {
+                    sheet.getRange("K" + jsonExternalId[c].toString()).setValue("Pagemento Enviado")
+                }
+
+                sentItems = "!!";
+
+                externalSheet.getRange("C1").setValue(JSON.stringify(jsonExternalId))
+            }
+            switch (status) {
+                case 500:
+                    throw new Error(JSON.parse(json)["errors"]["message"]);
+                case 400:
+                    let errors = Array.from(json["errors"]);   
+                    errors.forEach(error => {
+                        if (error.code == "invalidCredentials") {
+                            sendMessage("Sessão expirada! \nFaça o login novamente");
+                            return;
+                        };
+                        let errorMessage = error.message;
+
+                        let message = errorMessage + "\n"
+                        if (/Element [0-9]*:/.test(errorMessage)) {
+                            let requestNumber = errorMessage.split('Element ').pop().split(':')[0];
+                            let lineNumber = parseInt(requestNumber)
+
+                            let tempJson = requests[lineNumber]["payment"]
+
+                            let customerName = tempJson["name"]
+                            let taxId = tempJson["taxId"]
+                            let amount = tempJson["amount"]
+                            let bankCode = tempJson["bankCode"]
+                            let branchCode = tempJson["branchCode"]
+                            let accountNumber = tempJson["accountNumber"]
+
+                            let calculatedExternalId = calculateExternalId(amount, customerName, taxId, bankCode, branchCode, accountNumber)
+                            
+                            message = "Erro - Linha " + jsonExternalId[calculatedExternalId].toString() + ":" + errorMessage.split(':')[1] + "\n";
+                        };
+                        errorMessages = errorMessages.concat(message);
+                    })
+                    sendMessage(errorMessages);
+                    return
+            }
         }
     }
-    let successMessage = "Sucesso! \nTodas as transferências foram enviadas para aprovação."
-    errorMessages ? sendMessage(errorMessages) : sendMessage(successMessage)
+
+    sentItems ? sendMessage("Items enviados\n" + sentItems + "\n\n" + errorMessages) : sendMessage(errorMessages); 
 }
     
 function sendMessage(message){

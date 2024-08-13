@@ -20,6 +20,7 @@
 
 <script>
   var downloaded = 0;
+  var items = 0;
 
   function onLoad(){
     google.script.run.withSuccessHandler(downloadAll)
@@ -29,6 +30,7 @@
   
   function downloadAll(result){
     for (let id of result){
+      items = result.length
       google.script.run.withSuccessHandler(pdfSave)
                        .withFailureHandler(onFailure)
                        .TransferDownloadBase64Encoded(id);                                    
@@ -51,13 +53,15 @@
   
     document.body.removeChild(element);
     downloaded += 1;
-//    if (downloaded >= 30) {
-//      setTimeout(google.script.host.close, 20000);
-//    }
+
+   if (downloaded >= items) {
+     setTimeout(google.script.host.close, 10000);
+   }
   }
   
   function onFailure(error) {
     console.log(error)
+    setTimeout(google.script.host.close, 100);
   }
 
   function save() {
