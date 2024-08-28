@@ -1,7 +1,56 @@
 {
-  "timeZone": "America/Argentina/Buenos_Aires",
-  "dependencies": {
-  },
-  "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+    "timeZone": "America/Sao_Paulo",
+    "dependencies": {},
+    "exceptionLogging": "STACKDRIVER",
+    "oauthScopes": [
+        "https://www.googleapis.com/auth/workspace.linkpreview",
+        "https://www.googleapis.com/auth/script.locale"
+    ],
+    "runtimeVersion": "V8",
+    "addOns": {
+        "common": {
+            "name": "Stark Bank",
+            "logoUrl": "https://starkbank.com/static/emblem.svg",
+            "useLocaleFromApp": true,
+            "layoutProperties": {
+                "primaryColor": "#1B2733",
+                "secondaryColor": "#0070E0"
+            },
+            "homepageTrigger": {
+                "runFunction": "onHomepage",
+                "enabled": true
+            },
+            "universalActions": [
+                {
+                    "label": "Learn more about Cataas",
+                    "openLink": "https://cataas.com"
+                }
+            ]
+        },
+        "sheets": {
+            "onFileScopeGrantedTrigger": {
+                "runFunction": ""
+            },
+            "linkPreviewTriggers": [
+                {
+                    "labelText": "Invoice",
+                    "runFunction": "previewInvoice",
+                    "patterns": [
+                        {
+                            "hostPattern": "starkbank.com",
+                            "pathPrefix" : "invoicelink"
+                        }
+                    ]
+                }
+            ],
+            "createActionTriggers": {
+                "runFunction": ""
+            }
+        }
+    },
+    "urlFetchWhitelist": [
+        "https://starkbank.com/",
+        "https://api.starkbank.com/",
+        "https://sandbox.api.starkbank.com/"
+    ]
 }
