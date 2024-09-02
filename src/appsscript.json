@@ -2,34 +2,27 @@
     "timeZone": "America/Sao_Paulo",
     "dependencies": {},
     "exceptionLogging": "STACKDRIVER",
-    "oauthScopes": [
-        "https://www.googleapis.com/auth/workspace.linkpreview",
-        "https://www.googleapis.com/auth/script.locale"
-    ],
     "runtimeVersion": "V8",
     "addOns": {
         "common": {
-            "name": "Stark Bank",
-            "logoUrl": "https://starkbank.com/static/emblem.svg",
+            "name": "STARK BANK",
+            "logoUrl": "https://starkbank.com/static/icon.png",
             "useLocaleFromApp": true,
             "layoutProperties": {
-                "primaryColor": "#1B2733",
-                "secondaryColor": "#0070E0"
+                "primaryColor": "#0070E0"
             },
             "homepageTrigger": {
                 "runFunction": "onHomepage",
                 "enabled": true
-            },
-            "universalActions": [
-                {
-                    "label": "Learn more about Cataas",
-                    "openLink": "https://cataas.com"
-                }
-            ]
+            }
         },
         "sheets": {
+            "homepageTrigger": {
+                "runFunction": "onHomepage",
+                "enabled": true
+            },
             "onFileScopeGrantedTrigger": {
-                "runFunction": ""
+                "runFunction": "onFileScopeGranted"
             },
             "linkPreviewTriggers": [
                 {
@@ -42,10 +35,7 @@
                         }
                     ]
                 }
-            ],
-            "createActionTriggers": {
-                "runFunction": ""
-            }
+            ]
         }
     },
     "urlFetchWhitelist": [
