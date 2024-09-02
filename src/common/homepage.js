@@ -9,7 +9,14 @@ class Homepage {
             ]
         });
 
+        const savedWorkspace = PropertiesService.getUserProperties()
+            .getProperty("WORKSPACE");
+        
         if (!Authentication.isAuthorized()) {
+            if (savedWorkspace) {
+                return Authentication.renderLoginCard(e)
+            }
+
             return Authentication.renderWorkspaceSelectorCard(e);
         }
 

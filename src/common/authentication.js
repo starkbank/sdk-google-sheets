@@ -52,18 +52,21 @@ class Authentication {
             .build();
     }
 
-    static renderLoginCard (e, workspace) {
+    static renderLoginCard (e) {
         const loc = new Localization({
             "en": [
                 "Name",
-                "Change workspace"
+                "Change workspace",
+                "Password"
             ],
             "pt-BR": [
                 "Nome",
-                "Alterar workspace"
+                "Alterar workspace",
+                "Senha"
             ]
         });
-        const {pictureUrl, name, organizationId, status} = workspace;
+        
+        const {pictureUrl, name, organizationId, status} = Authentication.getSavedWorkspace();
         
         const card =  CardService.newCardBuilder();
         const section = CardService.newCardSection();
@@ -98,7 +101,29 @@ class Authentication {
                     .setTopLabel("Status")
             )
         }
+
+        const emailInput = CardService.newTextInput()
+            .setFieldName("email")
+            .setTitle("Email")
         
+        section.addWidget(emailInput)
+
+        const passwordInput = CardService.newTextInput()
+            .setFieldName("password")
+            .setTitle("Senha")
+
+        section.addWidget(passwordInput)
+
+        
+        section.addWidget(
+            CardService.newTextButton()
+                .setText("Login")
+                .setOnClickAction(
+                    CardService.newAction()
+                        .setFunctionName("Authentication.navigateToHome")
+                        // TBD: swap function to challenge
+                )
+        )
         section.addWidget(
             CardService.newTextButton()
                 .setText(loc.getLocalized(e, 1))
@@ -113,7 +138,28 @@ class Authentication {
         return card.build()
     }
 
+    static saveWorkspace(workspace) {
+        const userProperties = PropertiesService.getUserProperties();
+        userProperties.setProperty("WORKSPACE", JSON.stringify(workspace));
+    }
+
+    static getSavedWorkspace() {
+        const userProperties = PropertiesService.getUserProperties();
+        const workspace = userProperties.getProperty("WORKSPACE")
+        if (!workspace) {
+            return undefined;
+        }
+
+        return JSON.parse(workspace);
+    }
+
+    static deleteSavedWorkspace() {
+        const userProperties = PropertiesService.getUserProperties();
+        userProperties.deleteProperty("WORKSPACE")
+    }
+
     static navigateToHome (e) {
+        Authentication.deleteSavedWorkspace();
         const card = Authentication.renderWorkspaceSelectorCard(e);
 
         const nav = CardService.newNavigation()
@@ -179,8 +225,11 @@ class Authentication {
             Browser.msgBox(loc.getLocalized(e, 0));
             return;
         }
+
+        const workspaceObj = workspaceInfos[0].workspaces[0];
+        Authentication.saveWorkspace(workspaceObj);
         
-        const card = Authentication.renderLoginCard(e, workspaceInfos[0].workspaces[0])
+        const card = Authentication.renderLoginCard(e, workspaceObj)
 
         const nav = CardService.newNavigation().updateCard(card);
         return CardService.newActionResponseBuilder()
