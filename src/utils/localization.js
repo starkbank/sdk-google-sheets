@@ -3,9 +3,7 @@ class Localization {
         this.localizationStrings = localizationStrings;
     }
 
-    getLocalized(event, index) {
-        let userLanguage = event.commonEventObject.userLocale;
-        
+    getLocalized(userLanguage, index) {
         if (Object.keys(this.localizationStrings).indexOf(userLanguage) == -1) {
             userLanguage = Object.keys(this.localizationStrings)[0];
         }

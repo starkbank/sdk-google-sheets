@@ -13,11 +13,7 @@ class Homepage {
             .getProperty("WORKSPACE");
         
         if (!Authentication.isAuthorized()) {
-            if (savedWorkspace) {
-                return Authentication.renderLoginCard(e)
-            }
-
-            return Authentication.renderWorkspaceSelectorCard(e);
+            return Authentication.renderSignInCard(e);
         }
 
         const footer = CardService.newFixedFooter()

@@ -14,8 +14,10 @@ function getHostname(environment, version = "v2") {
 
 function maskFetch(path, method = 'GET', payload = null, query = null, version = "v2", environment = null, privateKeyPem = null, challengeId = null) {
 
-    let user = new getDefaultUser();
-    if (!user.privateKey) {
+    let user = Authentication.getJsonProperty("credentials");
+    // let user = new getDefaultUser();
+    
+    if (!user.privateKeyPem) {
         throw JSON.stringify({ "message": "Erro de autenticação! Por favor, faça login novamente." });
     }
     if (!environment) {

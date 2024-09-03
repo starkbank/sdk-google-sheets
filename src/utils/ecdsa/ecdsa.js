@@ -23,10 +23,10 @@ function verify(message, signature, publicKey) {
 };
 
 
-function hash(message){
-  let signature = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, message);
-  return signature.map(function(byte) {
-    var v = (byte < 0) ? 256 + byte : byte;
-    return ("0" + v.toString(16)).slice(-2);
-  }).join("");
+function hash(message) {
+    let signature = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, message);
+    return signature.map(function (byte) {
+        var v = (byte < 0) ? 256 + byte : byte;
+        return ("0" + v.toString(16)).slice(-2);
+    }).join("");
 };

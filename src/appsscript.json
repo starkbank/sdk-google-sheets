@@ -3,6 +3,14 @@
     "dependencies": {},
     "exceptionLogging": "STACKDRIVER",
     "runtimeVersion": "V8",
+    "oauthScopes": [
+        "https://www.googleapis.com/auth/drive.file",
+        "https://www.googleapis.com/auth/workspace.linkpreview",
+        "https://www.googleapis.com/auth/script.locale",
+        "https://www.googleapis.com/auth/script.external_request",
+        "https://www.googleapis.com/auth/script.container.ui",
+        "https://www.googleapis.com/auth/spreadsheets.currentonly"
+    ],
     "addOns": {
         "common": {
             "name": "STARK BANK",
@@ -41,6 +49,7 @@
     "urlFetchWhitelist": [
         "https://starkbank.com/",
         "https://api.starkbank.com/",
-        "https://sandbox.api.starkbank.com/"
+        "https://sandbox.api.starkbank.com/",
+        "https://us-central1-api-ms-auth-sbx.cloudfunctions.net/"
     ]
 }

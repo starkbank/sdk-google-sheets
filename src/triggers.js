@@ -5,6 +5,9 @@ const STARK_LOGO_URL = "https://starkbank.com/static/icon.png";
  * @return {CardService.Card} The card to show to the user.
  */
 function onHomepage(e) {
+    Authentication.setJsonProperty("language", {
+        language: e.commonEventObject.userLocale
+    });
     return Homepage.render(e);
 }
 
