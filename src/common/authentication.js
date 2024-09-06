@@ -1,18 +1,17 @@
 class Authentication {
     static isAuthorized () {
-        // Check if there is a private key
-
-        // Check if private key is working
         try {
             Balance.get()
             return true;
         } catch (e) {
+            console.log("ERROR GETTING BALANCE", e)
+            this.clearAuthProps()
             return false;
         }
     }
     
     static renderSignInCard (e) {
-        const language = e.commonEventObject.userLocale;
+        const language = Authentication.getUserProperty("userLocale");
         const loc = new Localization({
             "en": [
                 "Login into your Stark Bank account"
@@ -52,8 +51,7 @@ class Authentication {
     }
 
     static navigateToHome (e) {
-        Authentication._deleteSavedWorkspace();
-        const card = Authentication.renderSignInCard(e);
+        const card = Homepage.render(e);
 
         const nav = CardService.newNavigation()
             .updateCard(card);
@@ -64,7 +62,7 @@ class Authentication {
     }
     
     static validateWorkspace (environment, workspaceName) {
-        const {language} = Authentication.getJsonProperty("language");
+        const language = Authentication.getUserProperty("userLocale");
         
         const loc = new Localization({
             "en": [
@@ -111,26 +109,26 @@ class Authentication {
         };
     }
 
-    static setJsonProperty(property, jsonObject) {
+    static setUserProperty(property, value) {
         const userProperties = PropertiesService.getUserProperties();
-        userProperties.setProperty(property, JSON.stringify(jsonObject));
-        return true;
+        userProperties.setProperty(property, value);
     }
 
-    static getJsonProperty(property) {
+    static getUserProperty(property) {
         const userProperties = PropertiesService.getUserProperties();
-        const objString = userProperties.getProperty(property);
-        return JSON.parse(objString);
+        return userProperties.getProperty(property);
     }
 
-    static deleteJsonProperty(property) {
+    static deleteUserProperty(property) {
         const userProperties = PropertiesService.getUserProperties();
         userProperties.deleteProperty(property);
-        return true;
     }
 
     static getUserInputCredential(email, workspace, password, environment) {
         workspace = workspace.toLowerCase().trim()
+        Authentication.setUserProperty("workspace", workspace)
+        Authentication.setUserProperty("email", email)
+        Authentication.setUserProperty("environment", environment)
     
         let workspaceInfos = Authentication.validateWorkspace(environment, workspace);
     
@@ -139,14 +137,19 @@ class Authentication {
         }
 
         let workspaceId = workspaceInfos.workspace.id;
+        Authentication.setUserProperty("workspaceId", workspaceId)
         let memberName = workspaceInfos.workspace.username;
+        Authentication.setUserProperty("memberName", memberName)
     
-        var key = KeyGen.generateKeyFromPassword(password, email, environment);
+        var keyFromCredentials = KeyGen.generateKeyFromPassword(password, email, environment);
+        Authentication.setUserProperty("keyFromCredentials", keyFromCredentials.toPem())
     
         const keys = easyMake();
     
         let privateKeyPem = keys[0];
+        Authentication.setUserProperty("privateKeyPem", privateKeyPem)
         let publicKeyPem = keys[1];
+        Authentication.setUserProperty("publicKeyPem", publicKeyPem)
     
         const requestBody = {
             expiration: 604800,
@@ -155,18 +158,8 @@ class Authentication {
         }
     
         const jsonString = JSON.stringify(requestBody);
+        Authentication.setUserProperty("challengeJsonString", jsonString)
 
-        Authentication.setJsonProperty("credentials", {
-            workspace,
-            email,
-            environment,
-            memberName,
-            workspaceId,
-            jsonString,
-            privateKeyPem,
-            publicKeyPem,
-            keyPem: key.toPem(),
-        });
     
         const challenge = {
             requestBody: jsonString,
@@ -180,7 +173,7 @@ class Authentication {
         }
 
         const content = parseResponse(
-            fetch("/challenge?expand=qrcode", "POST", payload, null, "v2", environment, key.toPem())
+            fetch("/challenge?expand=qrcode", "POST", payload, null, "v2", environment, keyFromCredentials.toPem())
         );
         
         if (content[1] != 200) {
@@ -188,37 +181,107 @@ class Authentication {
             throw new Error(JSON.stringify(content[0]))
         } else {
             const challengeCreated = content[0];
+            const {
+                id,
+            } = challengeCreated.challenges[0];
+            Authentication.setUserProperty("accessId", id)
     
-            Authentication.setJsonProperty("challenge", challengeCreated.challenges[0]);
-            Utils.logJson(challengeCreated);
-    
-            return challengeCreated["challenges"][0]["qrcode"]
+            return challengeCreated.challenges[0].qrcode;
         }
     }
 
-    static getChallengeApprove() {
-        const challenge = Authentication.getJsonProperty("challenge").challenges[0];
-        Utils.logJson(challenge);
-        const {key, challengeId, environment} = challenge;
-        // var key = sheet.getRange('B14').getValue()
-        // var challengeId = sheet.getRange('B15').getValue()
-        // var environment = sheet.getRange('B3').getValue()
+    static getChallengeStatus() {
+        const challengeId = Authentication.getUserProperty("accessId")
+        const environment = Authentication.getUserProperty("environment")
+        const keyFromCredentials = Authentication.getUserProperty("keyFromCredentials")
+        
+        const path = "/challenge/" + challengeId;
     
-        var path = "/challenge/" + challengeId
-    
-        content = parseResponse(fetch(path, method = 'GET', null, null, 'v2', environment, key));
-        console.log(content)
+        const content = parseResponse(fetch(path, 'GET', null, null, 'v2', environment, keyFromCredentials));
     
         if (content[1] != 200) {
             throw new Error(JSON.stringify(content[0]))
         } else {
-            json = content[0];
-    
-            return json["challenge"]["status"]
+            const json = content[0];
+            return json.challenge.status;
         }
+    }
+
+    static saveApprovedChallenge() {
+        const environment = Authentication.getUserProperty("environment");
+        const keyFromCredentials = Authentication.getUserProperty("keyFromCredentials");
+
+        const jsonStringBody = Authentication.getUserProperty("challengeJsonString");
+        const challengeId = Authentication.getUserProperty("accessId");
+
+        // TBD: Why?
+        const content = parseResponse(maskFetch("/session", "POST", jsonStringBody, null, 'v2', environment, keyFromCredentials, challengeId));
+
+        if (content[1] != 200) {
+            throw new Error(JSON.stringify(content[0]))
+        } else {
+            const json = content[0];
+
+            Authentication.setUserProperty("accessId", json.session.id);
+        }
+    }
+
+    static getDefaultUser() {
+        const email = Authentication.getUserProperty("email");
+        let accessId = Authentication.getUserProperty("accessId");
+        const workspace = Authentication.getUserProperty("workspace");
+        const name = Authentication.getUserProperty("memberName");
+        const accessToken = Authentication.getUserProperty("accessToken");
+        const environment = Authentication.getUserProperty("environment");
+        const workspaceId = Authentication.getUserProperty("workspaceId");
+        const publicKey = Authentication.getUserProperty("publicKeyPem");
+        const privateKey = Authentication.getUserProperty("privateKeyPem");
+
+        if (accessId) {
+            accessId = "session/" + accessId;
+        }
+
+        return {
+            name,
+            email,
+            accessId,
+            workspace,
+            cartId: "",
+            publicKey,
+            privateKey,
+            environment,
+            workspaceId,
+            accessToken,
+        }
+    }
+
+    static clearAuthProps() {
+        Authentication.deleteUserProperty("email");
+        Authentication.deleteUserProperty("accessId");
+        Authentication.deleteUserProperty("workspace");
+        Authentication.deleteUserProperty("memberName");
+        Authentication.deleteUserProperty("accessToken");
+        Authentication.deleteUserProperty("environment");
+        Authentication.deleteUserProperty("workspaceId");
+        Authentication.deleteUserProperty("publicKeyPem");
+        Authentication.deleteUserProperty("privateKeyPem");
+        
+        console.log("Credential props cleared")
     }
 }
 
 function authGetUserInputCredential(email, workspace, password, environment) {
     return Authentication.getUserInputCredential(email, workspace, password, environment);
+}
+
+function authGetChallengeStatus() {
+    return Authentication.getChallengeStatus();
+}
+
+function authNavigateToHome() {
+    return Authentication.navigateToHome();
+}
+
+function authSaveApprovedChallenge() {
+    return Authentication.saveApprovedChallenge();
 }

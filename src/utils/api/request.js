@@ -13,16 +13,21 @@ function getHostname(environment, version = "v2") {
 }
 
 function maskFetch(path, method = 'GET', payload = null, query = null, version = "v2", environment = null, privateKeyPem = null, challengeId = null) {
-
-    let user = Authentication.getJsonProperty("credentials");
-    // let user = new getDefaultUser();
+    let user = Authentication.getDefaultUser();
+    console.log("path: ", path);
+    console.log("user before fetch: ", JSON.stringify(user));
+    console.log("privateKeyPem informed: ", privateKeyPem);
     
-    if (!user.privateKeyPem) {
+    if (!user.privateKey) {
         throw JSON.stringify({ "message": "Erro de autenticação! Por favor, faça login novamente." });
     }
+    console.log("user.privateKey: ", user.privateKey);
+
     if (!environment) {
         environment = environment || user.environment.toLowerCase();
     }
+    console.log(`environment: ${environment}`)
+
     let hostname = getHostname(environment, version);
     let options = {
         method: method,
@@ -47,6 +52,7 @@ function maskFetch(path, method = 'GET', payload = null, query = null, version =
     } else {
         var accessId = user.accessId;
     }
+    console.log("Access-Id: ", accessId);
 
     if (!privateKeyPem) {
         var privateKeyPem = user.privateKey;
@@ -73,6 +79,7 @@ function maskFetch(path, method = 'GET', payload = null, query = null, version =
 
     let message = accessId + ':' + accessTime + ':' + body
 
+    console.log(`challengeId: ${challengeId}`)
     if (challengeId) {
         message += ":" + challengeId
         options['headers']['Access-Challenge-Ids'] = challengeId
@@ -80,6 +87,7 @@ function maskFetch(path, method = 'GET', payload = null, query = null, version =
 
     let signature = easySign(message, privateKeyPem);
     options['headers']['Access-Signature'] = signature;
+    console.log(`Signature: ${signature}`)
 
     return UrlFetchApp.fetch(url, options);
 }
