@@ -160,7 +160,10 @@ function formatDateToISO(stringDate)
   return stringDate.replace(/(\d{2})\/(\d{2})\/(\d{4})*/, '$3-$2-$1');
 }
 
+function calculateExternalId(amount, name, taxId, bankCode, branchCode, accountNumber){
+  return bankCode + branchCode + accountNumber + name + taxId + amount.toString() 
+}
 
-// function onOpen(e) {
-//  Browser.msgBox("Hello!!");
-// }
+function clearCollumns(sheet, initialCollumn, endCollumn){
+  sheet.getRange(11, initialCollumn, sheet.getLastRow()-10, endCollumn).clearContent();
+}

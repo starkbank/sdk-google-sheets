@@ -14,9 +14,6 @@ function test() {
   console.log("wrong: " + wrong);
   
   if (wrong || !right) {
-    console.log(privateKeyPem)
-    console.log(publicKeyPem)
-    console.log(signature)
     throw new Error("bad")
   }
 }

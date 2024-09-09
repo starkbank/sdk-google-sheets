@@ -43,7 +43,6 @@ function viewSplits(after, before, status = null) {
     for (let obj of response[0]['receivers']) {
       receivers[obj.id] = obj.taxId;
     }
-    console.log(receivers);
     
     for (let split of splits){
       zeroCharges = false;
