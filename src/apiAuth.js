@@ -1,4 +1,3 @@
-
 function CredentialsHeader(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Credentials');
   sheet.getRange(1, 2, 9, 1).clearContent();
@@ -66,7 +65,7 @@ function getUserInputCredential(email, workspace, password, environment) {
   SaveSession(privateKeyPem, publicKeyPem, null);
 
   content = parseResponse(fetch("/challenge?expand=qrcode", method = 'POST', payload, null, 'v2', environment, key.toPem()));
-  console.log(content)
+
   if (content[1] != 200) 
   {
     Browser.msgBox(content[0]["errors"][0]["message"] + "\\n Efetue o login novamente");
@@ -92,7 +91,6 @@ function getChallengeApprove() {
   var path = "/challenge/" + challengeId
 
   content = parseResponse(fetch(path, method = 'GET', null, null, 'v2', environment, key));
-  console.log(content)
 
   if (content[1] != 200) 
   {
@@ -124,6 +122,9 @@ function postSessionChallenge() {
     json = content[0];
 
     SaveSession(sheet.getRange('B16').getValue(), sheet.getRange('B17').getValue(), json["session"]["id"])
+
+    let paymentRequestExternalIdsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
+    paymentRequestExternalIdsheet.getRange("C1").setValue("{\"transfer\": [], \"boleto\": []}")
   }
 
 }
@@ -192,11 +193,14 @@ function signOut(displayMessage = true) {
     }
     let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Solicitação de Cartões');
     sheet.getRange("B11").setFontColor("grey")
-    sheet.getRange("E11").setFontColor("grey")
-    sheet.getRange("K11").setFontColor("grey")
+    sheet.getRange("D11").setFontColor("grey")
+    sheet.getRange("J11").setFontColor("grey")
 
     sheet.getRange("B11").setValue("Ex: StarkBank")
-    sheet.getRange("E11").setValue("Ex: (11) 99999-9999")
-    sheet.getRange("K11").setValue("Ex: 20018-183")
+    sheet.getRange("D11").setValue("Ex: (11) 99999-9999")
+    sheet.getRange("J11").setValue("Ex: 20018-183")
+
+    let paymentRequestExternalIdsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
+    paymentRequestExternalIdsheet.getRange("C1").setValue("{\"transfer\": [], \"boleto\": []}")
   }
 }

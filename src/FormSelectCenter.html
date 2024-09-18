@@ -61,7 +61,7 @@
      let teamSelected = document.getElementById("team-selector").value;  
      google.script.run.withSuccessHandler(saveSuccess)
                       .withFailureHandler(onFailure)
-                      .SendOrder(teamSelected);
+                      .managePaymentRequestTransfer(teamSelected);
   }
   
   function addTeam(team) {

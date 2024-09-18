@@ -1,4 +1,3 @@
-
 function ViewTransfer(after, before, status = null) {
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Transferência');
   let i = 10;
@@ -66,16 +65,13 @@ function getTransferDownloadList(){
       break;
     }
   }
-  if (idList.length == 0) {
-    Browser.msgBox("Nenhuma transferência válida (sucesso) para download listada.")
-  }
   return idList;
 }
 
 
 function TransferDownload(id) {
   let path = "/transfer/" + id + "/pdf";
-  let pdfContent = fetchBuffer(path)[0];
+  let pdfContent = fetchBuffer(path);
   return pdfContent;
 }
 
@@ -122,6 +118,12 @@ function TransferDownloadAllLocal(){
 
 function TransferDownloadBase64Encoded(id){
   let blob = TransferDownload(id);
+  blob = blob[0]
+  let status = blob[1]
+
+  if (status != 200) {
+    throw new Error(blob[0])
+  }
   return {
     id: id,
     content: Utilities.base64Encode(blob.getBytes())

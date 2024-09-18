@@ -13,8 +13,8 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 
 
 ## [Unreleased]
-### Added
-- displayName column to cardShop resource
+### Changed
+- Transfer, Boleto Payment and get Dict Key implementation
 
 ## [0.6.5] - 2024-06-28
 ### Added

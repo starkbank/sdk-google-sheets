@@ -27,7 +27,6 @@ function ViewInvoice(after, before, status) {
     if (json[1] != 200) {
       throw new Error(json[0]["errors"][0]["message"])
     }
-    console.log(json)
     json = json[0]
 
     elementList = json["invoices"];
@@ -115,7 +114,6 @@ function ViewInvoice(after, before, status) {
         for (let split = 0; split <= 3; split++) {
           const column = ["R", "S", "T"];
           try {
-            console.log(invoice["splits"][split]["amount"])
             sheet.getRange(column[split] + i.toString()).setValue(stringToCurrency(invoice["splits"][split]["amount"].toString()));
           } catch {
             break
