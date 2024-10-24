@@ -13,6 +13,8 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 
 
 ## [Unreleased]
+
+## [0.7.1] - 2024-10-24
 ### Fixed
 - paymentRequest ExternalId
 
