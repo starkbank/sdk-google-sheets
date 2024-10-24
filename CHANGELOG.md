@@ -13,6 +13,10 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 
 
 ## [Unreleased]
+### Fixed
+- paymentRequest ExternalId
+
+## [0.7.0] - 2024-09-18
 ### Changed
 - Transfer, Boleto Payment and get Dict Key implementation
 
