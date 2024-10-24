@@ -15,8 +15,10 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
         let branchCode = removeDiacritics(sheet.getRange('E' + line.toString()).getValue());
         let accountNumber = removeDiacritics(sheet.getRange('F' + line.toString()).getValue());
         let schedule = sheet.getRange('G' + line.toString()).getValue();
+        let tags = removeDiacritics(sheet.getRange('I' + line.toString()).getValue().toString());
+        let description = removeDiacritics(sheet.getRange('J' + line.toString()).getValue().toString());
         
-        let externalId = calculateExternalId(amount, customerName, taxId, bankCode, branchCode, accountNumber);
+        let externalId = calculateExternalId(amount, customerName, taxId, bankCode, branchCode, accountNumber, tags, description);
         sheet.getRange(`K${line}`).setValue("Não enviado");
 
         if(externalOrdersList.includes(externalId)) {
@@ -39,23 +41,21 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
             if (accountType) {
                 payment["accountType"] = accountType;
             }
-    
-            tags = removeDiacritics(sheet.getRange('I' + line.toString()).getValue());
+
             if (tags) {
                 request["tags"] = tags.split(",");
             }
-    
-            description = removeDiacritics(sheet.getRange('J' + line.toString()).getValue())
+
             if (description) {
                 payment["description"] = description;
             }
-    
+
             request = {
                 centerId: centerId,
                 type: "transfer",
                 payment: payment,
             };
-    
+
             if (schedule != "") {
                 request["due"] = formatToLocalDatetime(schedule);
             }
