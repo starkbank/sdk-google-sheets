@@ -53,10 +53,10 @@ function maskFetch(path, method='GET', payload=null, query=null, version="v2", e
     let accessTime = Math.round((new Date()).getTime() / 1000).toString();
     options['headers'] = {
         'Access-Id': accessId,
-        'User-Agent': 'App-StarkBank-GSheets-v0.7.1b',
-        'User-Agent-Override': 'App-StarkBank-GSheets-v0.7.1b',        
+        'User-Agent': 'App-StarkBank-GSheets-v0.7.2b',
+        'User-Agent-Override': 'App-StarkBank-GSheets-v0.7.2b',        
         'PlatFormId' : 'gsheets',
-        'PlatFormVersion' : '0.7.1',
+        'PlatFormVersion' : '0.7.2',
         'Accept-Language': 'pt-BR',
         'Content-Type': 'application/json',
         'Access-Time': accessTime
@@ -142,10 +142,10 @@ function fetchBuffer(path, method='GET', payload=null, query=null, version="v2",
   let accessTime = Math.round((new Date()).getTime() / 1000).toString();
   options['headers'] = {
       'Access-Id': accessId,
-      'User-Agent': 'App-StarkBank-GSheets-v0.7.1b',
-      'User-Agent-Override': 'App-StarkBank-GSheets-v0.7.1b',        
+      'User-Agent': 'App-StarkBank-GSheets-v0.7.2b',
+      'User-Agent-Override': 'App-StarkBank-GSheets-v0.7.2b',        
       'PlatFormId' : 'gsheets',
-      'PlatFormVersion' : '0.7.1',
+      'PlatFormVersion' : '0.7.2',
       'Accept-Language': 'pt-BR',
       'Content-Type': 'application/pdf',
       'Access-Time': accessTime

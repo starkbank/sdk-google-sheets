@@ -42,10 +42,6 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
                 payment["accountType"] = accountType;
             }
 
-            if (tags) {
-                request["tags"] = tags.split(",");
-            }
-
             if (description) {
                 payment["description"] = description;
             }
@@ -55,6 +51,10 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
                 type: "transfer",
                 payment: payment,
             };
+
+            if (tags) {
+                request["tags"] = tags.split(",");
+            }
 
             if (schedule != "") {
                 request["due"] = formatToLocalDatetime(schedule);
