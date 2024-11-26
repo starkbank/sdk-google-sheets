@@ -6,7 +6,7 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
     let duplicatedPayments = 0;
     let emptyLines = 0;
 
-    clearCollumns(sheet, 11, 12);
+    clearCollumns(sheet, 12, 13);
     for (let line = initialLine; line <= sheet.getLastRow(); line++) {
         let customerName = removeDiacritics(sheet.getRange('A' + line.toString()).getValue());
         let taxId = removeDiacritics(sheet.getRange('B' + line.toString()).getValue());
@@ -17,9 +17,10 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
         let schedule = sheet.getRange('G' + line.toString()).getValue();
         let tags = removeDiacritics(sheet.getRange('I' + line.toString()).getValue().toString());
         let description = removeDiacritics(sheet.getRange('J' + line.toString()).getValue().toString());
+        let displayDescription = removeDiacritics(sheet.getRange('K' + line.toString()).getValue().toString());
         
         let externalId = calculateExternalId(amount, customerName, taxId, bankCode, branchCode, accountNumber, tags, description);
-        sheet.getRange(`K${line}`).setValue("Não enviado");
+        sheet.getRange(`L${line}`).setValue("Não enviado");
 
         if(externalOrdersList.includes(externalId)) {
             duplicatedPayments +=1;
@@ -44,6 +45,10 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
 
             if (description) {
                 payment["description"] = description;
+            }
+
+            if (displayDescription) {
+                payment["displayDescription"] = displayDescription;
             }
 
             request = {
@@ -94,7 +99,7 @@ function managePaymentRequestTransfer(centerId) {
     let returnMessage = "";
 
     if(ordersList == null) {
-      return
+        return
     }
     
     for (let batch = 0; batch < Math.ceil(ordersList.length/batchSize); batch++) {
@@ -103,13 +108,13 @@ function managePaymentRequestTransfer(centerId) {
         let request = sendPaymentRequestBatch(ordersBatch, query);
         switch (request["status"]) {
             case 200:
-                confirmOrders(sheet, batch, ordersBatch.length, batchSize, "K");
+                confirmOrders(sheet, batch, ordersBatch.length, batchSize, "L");
                 updatePaymentRequestManager(checkIds, "transfer")
                 break;
             case 500:
             case 400:
                 failedBatchs += 1;
-                returnMessage = returnMessage + failOrders(sheet, batch, batchSize, Array.from(request["content"]["errors"]), "K", "L");
+                returnMessage = returnMessage + failOrders(sheet, batch, batchSize, Array.from(request["content"]["errors"]), "L", "M");
                 break;
         }
     }

@@ -14,6 +14,10 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 
 ## [Unreleased]
 
+### Added
+## [0.8.0] - 2024-11-26
+- displayDescription to paymentRequest
+
 ## [0.7.2] - 2024-11-06
 ### Fixed
 - paymentRequest tags
