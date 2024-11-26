@@ -13,7 +13,7 @@ function getDictKey()
       keyId = "+" + keyId
     }
 
-    if(sheet.getRange('E' + i.toString()).getValue() == "") {
+    if(sheet.getRange('F' + i.toString()).getValue() == "") {
       json = parseResponse(fetch("/dict-key/" + keyId, method = 'GET'));
       
       if (json[1] != 200) {
@@ -31,12 +31,12 @@ function getDictKey()
       if(json[1] == 200) {
         json = json[0]
   
-        sheet.getRange('E' + i.toString()).setValue(json["key"]["name"])
-        sheet.getRange('F' + i.toString()).setValue(json["key"]["taxId"])
-        sheet.getRange('G' + i.toString()).setValue(json["key"]["ispb"])
-        sheet.getRange('H' + i.toString()).setValue(json["key"]["branchCode"])
-        sheet.getRange('I' + i.toString()).setValue(json["key"]["accountNumber"])
-        sheet.getRange('J' + i.toString()).setValue(json["key"]["type"])
+        sheet.getRange('F' + i.toString()).setValue(json["key"]["name"])
+        sheet.getRange('G' + i.toString()).setValue(json["key"]["taxId"])
+        sheet.getRange('H' + i.toString()).setValue(json["key"]["ispb"])
+        sheet.getRange('I' + i.toString()).setValue(json["key"]["branchCode"])
+        sheet.getRange('J' + i.toString()).setValue(json["key"]["accountNumber"])
+        sheet.getRange('K' + i.toString()).setValue(json["key"]["type"])
     
         var amount = sheet.getRange('B' + i.toString()).getValue();
     
@@ -46,6 +46,7 @@ function getDictKey()
             keyId: keyId,
             tags: sheet.getRange('C' + i.toString()).getValue(),
             description: sheet.getRange('D' + i.toString()).getValue(),
+            displayDescription: sheet.getRange('E' + i.toString()).getValue(),
             amount: amount,
             taxId: json["key"]["taxId"],
             name: json["key"]["name"],
@@ -84,6 +85,7 @@ function getDictKey()
           sheet.getRange('H' + i.toString()).setValue(jsonData[i + key]["accountType"])
           sheet.getRange('I' + i.toString()).setValue(jsonData[i + key]["tags"])
           sheet.getRange('J' + i.toString()).setValue(jsonData[i + key]["description"])
+          sheet.getRange('K' + i.toString()).setValue(jsonData[i + key]["displayDescription"])
         }
     
       } else {
