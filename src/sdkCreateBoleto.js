@@ -17,14 +17,15 @@ function createBoleto()
                 let columnAmount = String.fromCharCode(80 + 2*j + 1);
                 let description = {
                      text: removeDiacritics(text),
-                     amount: parseInt(sheet.getRange(columnAmount + i.toString()).getValue())
+                     amount: parseInt(Math.round(100*sheet.getRange(columnAmount + i.toString()).getValue()), 10),
                 };
                 descriptions.push(description);
             }
         }
 
         let boleto = {
-            amount: parseInt(Math.round(100*sheet.getRange('I' + i.toString()).getValue()), 10)
+            amount: parseInt(Math.round(100*sheet.getRange('I' + i.toString()).getValue()), 10),
+            descriptions: descriptions,
         };
 
         let name = sheet.getRange('A' + i.toString()).getValue();
