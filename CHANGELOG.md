@@ -14,6 +14,10 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 
 ## [Unreleased]
 
+## [0.8.2] - 2025-01-17
+### Fixed
+- dictKey message
+
 ## [0.8.1] - 2024-11-26
 ### Fixed
 - boleto descriptions
