@@ -20,7 +20,7 @@ function getDictKey()
         if (json[0]["errors"][0]["code"] == "invalidPixKey") 
         {
           errorsCount += 1;
-          sheet.getRange('K' + i.toString()).setValue("A chave informada não corresponde nenhum dos padrões conhecidos de chave. As chaves conhecidas são emails, números de celular no padrão E164 (ex: 5511988887777), CPFs válidos, CNPJs válidos e EVPs.");
+          sheet.getRange('K' + i.toString()).setValue("A chave informada não corresponde a nenhum dos padrões conhecidos (e-mail, número de celular no formato E164 — ex: 5511988887777, CPF, CNPJ ou EVP) ou não está vinculada a nenhuma conta ativa.");
         }
         if (json[0]["errors"][0]["code"] != "invalidPixKey")
         {
