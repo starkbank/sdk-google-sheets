@@ -85,7 +85,8 @@ function TransferDownloadAllDrive(){
     if (transferStatus === "sucesso") {
       let fileName = transferId + ".pdf";
       let pdfContent = TransferDownload(transferId);
-      let pdfFile = transferDriveFolder.createFile(pdfContent);
+      let blob = pdfContent[0];
+      let pdfFile = transferDriveFolder.createFile(blob);
       pdfFile.setName(fileName);
     }
   }
@@ -118,9 +119,8 @@ function TransferDownloadAllLocal(){
 
 function TransferDownloadBase64Encoded(id){
   let blob = TransferDownload(id);
-  blob = blob[0]
   let status = blob[1]
-
+  blob = blob[0]
   if (status != 200) {
     throw new Error(blob[0])
   }

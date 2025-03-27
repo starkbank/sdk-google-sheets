@@ -169,7 +169,6 @@ function fetchBuffer(path, method='GET', payload=null, query=null, version="v2",
   options['headers']['Access-Signature'] = signature;
 
   response = UrlFetchApp.fetch(url, options);
-
   let status = response.getResponseCode();
 
   if (status != 200) {
