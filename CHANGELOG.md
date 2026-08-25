@@ -13,6 +13,8 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 
 
 ## [Unreleased]
+### Fixed
+- generate ECDSA private keys and signature nonces locally
 
 ## [0.8.2] - 2025-01-17
 ### Fixed
