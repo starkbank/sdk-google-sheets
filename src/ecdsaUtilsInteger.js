@@ -11,12 +11,13 @@ Integer.modulo = function(x, n) {
 }
 
 
-Integer.secureRandomNumber = function() {
-    let curve = Curve.secp256k1;
+Integer.secureRandomNumber = function(curve = Curve.secp256k1) {
     let N = BigInt(curve.N);
 
     // Apps Script does not expose a raw CSPRNG. Keep entropy inside the
-    // runtime by hashing three independent values from its UUID generator.
+    // runtime by hashing three independent values from its UUID generator,
+    // documented as java.util.UUID.randomUUID(), which is SecureRandom-backed.
+    // Key security rests on that platform guarantee.
     for (let attempt = 0; attempt < 100; attempt++) {
         let entropy = Utilities.getUuid() + Utilities.getUuid() +
                       Utilities.getUuid();
@@ -27,12 +28,7 @@ Integer.secureRandomNumber = function() {
             Utilities.Charset.UTF_8
         );
 
-        let hex = hash.map(byte => {
-            let v = (byte < 0) ? 256 + byte : byte;
-            return ("0" + v.toString(16)).slice(-2);
-        }).join("");
-
-        let num = BigInt("0x" + hex);
+        let num = BinaryAscii.numberFromHex(BinaryAscii.hexFromSignedBytes(hash));
 
         if (num >= BigInt(1) && num < N) {
             return num;
@@ -43,45 +39,13 @@ Integer.secureRandomNumber = function() {
 };
 
 
-Integer._secp256k1_N = BigInt("115792089237316195423570985008687907852837564279074904382605163141518161494337");
+// RFC 6979 deterministic nonce: k is derived from the private key and the
+// message hash via an HMAC-SHA256 ladder, so signing never depends on an RNG.
+Integer.secureRandomNonce = function(privateKeySecret, messageHashHex, curve) {
+    const N = BigInt(curve.N);
 
-Integer._bytesToBigInt = function(bytes) {
-    let result = BigInt(0);
-    for (let i = 0; i < bytes.length; i++) {
-        result = (result << BigInt(8)) | BigInt(bytes[i] & 0xFF);
-    }
-    return result;
-};
-
-Integer._hmacSha256 = function(key, value) {
-    const keyBlob = Utilities.newBlob(key);
-    const valueBlob = Utilities.newBlob(value);
-
-    const signature = Utilities.computeHmacSignature(
-        Utilities.HmacAlgorithm.HMAC_SHA_256,
-        valueBlob,
-        keyBlob
-    );
-
-    if (typeof signature === 'string') {
-        return signature.split('').map(c => c.charCodeAt(0));
-    }
-    return Array.from(signature);
-};
-
-Integer._hexStringToBytes = function(hexString) {
-    const bytes = [];
-    for (let i = 0; i < hexString.length; i += 2) {
-        bytes.push(parseInt(hexString.substr(i, 2), 16));
-    }
-    return bytes;
-};
-
-Integer.secureRandomNonce = function(privateKeySecret, messageHashHex) {
-    const N = Integer._secp256k1_N;
-
-    const x = Integer._bigIntToBytes(privateKeySecret, 32);
-    const h1 = Integer._hexStringToBytes(messageHashHex);
+    const x = Integer._bigIntToBytes(privateKeySecret, curve.length());
+    const h1 = Integer._hexToSignedBytes(messageHashHex);
 
     let K = new Array(32).fill(0x00);
     let V = new Array(32).fill(0x01);
@@ -124,13 +88,46 @@ Integer.secureRandomNonce = function(privateKeySecret, messageHashHex) {
     throw new Error("RFC 6979: Failed to generate valid nonce after " + maxLoops + " attempts");
 };
 
-Integer._bigIntToBytes = function(num, length) {
+
+Integer._hmacSha256 = function(key, value) {
+    // computeHmacSignature has no Blob overload: it only accepts
+    // (MacAlgorithm, Byte[], Byte[]) or (MacAlgorithm, String, String).
+    return Utilities.computeHmacSignature(
+        Utilities.MacAlgorithm.HMAC_SHA_256,
+        value,
+        key
+    );
+};
+
+
+Integer._hexToSignedBytes = function(hexString) {
     const bytes = [];
-    for (let i = length - 1; i >= 0; i--) {
-        bytes.push(Number((num >> BigInt(i * 8)) & BigInt(0xFF)));
+    for (let i = 0; i < hexString.length; i += 2) {
+        let value = parseInt(hexString.substr(i, 2), 16);
+        // Apps Script Byte[] carries signed Java bytes (-128..127)
+        bytes.push(value > 127 ? value - 256 : value);
     }
     return bytes;
 };
+
+
+Integer._bigIntToBytes = function(num, length) {
+    let hex = num.toString(16);
+    while (hex.length < 2 * length) {
+        hex = "0" + hex;
+    }
+    return Integer._hexToSignedBytes(hex);
+};
+
+
+Integer._bytesToBigInt = function(bytes) {
+    let result = BigInt(0);
+    for (let i = 0; i < bytes.length; i++) {
+        result = (result << BigInt(8)) | BigInt(bytes[i] & 0xFF);
+    }
+    return result;
+};
+
 
 Integer._bytesConcat = function(...arrays) {
     return [].concat(...arrays);

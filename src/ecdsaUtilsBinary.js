@@ -22,6 +22,14 @@ BinaryAscii.binaryFromHex = function(hex){
 }
 
 
+BinaryAscii.hexFromSignedBytes = function (bytes) {
+  return bytes.map(function (byte) {
+    let value = (byte < 0) ? 256 + byte : byte;
+    return ("0" + value.toString(16)).slice(-2);
+  }).join("");
+}
+
+
 BinaryAscii.numberFromString = function (string) {
     return BinaryAscii.numberFromHex(BinaryAscii.hexFromBinary(string.toString()));
 }

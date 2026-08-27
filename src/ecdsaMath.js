@@ -85,7 +85,7 @@ EcdsaMath.jacobianAdd = function (p, q, A, P) {
 
     if (U1 == U2) {
         if (S1 != S2) {
-            return Point(BigInt(0), BigInt(0), BigInt(1));
+            return new Point(BigInt(0), BigInt(0), BigInt(1));
         };
         return EcdsaMath.jacobianDouble(p, A, P);
     };
