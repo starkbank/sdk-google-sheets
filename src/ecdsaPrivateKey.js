@@ -3,7 +3,7 @@ PrivateKey = function(curve=Curve.secp256k1, secret=null) {
   if (secret) {
     this.secret = secret;
   } else {
-    this.secret = Integer.secureRandomNumber();
+    this.secret = Integer.secureRandomNumber(curve);
   }
   
   this.publicKey = function() {

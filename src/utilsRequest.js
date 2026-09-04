@@ -178,33 +178,3 @@ function fetchBuffer(path, method='GET', payload=null, query=null, version="v2",
     return [content, status]
   }
 }
-
-function fetchMath(){
-  let url = "https://us-central1-api-ms-auth-sbx.cloudfunctions.net/ellipticCurveMath";
-  let payload = {
-    "Gx": "55066263022277343669578718895168534326250603453777594175500187360389116729240",
-    "Gy": "32670510020758816978083085130507043184471273380659243275938904335757337482424",
-    "A": "0",
-    "P": "115792089237316195423570985008687907853269984665640564039457584007908834671663",
-    "N": "115792089237316195423570985008687907852837564279074904382605163141518161494337"
-  };
-  let options = {
-    method: 'post',
-    payload: JSON.stringify(payload),
-    headers: {'Content-Type': 'Application/json'}
-  };
-  let response = UrlFetchApp.fetch(url, options);
-  let content = response.getContentText();
-  let status = response.getResponseCode();
-  switch (status) {
-    case 200:
-      return new Response(status, content);
-    case 400:
-    case 404:
-    case 500:
-      throw JSON.stringify(JSON.parse(content)["error"]);
-    default:
-      throw e;
-  }
-  return new Response(status, content);
-}

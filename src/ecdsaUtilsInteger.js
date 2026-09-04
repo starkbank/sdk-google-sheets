@@ -11,44 +11,124 @@ Integer.modulo = function(x, n) {
 }
 
 
-Integer.secureRandomNumber = function() {
-    let url = "https://us-central1-api-ms-auth-sbx.cloudfunctions.net/ellipticCurveMath";
-    let payload = {
-      "Gx": "55066263022277343669578718895168534326250603453777594175500187360389116729240",
-      "Gy": "32670510020758816978083085130507043184471273380659243275938904335757337482424",
-      "A": "0",
-      "P": "115792089237316195423570985008687907853269984665640564039457584007908834671663",
-      "N": "115792089237316195423570985008687907852837564279074904382605163141518161494337"
-    };
-    let options = {
-      'method': 'post',
-      'payload': JSON.stringify(payload),
-      'headers': {'Content-Type': 'Application/json'}
-    };
-    let response;
-    let content;
-    let status;
-    try {
-      response = UrlFetchApp.fetch(url, options);
-      content = response.getContentText();
-      status = response.getResponseCode();
-    } catch (e) {
-      if (!e.response) {
-        throw e;
-      }
-      content = e.response.body;
-      status = e.response.statusCode;
-      switch (status) {
-        case 400:
-        case 404:
-          throw new error.InputErrors(content, status);
-        case 500:
-          throw new error.InternalServerError(content, status);
-        default:
-          throw e;
-      }
+Integer.secureRandomNumber = function(curve = Curve.secp256k1) {
+    let N = BigInt(curve.N);
+
+    // Apps Script does not expose a raw CSPRNG. Keep entropy inside the
+    // runtime by hashing three independent values from its UUID generator,
+    // documented as java.util.UUID.randomUUID(), which is SecureRandom-backed.
+    // Key security rests on that platform guarantee.
+    for (let attempt = 0; attempt < 100; attempt++) {
+        let entropy = Utilities.getUuid() + Utilities.getUuid() +
+                      Utilities.getUuid();
+
+        let hash = Utilities.computeDigest(
+            Utilities.DigestAlgorithm.SHA_256,
+            entropy,
+            Utilities.Charset.UTF_8
+        );
+
+        let num = BinaryAscii.numberFromHex(BinaryAscii.hexFromSignedBytes(hash));
+
+        if (num >= BigInt(1) && num < N) {
+            return num;
+        }
     }
-    let mathJson = JSON.parse(content);
-    let randNum = BigInt(mathJson['randNum']);
-    return randNum;
+
+    throw new Error("Unable to generate a secure random number");
+};
+
+
+// RFC 6979 deterministic nonce: k is derived from the private key and the
+// message hash via an HMAC-SHA256 ladder, so signing never depends on an RNG.
+Integer.secureRandomNonce = function(privateKeySecret, messageHashHex, curve) {
+    const N = BigInt(curve.N);
+
+    const x = Integer._bigIntToBytes(privateKeySecret, curve.length());
+    const h1 = Integer._hexToSignedBytes(messageHashHex);
+
+    let K = new Array(32).fill(0x00);
+    let V = new Array(32).fill(0x01);
+
+    const hmacInput1 = Integer._bytesConcat(
+        V,
+        [0x00],
+        Integer._bytesConcat(x, h1)
+    );
+    K = Integer._hmacSha256(K, hmacInput1);
+
+    V = Integer._hmacSha256(K, V);
+
+    const hmacInput2 = Integer._bytesConcat(
+        V,
+        [0x01],
+        Integer._bytesConcat(x, h1)
+    );
+    K = Integer._hmacSha256(K, hmacInput2);
+
+    V = Integer._hmacSha256(K, V);
+
+    let counter = 0;
+    const maxLoops = 1000;
+
+    while (counter < maxLoops) {
+        V = Integer._hmacSha256(K, V);
+
+        const nonce = Integer._bytesToBigInt(V);
+
+        if (nonce >= BigInt(1) && nonce < N) {
+            return nonce;
+        }
+
+        K = Integer._hmacSha256(K, Integer._bytesConcat(V, [0x00]));
+        V = Integer._hmacSha256(K, V);
+        counter++;
+    }
+
+    throw new Error("RFC 6979: Failed to generate valid nonce after " + maxLoops + " attempts");
+};
+
+
+Integer._hmacSha256 = function(key, value) {
+    // computeHmacSignature has no Blob overload: it only accepts
+    // (MacAlgorithm, Byte[], Byte[]) or (MacAlgorithm, String, String).
+    return Utilities.computeHmacSignature(
+        Utilities.MacAlgorithm.HMAC_SHA_256,
+        value,
+        key
+    );
+};
+
+
+Integer._hexToSignedBytes = function(hexString) {
+    const bytes = [];
+    for (let i = 0; i < hexString.length; i += 2) {
+        let value = parseInt(hexString.substr(i, 2), 16);
+        // Apps Script Byte[] carries signed Java bytes (-128..127)
+        bytes.push(value > 127 ? value - 256 : value);
+    }
+    return bytes;
+};
+
+
+Integer._bigIntToBytes = function(num, length) {
+    let hex = num.toString(16);
+    while (hex.length < 2 * length) {
+        hex = "0" + hex;
+    }
+    return Integer._hexToSignedBytes(hex);
+};
+
+
+Integer._bytesToBigInt = function(bytes) {
+    let result = BigInt(0);
+    for (let i = 0; i < bytes.length; i++) {
+        result = (result << BigInt(8)) | BigInt(bytes[i] & 0xFF);
+    }
+    return result;
+};
+
+
+Integer._bytesConcat = function(...arrays) {
+    return [].concat(...arrays);
 };
