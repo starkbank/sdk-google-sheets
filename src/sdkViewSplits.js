@@ -47,18 +47,18 @@ function viewSplits(after, before, status = null) {
     for (let split of splits){
       zeroCharges = false;
       i += 1;
-      sheet.getRange('A' + i.toString()).setValue(split["created"]);
-      sheet.getRange('B' + i.toString()).setValue(split["source"]);
-      sheet.getRange('C' + i.toString()).setValue(split["receiverId"]);
-      sheet.getRange('D' + i.toString()).setValue(receivers[split.receiverId]);
+      sheet.getRange('A' + i.toString()).setValue(safeText(split["created"]));
+      sheet.getRange('B' + i.toString()).setValue(safeText(split["source"]));
+      sheet.getRange('C' + i.toString()).setValue(safeText(split["receiverId"]));
+      sheet.getRange('D' + i.toString()).setValue(safeText(receivers[split.receiverId]));
       sheet.getRange('E' + i.toString()).setValue(stringToCurrency(split["amount"]));
-      sheet.getRange('F' + i.toString()).setValue(split["status"]);
+      sheet.getRange('F' + i.toString()).setValue(safeText(split["status"]));
     };
   } while (cursor);
 }
 
 function selectSplitsDialog() {
-  var html = HtmlService.createHtmlOutputFromFile('FormViewSplits');
+  var html = HtmlService.createTemplateFromFile('FormViewSplits').evaluate();
   SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
   .showModalDialog(html, 'Splits');
 }

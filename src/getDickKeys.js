@@ -14,7 +14,7 @@ function getDictKey()
     }
 
     if(sheet.getRange('F' + i.toString()).getValue() == "") {
-      json = parseResponse(fetch("/dict-key/" + keyId, method = 'GET'));
+      json = parseResponse(fetch("/dict-key/" + pathSegment(keyId), method = 'GET'));
       
       if (json[1] != 200) {
         if (json[0]["errors"][0]["code"] == "invalidPixKey") 
@@ -25,18 +25,18 @@ function getDictKey()
         if (json[0]["errors"][0]["code"] != "invalidPixKey")
         {
           errorsCount += 1;
-          sheet.getRange('K' + i.toString()).setValue(json[0]["errors"][0]["message"]);
+          sheet.getRange('K' + i.toString()).setValue(safeText(json[0]["errors"][0]["message"]));
         }
       }
       if(json[1] == 200) {
         json = json[0]
   
-        sheet.getRange('F' + i.toString()).setValue(json["key"]["name"])
-        sheet.getRange('G' + i.toString()).setValue(json["key"]["taxId"])
-        sheet.getRange('H' + i.toString()).setValue(json["key"]["ispb"])
-        sheet.getRange('I' + i.toString()).setValue(json["key"]["branchCode"])
-        sheet.getRange('J' + i.toString()).setValue(json["key"]["accountNumber"])
-        sheet.getRange('K' + i.toString()).setValue(json["key"]["type"])
+        sheet.getRange('F' + i.toString()).setValue(safeText(json["key"]["name"]))
+        sheet.getRange('G' + i.toString()).setValue(safeText(json["key"]["taxId"]))
+        sheet.getRange('H' + i.toString()).setValue(safeText(json["key"]["ispb"]))
+        sheet.getRange('I' + i.toString()).setValue(safeText(json["key"]["branchCode"]))
+        sheet.getRange('J' + i.toString()).setValue(safeText(json["key"]["accountNumber"]))
+        sheet.getRange('K' + i.toString()).setValue(safeText(json["key"]["type"]))
     
         var amount = sheet.getRange('B' + i.toString()).getValue();
     
@@ -76,16 +76,16 @@ function getDictKey()
     
         for (let i=11; i<=jsonData.length + 10; i++) 
         {
-          sheet.getRange('A' + i.toString()).setValue(jsonData[i + key]["name"])
-          sheet.getRange('B' + i.toString()).setValue(jsonData[i + key]["taxId"])
-          sheet.getRange('C' + i.toString()).setValue(jsonData[i + key]["amount"])
-          sheet.getRange('D' + i.toString()).setValue(jsonData[i + key]["ispb"])
-          sheet.getRange('E' + i.toString()).setValue(jsonData[i + key]["branchCode"])
-          sheet.getRange('F' + i.toString()).setValue(jsonData[i + key]["accountNumber"])
-          sheet.getRange('H' + i.toString()).setValue(jsonData[i + key]["accountType"])
-          sheet.getRange('I' + i.toString()).setValue(jsonData[i + key]["tags"])
-          sheet.getRange('J' + i.toString()).setValue(jsonData[i + key]["description"])
-          sheet.getRange('K' + i.toString()).setValue(jsonData[i + key]["displayDescription"])
+          sheet.getRange('A' + i.toString()).setValue(safeText(jsonData[i + key]["name"]))
+          sheet.getRange('B' + i.toString()).setValue(safeText(jsonData[i + key]["taxId"]))
+          sheet.getRange('C' + i.toString()).setValue(safeText(jsonData[i + key]["amount"]))
+          sheet.getRange('D' + i.toString()).setValue(safeText(jsonData[i + key]["ispb"]))
+          sheet.getRange('E' + i.toString()).setValue(safeText(jsonData[i + key]["branchCode"]))
+          sheet.getRange('F' + i.toString()).setValue(safeText(jsonData[i + key]["accountNumber"]))
+          sheet.getRange('H' + i.toString()).setValue(safeText(jsonData[i + key]["accountType"]))
+          sheet.getRange('I' + i.toString()).setValue(safeText(jsonData[i + key]["tags"]))
+          sheet.getRange('J' + i.toString()).setValue(safeText(jsonData[i + key]["description"]))
+          sheet.getRange('K' + i.toString()).setValue(safeText(jsonData[i + key]["displayDescription"]))
         }
     
       } else {

@@ -133,7 +133,7 @@ function managePaymentRequestTransfer(centerId) {
 }
 
 function selectCenterDialog() {
-    var html = HtmlService.createHtmlOutputFromFile('FormSelectCenter');
+    var html = HtmlService.createTemplateFromFile('FormSelectCenter').evaluate();
     SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
         .showModalDialog(html, 'Envio de Transferência para Aprovação');
 }

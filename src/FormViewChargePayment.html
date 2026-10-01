@@ -46,6 +46,7 @@
     </body>
 </html>
 
+<?!= includeHtml_('alertMessage') ?>
 <script>
   function onSuccess() {
      stopLoading()
@@ -61,7 +62,7 @@
       let message = JSON.parse(error["message"])["message"];
       $("#alert").show();
       var alertMessage = document.getElementById("alert-message");
-      alertMessage.innerHTML = message
+      setAlertMessage(alertMessage, message)
   }
   
   function save() {

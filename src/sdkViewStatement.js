@@ -38,10 +38,10 @@ function ViewStatement(after, before) {
       sheet.getRange(i, 2).setValue(getTransactionType(transact["source"].split("/")[0]));
       sheet.getRange(i, 3).setValue(sign*stringToCurrency(transact["amount"]));
       sheet.getRange(i, 4).setValue(stringToCurrency(transact["balance"]));
-      sheet.getRange(i, 5).setValue(transact["description"]);
-      sheet.getRange(i, 6).setValue(transact["id"]);
+      sheet.getRange(i, 5).setValue(safeText(transact["description"]));
+      sheet.getRange(i, 6).setValue(safeText(transact["id"]));
       sheet.getRange(i, 7).setValue(stringToCurrency(transact["fee"]));
-      sheet.getRange(i, 8).setValue(tags.join(","));
+      sheet.getRange(i, 8).setValue(safeText(tags.join(",")));
     }
   } while (cursor);
   if (zeroTransactions) {
@@ -78,7 +78,7 @@ function getTransactionType(path){
 }
 
 function selectStatementDialog() {
-  var html = HtmlService.createHtmlOutputFromFile('FormViewStatement');
+  var html = HtmlService.createTemplateFromFile('FormViewStatement').evaluate();
   SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
   .showModalDialog(html, 'Extrato');
 }

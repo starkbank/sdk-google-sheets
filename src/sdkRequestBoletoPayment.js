@@ -116,7 +116,7 @@ function createPaymentRequestArrayBoleto(centerId, sheet, linesList)
 }
 
 function payBoletosDialog() {
-  var html = HtmlService.createHtmlOutputFromFile('FormPayBoleto');
+  var html = HtmlService.createTemplateFromFile('FormPayBoleto').evaluate();
   SpreadsheetApp.getUi()
   .showModalDialog(html, 'Pagamento de Boletos');
 }

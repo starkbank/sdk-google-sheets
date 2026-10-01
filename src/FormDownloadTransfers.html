@@ -68,7 +68,7 @@
   function onFailure(error) {
     $("#alert").show();
     var alertMessage = document.getElementById("alert-message");
-    alertMessage.innerHTML = "Não foi possivel realizar o download dos itens"
+    alertMessage.textContent = "Não foi possivel realizar o download dos itens"
     stopLoading()
   }
 

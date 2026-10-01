@@ -4,6 +4,34 @@ function Response(status, content) {
   this.content = content;
 }
 
+// Values that become part of a request path or of a query string come from cells and from the API:
+// they must not be able to change the route or to add parameters. Both keep every character that
+// ids, e-mails, phone numbers (with "+"), dates and lists are made of, so those requests are the same
+// as before; anything else is percent-encoded.
+function pathSegment(value) {
+  let text = String(value);
+  // "." and ".." (also when percent-encoded) are read as "this folder" and "the parent folder"
+  // when a URL is resolved; no id or key is made of them, so they become something else.
+  if (text == "." || text == "..") {
+    return "%2E%2E%2E";
+  }
+
+  return text.replace(/[^A-Za-z0-9@+._:-]/gu, percentEncodeCharacter);
+}
+
+function queryValue(value) {
+  return String(value).replace(/[^A-Za-z0-9\-_.~:,@\/*!'()]/gu, percentEncodeCharacter);
+}
+
+function percentEncodeCharacter(character) {
+  try {
+    return encodeURIComponent(character);
+  } catch (error) {
+    // A lone surrogate cannot be encoded: the replacement character is used instead.
+    return "%EF%BF%BD";
+  }
+}
+
 function getHostname(environment, version = "v2"){
   return {
     'production': 'https://api.starkbank.com/' + version,
@@ -12,10 +40,10 @@ function getHostname(environment, version = "v2"){
   }[environment.toLowerCase()];
 }
 
-function maskFetch(path, method='GET', payload=null, query=null, version="v2", environment=null, privateKeyPem=null, challengeId=null) {
+function maskFetch(path, method='GET', payload=null, query=null, version="v2", environment=null, privateKeyPem=null, challengeId=null, sessionAccessId=null) {
 
     let user = new getDefaultUser();
-    if (!user.privateKey) {
+    if (!user.privateKey && !privateKeyPem) {
         throw JSON.stringify({"message": "Erro de autenticação! Por favor, faça login novamente."});
     }
     if (!environment) {
@@ -33,14 +61,16 @@ function maskFetch(path, method='GET', payload=null, query=null, version="v2", e
         let separator = '?';
         for (let key in query) {
             if (query[key]) {
-                queryString += separator + key + '=' + query[key];
+                queryString += separator + key + '=' + queryValue(query[key]);
                 separator = '&';
             }
         }
         url += queryString;
     }
 
-    if (privateKeyPem) {
+    if (sessionAccessId) {
+      var accessId = sessionAccessId
+    } else if (privateKeyPem) {
       var accessId = KeyGen.generateMemberAccessId(user.workspaceId, user.email)
     } else {
       var accessId = user.accessId;
@@ -104,7 +134,7 @@ function parseResponse(responseApi) {
 
 function fetchBuffer(path, method='GET', payload=null, query=null, version="v2", environment=null, privateKeyPem=null, challengeId=null) {
   let user = new getDefaultUser();
-  if (!user.privateKey) {
+  if (!user.privateKey && !privateKeyPem) {
       throw JSON.stringify({"message": "Erro de autenticação! Por favor, faça login novamente."});
   }
   if (!environment) {
@@ -122,7 +152,7 @@ function fetchBuffer(path, method='GET', payload=null, query=null, version="v2",
       let separator = '?';
       for (let key in query) {
           if (query[key]) {
-              queryString += separator + key + '=' + query[key];
+              queryString += separator + key + '=' + queryValue(query[key]);
               separator = '&';
           }
       }
