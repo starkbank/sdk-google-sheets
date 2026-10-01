@@ -1,6 +1,6 @@
 function selectChargeEventDialog()
 {
-    let html = HtmlService.createHtmlOutputFromFile('FormViewChargeEvent').setHeight(400);
+    let html = HtmlService.createTemplateFromFile('FormViewChargeEvent').evaluate().setHeight(400);
     SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
     .showModalDialog(html, 'Histórico de Boletos Emitidos')
 }
@@ -46,29 +46,29 @@ function viewChargeEvents(after, before, eventOption)
             zeroLogs = false;
             i +=1;
             let charge = log["boleto"];
-            let pdfLink = '=HYPERLINK("' + hostname + "/boleto/" + charge["id"] + '/pdf", "PDF")';
+            let pdfLink = '=HYPERLINK("' + hostname + "/boleto/" + formulaText(charge["id"]) + '/pdf", "PDF")';
             let tags = charge["tags"];
             idsList.push(charge["id"]);
             chargeIdLineAmountDict[charge["id"]] = [i, parseInt(charge["amount"])];
             sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(log["created"]));
-            sheet.getRange('B' + i.toString()).setValue(eventEntoPt(charge["status"]));
-            sheet.getRange('C' + i.toString()).setValue(charge["name"]);
-            sheet.getRange('D' + i.toString()).setValue(charge["taxId"]);
+            sheet.getRange('B' + i.toString()).setValue(safeText(eventEntoPt(charge["status"])));
+            sheet.getRange('C' + i.toString()).setValue(safeText(charge["name"]));
+            sheet.getRange('D' + i.toString()).setValue(safeText(charge["taxId"]));
             sheet.getRange('E' + i.toString()).setValue(stringToCurrency(charge["amount"]));
 
             sheet.getRange('J' + i.toString()).setValue(formatToLocalDatetime(charge["created"]));
             sheet.getRange('K' + i.toString()).setValue(formatToLocalDatetime(charge["due"]));
-            sheet.getRange('L' + i.toString()).setValue(charge["barCode"]);
-            sheet.getRange('M' + i.toString()).setValue(charge["id"]);
+            sheet.getRange('L' + i.toString()).setValue(safeText(charge["barCode"]));
+            sheet.getRange('M' + i.toString()).setValue(safeText(charge["id"]));
             sheet.getRange('N' + i.toString()).setValue(parseInt(charge["fee"]) / 100.0);
-            sheet.getRange('O' + i.toString()).setValue(tags.join(","));
+            sheet.getRange('O' + i.toString()).setValue(safeText(tags.join(",")));
             sheet.getRange('P' + i.toString()).setValue(pdfLink);
-            sheet.getRange('Q' + i.toString()).setValue(charge["streetLine1"]);
-            sheet.getRange('R' + i.toString()).setValue(charge["streetLine2"]);
-            sheet.getRange('S' + i.toString()).setValue(charge["district"]);
-            sheet.getRange('T' + i.toString()).setValue(charge["city"]);
-            sheet.getRange('U' + i.toString()).setValue(charge["stateCode"]);
-            sheet.getRange('V' + i.toString()).setValue(charge["zipCode"]);
+            sheet.getRange('Q' + i.toString()).setValue(safeText(charge["streetLine1"]));
+            sheet.getRange('R' + i.toString()).setValue(safeText(charge["streetLine2"]));
+            sheet.getRange('S' + i.toString()).setValue(safeText(charge["district"]));
+            sheet.getRange('T' + i.toString()).setValue(safeText(charge["city"]));
+            sheet.getRange('U' + i.toString()).setValue(safeText(charge["stateCode"]));
+            sheet.getRange('V' + i.toString()).setValue(safeText(charge["zipCode"]));
         }
         if(idsList.length > 0)
         {

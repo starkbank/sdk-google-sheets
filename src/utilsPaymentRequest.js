@@ -83,7 +83,7 @@ function failOrders(sheet, batch, batchSize, errors, colStat, colReas) {
                 let requestNumber = parseInt(error.message.split('Element ').pop().split(':')[0]);
                 let lineNumber = parseInt(requestNumber)
                 message = "Erro - Linha " + (requestNumber + 11 + (batch * batchSize)).toString() + ":" + error.message.split(':')[1] + "\n";
-                sheet.getRange(`${colReas}${(lineNumber + 11 + (batch * batchSize)).toString()}`).setValue(error.message.split(':')[1])
+                sheet.getRange(`${colReas}${(lineNumber + 11 + (batch * batchSize)).toString()}`).setValue(safeText(error.message.split(':')[1]))
                 sheet.getRange(`${colStat}${(lineNumber + 11 + (batch * batchSize)).toString()}`).setValue("Falha")
             };
             errorMessages = errorMessages.concat(message);

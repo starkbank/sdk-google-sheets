@@ -156,8 +156,8 @@ function cartShop() {
   }
 
   sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Credentials');
-  sheet.getRange('C6').setValue(cartId);
-  var html = HtmlService.createHtmlOutputFromFile('FormRedirect').setWidth(300).setHeight(120);
+  sheet.getRange('C6').setValue(safeText(cartId));
+  var html = HtmlService.createTemplateFromFile('FormRedirect').evaluate().setWidth(300).setHeight(120);
   SpreadsheetApp.getUi().showModalDialog(html, 'Cartões Enviados');
 }
 
@@ -167,7 +167,7 @@ function corporateCardKits(kitList) {
   range.clear();
   let i = 10;
   for (let item of kitList) {
-    sheet.getRange('E' + i.toString()).setValue(item["name"].toString());
+    sheet.getRange('E' + i.toString()).setValue(safeText(item["name"].toString()));
     i++
   }
 }
@@ -179,7 +179,7 @@ function onEdit(e) {
 
   if ("Solicitação de Cartões" == SpreadsheetApp.getActiveSheet().getSheetName() && editedCell.substring(1, 3) == "11") {
     sheet.getRange(editedCell).setFontColor("black");
-    sheet.getRange(editedCell).setValue(sheet.getRange(editedCell).getValue());
+    sheet.getRange(editedCell).setValue(safeText(sheet.getRange(editedCell).getValue()));
 
     if (removeDiacritics(sheet.getRange("B11").getValue()) == "") {
       sheet.getRange("B11").setFontColor("grey");
@@ -199,11 +199,17 @@ function onEdit(e) {
   }
 }
 
+// The link is opened in the browser by the dialog, and the cart id is kept in a cell that anyone who
+// edits the sheet can change: only what workspaces, environments and cart ids are made of is used.
 function redirect() {
   let user = new getDefaultUser();
   var ws = user.workspace.toLowerCase();
   var env = user.environment.toLowerCase();
-  var cartId = user.cartId.toLowerCase();
+  var cartId = String(user.cartId).toLowerCase();
+  // The environments are the ones of getHostname().
+  if (!/^[a-z0-9_-]+$/.test(ws) || !["production", "sandbox", "development"].includes(env) || !/^[a-z0-9_-]*$/.test(cartId)) {
+    throw JSON.stringify({"message": "Não foi possível abrir o carrinho: workspace, ambiente ou carrinho inválidos."});
+  }
   var novaURL = "https://" + ws + ".starkbank.com/cart/" + cartId;
 
   if (env != "production") {

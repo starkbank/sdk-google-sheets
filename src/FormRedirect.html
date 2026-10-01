@@ -18,6 +18,7 @@
     </body>
 </html>
 
+<?!= includeHtml_('alertMessage') ?>
 <script>
   function onSuccess(teams) {
     $(".mini").hide()
@@ -51,7 +52,7 @@
       }
     }
     $("#alert").show();
-    alertMessage.innerHTML = message
+    setAlertMessage(alertMessage, message)
   }
 
   function startLoading() {

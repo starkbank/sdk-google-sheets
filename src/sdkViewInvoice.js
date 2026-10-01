@@ -86,12 +86,12 @@ function ViewInvoice(after, before, status) {
 
       zeroCharges = false;
       i += 1;
-      let pdfLink = '=HYPERLINK("'+ invoice["pdf"] +'", "PDF")';
+      let pdfLink = '=HYPERLINK("'+ formulaText(invoice["pdf"]) +'", "PDF")';
       let tags = invoice["tags"];
       sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(invoice["created"]));
-      sheet.getRange('B' + i.toString()).setValue(invoice["name"]);
-      sheet.getRange('C' + i.toString()).setValue(invoice["taxId"]);
-      sheet.getRange('D' + i.toString()).setValue(InvoiceStatusEnToPt(invoice["status"]));
+      sheet.getRange('B' + i.toString()).setValue(safeText(invoice["name"]));
+      sheet.getRange('C' + i.toString()).setValue(safeText(invoice["taxId"]));
+      sheet.getRange('D' + i.toString()).setValue(safeText(InvoiceStatusEnToPt(invoice["status"])));
       sheet.getRange('E' + i.toString()).setValue(stringToCurrency(invoice["amount"]));
       sheet.getRange('F' + i.toString()).setValue(stringToCurrency(invoice["nominalAmount"]));
       if (invoice["discountAmount"]) {
@@ -100,11 +100,11 @@ function ViewInvoice(after, before, status) {
       sheet.getRange('H' + i.toString()).setValue(stringToCurrency(invoice["fineAmount"]));
       sheet.getRange('I' + i.toString()).setValue(stringToCurrency(invoice["interestAmount"]));
       sheet.getRange('J' + i.toString()).setValue(formatToLocalDatetime(invoice["due"]));
-      sheet.getRange('K' + i.toString()).setValue(invoice["expiration"]);
-      sheet.getRange('L' + i.toString()).setValue(invoice["brcode"]);
-      sheet.getRange('M' + i.toString()).setValue(invoice["id"]);
+      sheet.getRange('K' + i.toString()).setValue(safeText(invoice["expiration"]));
+      sheet.getRange('L' + i.toString()).setValue(safeText(invoice["brcode"]));
+      sheet.getRange('M' + i.toString()).setValue(safeText(invoice["id"]));
       sheet.getRange('N' + i.toString()).setValue(stringToCurrency(invoice["fee"]));
-      sheet.getRange('O' + i.toString()).setValue(tags.join(","));
+      sheet.getRange('O' + i.toString()).setValue(safeText(tags.join(",")));
       sheet.getRange('P' + i.toString()).setValue(pdfLink);
 
       sheet.getRange('Q' + i.toString()).setValue("NÃO");
@@ -171,7 +171,7 @@ function InvoiceStatusEnToPt(status){
 }
 
 function selectViewInvoiceDialog() {
-  let html = HtmlService.createHtmlOutputFromFile('FormViewInvoices');
+  let html = HtmlService.createTemplateFromFile('FormViewInvoices').evaluate();
   SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
   .showModalDialog(html, 'Invoices Emitidas');
 }

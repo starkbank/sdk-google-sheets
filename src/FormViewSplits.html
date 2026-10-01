@@ -43,6 +43,7 @@
     </body>
 </html>
 
+<?!= includeHtml_('alertMessage') ?>
 <script>
   function onLoad() {
     $('#before-date').datepicker();
@@ -64,7 +65,7 @@
       let message = JSON.parse(error["message"])["message"];
       $("#alert").show();
       var alertMessage = document.getElementById("alert-message");
-      alertMessage.innerHTML = message
+      setAlertMessage(alertMessage, message)
   }
   
   

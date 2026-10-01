@@ -37,6 +37,7 @@
     </body>
 </html>
 
+<?!= includeHtml_('alertMessage') ?>
 <script>
   function hideAlert() {
     $("#alert").hide();
@@ -82,7 +83,7 @@
   function onSuccessFunc() {
     stopLoading();
     google.script.host.close();
-    alertMessage.innerHTML = "Pagamentos enviados com sucesso!";
+    alertMessage.textContent = "Pagamentos enviados com sucesso!";
     window.scrollTo(0,0);
   }
   
@@ -118,7 +119,7 @@
       }
     }
     $("#alert").show();
-    alertMessage.innerHTML = message
+    setAlertMessage(alertMessage, message)
   }
   
   function saveSuccess() {

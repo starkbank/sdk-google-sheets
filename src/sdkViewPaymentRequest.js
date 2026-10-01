@@ -40,13 +40,13 @@ function ViewPaymentRequest(after, before, status, centerId, type) {
       i += 1;
       let tags = payment["tags"];
       sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(payment["created"]));
-      sheet.getRange('B' + i.toString()).setValue(payment["type"]);
-      sheet.getRange('C' + i.toString()).setValue(payment["description"]);
+      sheet.getRange('B' + i.toString()).setValue(safeText(payment["type"]));
+      sheet.getRange('C' + i.toString()).setValue(safeText(payment["description"]));
       sheet.getRange('D' + i.toString()).setValue(stringToCurrency(payment["amount"]));
-      sheet.getRange('E' + i.toString()).setValue(payment["actions"][1]["name"]);
-      sheet.getRange('F' + i.toString()).setValue(payment["status"]);
-      sheet.getRange('G' + i.toString()).setValue(payment["id"]);
-      sheet.getRange('H' + i.toString()).setValue(tags.join(","));
+      sheet.getRange('E' + i.toString()).setValue(safeText(payment["actions"][1]["name"]));
+      sheet.getRange('F' + i.toString()).setValue(safeText(payment["status"]));
+      sheet.getRange('G' + i.toString()).setValue(safeText(payment["id"]));
+      sheet.getRange('H' + i.toString()).setValue(safeText(tags.join(",")));
 
       if (payment["type"] == "transfer") {
         sheet.getRange('I10').setValue("Nome");
@@ -54,11 +54,11 @@ function ViewPaymentRequest(after, before, status, centerId, type) {
         sheet.getRange('L10').setValue("Agencia");
         sheet.getRange('M10').setValue("Conta");
 
-        sheet.getRange('I' + i.toString()).setValue(payment["payment"]["name"]);
-        sheet.getRange('J' + i.toString()).setValue(payment["payment"]["taxId"]);
-        sheet.getRange('K' + i.toString()).setValue(payment["payment"]["bankCode"]);
-        sheet.getRange('L' + i.toString()).setValue(payment["payment"]["branchCode"]);
-        sheet.getRange('M' + i.toString()).setValue(payment["payment"]["accountNumber"]);
+        sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["name"]));
+        sheet.getRange('J' + i.toString()).setValue(safeText(payment["payment"]["taxId"]));
+        sheet.getRange('K' + i.toString()).setValue(safeText(payment["payment"]["bankCode"]));
+        sheet.getRange('L' + i.toString()).setValue(safeText(payment["payment"]["branchCode"]));
+        sheet.getRange('M' + i.toString()).setValue(safeText(payment["payment"]["accountNumber"]));
       }
 
       if (payment["type"] == "boleto-payment") {
@@ -67,14 +67,14 @@ function ViewPaymentRequest(after, before, status, centerId, type) {
         sheet.getRange('L10').setValue("");
         sheet.getRange('M10').setValue("");
 
-        sheet.getRange('J' + i.toString()).setValue(payment["payment"]["taxId"]);
+        sheet.getRange('J' + i.toString()).setValue(safeText(payment["payment"]["taxId"]));
 
         if (payment["payment"]["line"] != null){
-          sheet.getRange('I' + i.toString()).setValue(payment["payment"]["line"]); 
+          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["line"])); 
         }
 
         if (payment["payment"]["barCode"] != null){
-          sheet.getRange('I' + i.toString()).setValue(payment["payment"]["barCode"]);
+          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["barCode"]));
         }
       }
 
@@ -84,14 +84,14 @@ function ViewPaymentRequest(after, before, status, centerId, type) {
         sheet.getRange('L10').setValue("");
         sheet.getRange('M10').setValue("");
 
-        sheet.getRange('J' + i.toString()).setValue(payment["payment"]["taxId"]);
+        sheet.getRange('J' + i.toString()).setValue(safeText(payment["payment"]["taxId"]));
 
         if (payment["payment"]["line"] != null){
-          sheet.getRange('I' + i.toString()).setValue(payment["payment"]["line"]); 
+          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["line"])); 
         }
 
         if (payment["payment"]["barCode"] != null){
-          sheet.getRange('I' + i.toString()).setValue(payment["payment"]["barCode"]);
+          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["barCode"]));
         }
       }
 
@@ -102,11 +102,11 @@ function ViewPaymentRequest(after, before, status, centerId, type) {
         sheet.getRange('M10').setValue("");
 
         if (payment["payment"]["line"] != null){
-          sheet.getRange('I' + i.toString()).setValue(payment["payment"]["line"]); 
+          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["line"])); 
         }
 
         if (payment["payment"]["barCode"] != null){
-          sheet.getRange('I' + i.toString()).setValue(payment["payment"]["barCode"]);
+          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["barCode"]));
         }
 
       }
@@ -118,11 +118,11 @@ function ViewPaymentRequest(after, before, status, centerId, type) {
         sheet.getRange('M10').setValue("");
 
         if (payment["payment"]["line"] != null){
-          sheet.getRange('I' + i.toString()).setValue(payment["payment"]["line"]); 
+          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["line"])); 
         }
 
         if (payment["payment"]["barCode"] != null){
-          sheet.getRange('I' + i.toString()).setValue(payment["payment"]["barCode"]);
+          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["barCode"]));
         }
         
       }
@@ -134,11 +134,11 @@ function ViewPaymentRequest(after, before, status, centerId, type) {
         sheet.getRange('M10').setValue("");
 
         if (payment["payment"]["line"] != null){
-          sheet.getRange('I' + i.toString()).setValue(payment["payment"]["line"]); 
+          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["line"])); 
         }
 
         if (payment["payment"]["barCode"] != null){
-          sheet.getRange('I' + i.toString()).setValue(payment["payment"]["barCode"]);
+          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["barCode"]));
         }
         
       }
@@ -152,7 +152,7 @@ function ViewPaymentRequest(after, before, status, centerId, type) {
 }
 
 function selectPaymentRequestDialog() {
-    var html = HtmlService.createHtmlOutputFromFile('FormPaymentRequest')
+    var html = HtmlService.createTemplateFromFile('FormPaymentRequest').evaluate()
   .setHeight(450)
   .setWidth(450);
     SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
