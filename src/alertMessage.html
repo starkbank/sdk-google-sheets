@@ -1,0 +1,13 @@
+<script>
+  // Shows the message as plain text: it may carry data from the API or from the spreadsheet.
+  // The "<br>" separators the forms put between lines become real line breaks.
+  function setAlertMessage(element, message) {
+    element.textContent = ""
+    String(message === null ? "" : message).split(/<br\s*\/?>/i).forEach(function (line, index) {
+      if (index > 0) {
+        element.appendChild(document.createElement("br"))
+      }
+      element.appendChild(document.createTextNode(line))
+    })
+  }
+</script>

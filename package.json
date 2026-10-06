@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node test/ecdsa.test.js"
+    "test": "node test/ecdsa.test.js && node test/credentials.test.js && node test/loginForm.test.js && node test/forms.test.js && node test/listings.test.js && node test/requests.test.js && node test/cartRedirect.test.js && node test/sharedSheet.test.js && node test/manifest.test.js"
   },
   "repository": {
     "type": "git",

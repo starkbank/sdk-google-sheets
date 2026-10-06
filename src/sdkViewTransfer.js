@@ -36,15 +36,15 @@ function ViewTransfer(after, before, status = null) {
       
       let transactionIds = transfer["transactionIds"];
       sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(transfer["created"]));
-      sheet.getRange('B' + i.toString()).setValue(transfer["id"]);
+      sheet.getRange('B' + i.toString()).setValue(safeText(transfer["id"]));
       sheet.getRange('C' + i.toString()).setValue(stringToCurrency(transfer["amount"]));
-      sheet.getRange('D' + i.toString()).setValue(transferStatusEnToPt(transfer["status"]));
-      sheet.getRange('E' + i.toString()).setValue(transfer["name"]);
-      sheet.getRange('F' + i.toString()).setValue(transfer["taxId"]);
-      sheet.getRange('G' + i.toString()).setValue(transfer["bankCode"]);
-      sheet.getRange('H' + i.toString()).setValue(transfer["branchCode"]);
-      sheet.getRange('I' + i.toString()).setValue(transfer["accountNumber"]);
-      sheet.getRange('J' + i.toString()).setValue(transactionIds.join(","));
+      sheet.getRange('D' + i.toString()).setValue(safeText(transferStatusEnToPt(transfer["status"])));
+      sheet.getRange('E' + i.toString()).setValue(safeText(transfer["name"]));
+      sheet.getRange('F' + i.toString()).setValue(safeText(transfer["taxId"]));
+      sheet.getRange('G' + i.toString()).setValue(safeText(transfer["bankCode"]));
+      sheet.getRange('H' + i.toString()).setValue(safeText(transfer["branchCode"]));
+      sheet.getRange('I' + i.toString()).setValue(safeText(transfer["accountNumber"]));
+      sheet.getRange('J' + i.toString()).setValue(safeText(transactionIds.join(",")));
     }
   } while (cursor);
   if (zeroTransfers) {
@@ -70,7 +70,7 @@ function getTransferDownloadList(){
 
 
 function TransferDownload(id) {
-  let path = "/transfer/" + id + "/pdf";
+  let path = "/transfer/" + pathSegment(id) + "/pdf";
   let pdfContent = fetchBuffer(path);
   return pdfContent;
 }
@@ -139,7 +139,7 @@ function localTransferDownloadDialog() {
 
 
 function selectTransferDialog() {
-  var html = HtmlService.createHtmlOutputFromFile('FormViewTransfer');
+  var html = HtmlService.createTemplateFromFile('FormViewTransfer').evaluate();
   SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
   .showModalDialog(html, 'Transferências');
 }

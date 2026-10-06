@@ -37,18 +37,18 @@ function ViewCharge(after, before, status) {
     for (let charge of elementList){
       zeroCharges = false;
       i += 1;
-      let pdfLink = '=HYPERLINK("' + hostname + "/boleto/" + charge["id"] + '/pdf", "PDF")';
+      let pdfLink = '=HYPERLINK("' + hostname + "/boleto/" + formulaText(charge["id"]) + '/pdf", "PDF")';
       let tags = charge["tags"];
       sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(charge["created"]));
-      sheet.getRange('B' + i.toString()).setValue(charge["name"]);
-      sheet.getRange('C' + i.toString()).setValue(charge["taxId"]);
-      sheet.getRange('D' + i.toString()).setValue(ChargeStatusEnToPt(charge["status"]));
+      sheet.getRange('B' + i.toString()).setValue(safeText(charge["name"]));
+      sheet.getRange('C' + i.toString()).setValue(safeText(charge["taxId"]));
+      sheet.getRange('D' + i.toString()).setValue(safeText(ChargeStatusEnToPt(charge["status"])));
       sheet.getRange('E' + i.toString()).setValue(stringToCurrency(charge["amount"]));
       sheet.getRange('F' + i.toString()).setValue(formatToLocalDatetime(charge["due"]));
-      sheet.getRange('G' + i.toString()).setValue(charge["line"]);
-      sheet.getRange('H' + i.toString()).setValue(charge["id"]);
+      sheet.getRange('G' + i.toString()).setValue(safeText(charge["line"]));
+      sheet.getRange('H' + i.toString()).setValue(safeText(charge["id"]));
       sheet.getRange('I' + i.toString()).setValue(stringToCurrency(charge["fee"]));
-      sheet.getRange('J' + i.toString()).setValue(tags.join(","));
+      sheet.getRange('J' + i.toString()).setValue(safeText(tags.join(",")));
       sheet.getRange('K' + i.toString()).setValue(pdfLink);
     }
   } while (cursor);
@@ -106,7 +106,7 @@ function getChargeDownloadList(){
 
 
 function ChargeDownload(id) {
-  let path = "/boleto/" + id + "/pdf";
+  let path = "/boleto/" + pathSegment(id) + "/pdf";
   let pdfContent = fetchBuffer(path)[0];
   return pdfContent;
 }
@@ -127,7 +127,7 @@ function localChargeDownloadDialog() {
 }
 
 function selectChargeDialog() {
-  let html = HtmlService.createHtmlOutputFromFile('FormViewCharge');
+  let html = HtmlService.createTemplateFromFile('FormViewCharge').evaluate();
   SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
   .showModalDialog(html, 'Boletos Emitidos');
 }

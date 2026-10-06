@@ -68,6 +68,7 @@
     </body>
 </html>
 
+<?!= includeHtml_('alertMessage') ?>
 <script>
   function onLoad() {
     $('#before-date').datepicker();
@@ -84,7 +85,7 @@
     hideAlert();
     $("#alert").show();
     var alertMessage = document.getElementById("alert-message");
-    alertMessage.innerHTML = message;
+    setAlertMessage(alertMessage, message);
     window.scrollTo(0,0);
 }
   

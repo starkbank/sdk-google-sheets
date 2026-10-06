@@ -62,8 +62,8 @@
     </body>
 </html>
 
+<?!= includeHtml_('alertMessage') ?>
 <script>
-
 let privateKey = "";
 
 function startLoading() {
@@ -86,7 +86,7 @@ function hideSuccessAlert(){
 function loadPrivateKey(event) {
     let reader = new FileReader();
     let fullPath = document.getElementById("file-input").value;
-    document.getElementById("file-input-label").innerHTML = fullPath.split(/(\\|\/)/g).pop();
+    document.getElementById("file-input-label").textContent = fullPath.split(/(\\|\/)/g).pop();
     reader.onload = function(event) {
         privateKey = event.target.result;
     };
@@ -99,7 +99,7 @@ function showMessage(message)
     hideSuccessAlert();
     $("#alert").show();
     var alertMessage = document.getElementById("alert-message");
-    alertMessage.innerHTML = message;
+    setAlertMessage(alertMessage, message);
     window.scrollTo(0,0);
 }
 
@@ -113,7 +113,7 @@ function send() {
         let message = "Por favor, insira um arquivo válido.";
         showMessage(message);
         privateKey = "";
-        document.getElementById("file-input-label").innerHTML = "Insira um arquivo";
+        document.getElementById("file-input-label").textContent = "Insira um arquivo";
         document.getElementById("file-input").value = "";
         return;
     }
@@ -146,7 +146,7 @@ function onSuccess() {
     hideSuccessAlert();
     $("#alert-success").show();
     var alertMessage = document.getElementById("alert-success-message");
-    alertMessage.innerHTML = "Transferências enviadas com sucesso!";
+    alertMessage.textContent = "Transferências enviadas com sucesso!";
     window.scrollTo(0,0);
 }
 

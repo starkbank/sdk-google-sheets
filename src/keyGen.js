@@ -18,16 +18,17 @@ function hashData(data) {
 KeyGen.hashPassword = function (password, email) {
   const encodedPass = encodeToBase64(password)
   const encodedEmail = email.toLowerCase()
-  sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Credentials')
   var encodedSalt = ""
+  // The environment of the login in progress (SaveCredentials stores it before the key is derived).
+  var environment = SessionStore.loadProfile().environment
 
-  if (sheet.getRange('B3').getValue() == "production"){
+  if (environment == "production"){
     encodedSalt = "1fcb2ff0-e78b-4292-ae7d-80e41161025c" 
   }
-  if (sheet.getRange('B3').getValue() == "sandbox"){
+  if (environment == "sandbox"){
     encodedSalt = "7186ead6-55ff-42ac-87d2-f2ccdf7a2b5d"
   }
-  if (sheet.getRange('B3').getValue() == "development"){
+  if (environment == "development"){
     encodedSalt = "31cf81be-341f-43fa-bd75-391e0b1a3d3a" 
   }
 

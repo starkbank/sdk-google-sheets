@@ -36,13 +36,13 @@ function ViewChargePayment(after, before, status = null) {
       
       let tags = payment["tags"];
       sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(payment["created"]));
-      sheet.getRange('B' + i.toString()).setValue(payment["id"]);
+      sheet.getRange('B' + i.toString()).setValue(safeText(payment["id"]));
       sheet.getRange('C' + i.toString()).setValue(stringToCurrency(payment["amount"]));
-      sheet.getRange('D' + i.toString()).setValue(ChargePaymentStatusEnToPt(payment["status"]));
+      sheet.getRange('D' + i.toString()).setValue(safeText(ChargePaymentStatusEnToPt(payment["status"])));
       sheet.getRange('E' + i.toString()).setValue(formatToLocalDatetime(payment["scheduled"]));
-      sheet.getRange('F' + i.toString()).setValue(payment["line"]);
-      sheet.getRange('G' + i.toString()).setValue(payment["description"]);
-      sheet.getRange('H' + i.toString()).setValue(tags.join(","));
+      sheet.getRange('F' + i.toString()).setValue(safeText(payment["line"]));
+      sheet.getRange('G' + i.toString()).setValue(safeText(payment["description"]));
+      sheet.getRange('H' + i.toString()).setValue(safeText(tags.join(",")));
     }
   } while (cursor);
   if (zeroPayments) {
@@ -108,7 +108,7 @@ function getChargePaymentDownloadList(){
 
 
 function ChargePaymentDownload(id) {
-  let path = "/boleto-payment/" + id + "/pdf";
+  let path = "/boleto-payment/" + pathSegment(id) + "/pdf";
   let pdfContent = fetchBuffer(path)[0];
   return pdfContent;
 }
@@ -130,7 +130,7 @@ function localChargePaymentDownloadDialog() {
 
 
 function selectChargePaymentDialog() {
-  var html = HtmlService.createHtmlOutputFromFile('FormViewChargePayment');
+  var html = HtmlService.createTemplateFromFile('FormViewChargePayment').evaluate();
   SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
   .showModalDialog(html, 'Pagamento de Boletos');
 }

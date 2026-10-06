@@ -52,6 +52,27 @@ function removeDiacritics(inputString) {
 }
 
 
+// Text that comes from the API or from other cells must never be read by Sheets as a formula:
+// "=IMPORTXML(...)" in a name would send data of the spreadsheet to someone else. Sheets may read
+// text that starts with "=", "+" or "-" as a formula, so that text gets an apostrophe prefix, which
+// forces plain text and is not shown. The exception is text that starts with "+" or "-" and has
+// only digits, spaces and number punctuation (phones, amounts): it has no letters, so no function
+// or cell reference can be in it. Anything else is left as it is.
+function safeText(value) {
+  if (typeof value !== "string") {
+    return value;
+  }
+  let startsAFormula = value.startsWith("=") || (/^[+-]/.test(value) && !/^[+-][\d\s().,%$+-]*$/.test(value));
+
+  return startsAFormula ? "'" + value : value;
+}
+
+// For the parts of a formula built by the SDK that are written inside quotes.
+function formulaText(value) {
+  return String(value).replace(/"/g, '""');
+}
+
+
 function stringToCurrency(string) {
   return parseInt(string, 10)/100;
 }
@@ -166,4 +187,9 @@ function calculateExternalId(amount, name, taxId, bankCode, branchCode, accountN
 
 function clearCollumns(sheet, initialCollumn, endCollumn){
   sheet.getRange(11, initialCollumn, sheet.getLastRow()-10, endCollumn).clearContent();
+}
+
+// Content of an html file of the project, for the dialogs that share a piece of page (<?!= includeHtml_('name') ?>).
+function includeHtml_(name) {
+  return HtmlService.createHtmlOutputFromFile(name).getContent();
 }
