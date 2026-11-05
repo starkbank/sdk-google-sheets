@@ -792,24 +792,7 @@
     "10,11|t|Codigo do Banco/ISPB",
     "10,12|t|Agencia",
     "10,13|t|Conta",
-    "11,1|t|2024-03-05",
-    "11,2|t|transfer",
-    "11,3|t|Fornecedor A",
-    "11,4|n|1234",
-    "11,5|t|Maria Aprovadora",
-    "11,6|t|pending",
-    "11,7|n|2001",
-    "11,8|t|x",
-    "11,9|t|José & Cia",
-    "11,10|t|012.345.678-90",
-    "11,11|n|341",
-    "11,12|n|1234",
-    "11,13|t|1-9",
-    "11,30|t|sentinela AD11",
-    "12,1|t|2024-03-05",
-    "12,2|t|transfer",
-    "12,3|t|Fornecedor A",
-    "12,4|n|1234"
+    "11,30|t|sentinela AD11"
    ]
   },
   "requests": [

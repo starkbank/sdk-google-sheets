@@ -165,11 +165,7 @@ function corporateCardKits(kitList) {
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('corporateShopKits');
   var range = sheet.getRange(1, 5, sheet.getMaxRows());
   range.clear();
-  let i = 10;
-  for (let item of kitList) {
-    sheet.getRange('E' + i.toString()).setValue(safeText(item["name"].toString()));
-    i++
-  }
+  writeRows_(sheet, 10, 5, kitList.map(item => [item["name"].toString()]));
 }
 
 function onEdit(e) {

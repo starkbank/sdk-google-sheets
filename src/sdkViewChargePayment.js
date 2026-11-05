@@ -30,20 +30,22 @@ function ViewChargePayment(after, before, status = null) {
     elementList = json["payments"];
     cursor = json["cursor"];
     
+    let rows = [];
     for (let payment of elementList){
       zeroPayments = false;
-      i += 1;
-      
-      let tags = payment["tags"];
-      sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(payment["created"]));
-      sheet.getRange('B' + i.toString()).setValue(safeText(payment["id"]));
-      sheet.getRange('C' + i.toString()).setValue(stringToCurrency(payment["amount"]));
-      sheet.getRange('D' + i.toString()).setValue(safeText(ChargePaymentStatusEnToPt(payment["status"])));
-      sheet.getRange('E' + i.toString()).setValue(formatToLocalDatetime(payment["scheduled"]));
-      sheet.getRange('F' + i.toString()).setValue(safeText(payment["line"]));
-      sheet.getRange('G' + i.toString()).setValue(safeText(payment["description"]));
-      sheet.getRange('H' + i.toString()).setValue(safeText(tags.join(",")));
+      rows.push([
+        formatToLocalDatetime(payment["created"]),
+        payment["id"],
+        stringToCurrency(payment["amount"]),
+        ChargePaymentStatusEnToPt(payment["status"]),
+        formatToLocalDatetime(payment["scheduled"]),
+        payment["line"],
+        payment["description"],
+        payment["tags"].join(","),
+      ]);
     }
+    writeRows_(sheet, i + 1, 1, rows);
+    i += rows.length;
   } while (cursor);
   if (zeroPayments) {
     Browser.msgBox("Nenhum pagamento encontrado para o período selecionado!");

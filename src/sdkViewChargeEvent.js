@@ -41,39 +41,46 @@ function viewChargeEvents(after, before, eventOption)
 
         let idsList = [];
         let chargeIdLineAmountDict = {};
+        let rows = [];
         for(let log of elementsList)
         {
             zeroLogs = false;
-            i +=1;
             let charge = log["boleto"];
             let pdfLink = '=HYPERLINK("' + hostname + "/boleto/" + formulaText(charge["id"]) + '/pdf", "PDF")';
-            let tags = charge["tags"];
             idsList.push(charge["id"]);
-            chargeIdLineAmountDict[charge["id"]] = [i, parseInt(charge["amount"])];
-            sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(log["created"]));
-            sheet.getRange('B' + i.toString()).setValue(safeText(eventEntoPt(charge["status"])));
-            sheet.getRange('C' + i.toString()).setValue(safeText(charge["name"]));
-            sheet.getRange('D' + i.toString()).setValue(safeText(charge["taxId"]));
-            sheet.getRange('E' + i.toString()).setValue(stringToCurrency(charge["amount"]));
-
-            sheet.getRange('J' + i.toString()).setValue(formatToLocalDatetime(charge["created"]));
-            sheet.getRange('K' + i.toString()).setValue(formatToLocalDatetime(charge["due"]));
-            sheet.getRange('L' + i.toString()).setValue(safeText(charge["barCode"]));
-            sheet.getRange('M' + i.toString()).setValue(safeText(charge["id"]));
-            sheet.getRange('N' + i.toString()).setValue(parseInt(charge["fee"]) / 100.0);
-            sheet.getRange('O' + i.toString()).setValue(safeText(tags.join(",")));
-            sheet.getRange('P' + i.toString()).setValue(pdfLink);
-            sheet.getRange('Q' + i.toString()).setValue(safeText(charge["streetLine1"]));
-            sheet.getRange('R' + i.toString()).setValue(safeText(charge["streetLine2"]));
-            sheet.getRange('S' + i.toString()).setValue(safeText(charge["district"]));
-            sheet.getRange('T' + i.toString()).setValue(safeText(charge["city"]));
-            sheet.getRange('U' + i.toString()).setValue(safeText(charge["stateCode"]));
-            sheet.getRange('V' + i.toString()).setValue(safeText(charge["zipCode"]));
+            chargeIdLineAmountDict[charge["id"]] = [rows.length, parseInt(charge["amount"])];
+            rows.push([
+                formatToLocalDatetime(log["created"]),
+                eventEntoPt(charge["status"]),
+                charge["name"],
+                charge["taxId"],
+                stringToCurrency(charge["amount"]),
+                null,
+                null,
+                null,
+                null,
+                formatToLocalDatetime(charge["created"]),
+                formatToLocalDatetime(charge["due"]),
+                charge["barCode"],
+                charge["id"],
+                parseInt(charge["fee"]) / 100.0,
+                charge["tags"].join(","),
+                new LinkFormula(pdfLink),
+                charge["streetLine1"],
+                charge["streetLine2"],
+                charge["district"],
+                charge["city"],
+                charge["stateCode"],
+                charge["zipCode"],
+            ]);
         }
+        writeRows_(sheet, i + 1, 1, rows);
         if(idsList.length > 0)
         {
-            getCreatedLogs(idsList, chargeIdLineAmountDict, sheet);
+            // F to I (nominal amount, discount, fine and interest) come from the registered logs.
+            writeRows_(sheet, i + 1, 6, getCreatedLogs(idsList, chargeIdLineAmountDict));
         }
+        i += rows.length;
 
     } while(cursor);
     if(zeroLogs) {
@@ -81,10 +88,12 @@ function viewChargeEvents(after, before, eventOption)
     }
 }
 
-function getCreatedLogs(idsList, chargeIdLineAmountDict, sheet)
+// Columns F to I of each row of the page, in the order of chargeIdLineAmountDict's row indexes.
+function getCreatedLogs(idsList, chargeIdLineAmountDict)
 {
     let cursor = "";
     let query = {};
+    let amountRows = idsList.map(() => [null, null, null, null]);
     
     query["types"] = "registered";
     query["boletoIds"] = idsList.join(",");
@@ -105,25 +114,26 @@ function getCreatedLogs(idsList, chargeIdLineAmountDict, sheet)
         {
             let charge = log["boleto"];
             
-            let line = chargeIdLineAmountDict[charge["id"]][0];
+            let amountRow = amountRows[chargeIdLineAmountDict[charge["id"]][0]];
             let amount = chargeIdLineAmountDict[charge["id"]][1] / 100.0;
             let nominalAmount = parseInt(charge["amount"]) / 100.0;
             let deltaAmount = amount - nominalAmount;
-            sheet.getRange('F' + line.toString()).setValue(nominalAmount);
+            amountRow[0] = nominalAmount;
 
             if(deltaAmount < 0) {
-                sheet.getRange('G' + line.toString()).setValue(deltaAmount);
+                amountRow[1] = deltaAmount;
             } 
             else if(deltaAmount > 0) {
                 let fine = parseInt(charge["fine"]) * nominalAmount/100;
                 let interest = amount - fine - nominalAmount;
-                sheet.getRange('H' + line.toString()).setValue(fine);
-                sheet.getRange('I' + line.toString()).setValue(interest);
+                amountRow[2] = fine;
+                amountRow[3] = interest;
             }            
         }
 
     } while(cursor);
 
+    return amountRows;
 }
 
 function eventEntoPt(event)

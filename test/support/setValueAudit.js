@@ -111,19 +111,10 @@ function isNumericExpression(text) {
   return splitOnOperators(text).every(term => /^\d+(\.\d+)?$/.test(term) || PRODUCED_BY_THE_SDK.test(singleCall(term) || ""));
 }
 
-// Arguments the SDK computes itself, as numbers or as fixed text: they cannot carry text from outside.
-const COMPUTED_BY_THE_SDK = new Set([
-  "sdkViewChargeEvent.js: nominalAmount", "sdkViewChargeEvent.js: deltaAmount", "sdkViewChargeEvent.js: fine", "sdkViewChargeEvent.js: interest",
-  "utilsBase.js: headers[i]",
-  'sdkViewStatement.js: getTransactionType(transact["source"].split("/")[0])',
-  'sdkViewStatement.js: sign*stringToCurrency(transact["amount"])',
-]);
-
 function isSafeByForm(argument, file = "") {
   const text = argument.trim();
   if (text === "null" || text === "true" || text === "false" || text === '""' || text === "''" || /^-?\d+(\.\d+)?$/.test(text)) return true;
   if (isNumericExpression(text)) return true;
-  if (COMPUTED_BY_THE_SDK.has(`${file}: ${text}`)) return true;
   if (/^pdfLink$/.test(text)) return true;
   // Fixed text that opens the value: what follows cannot start a formula, unless the text itself
   // is empty or starts like one, and it must be a concatenation (not a condition or anything else).

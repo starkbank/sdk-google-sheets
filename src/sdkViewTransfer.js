@@ -30,22 +30,24 @@ function ViewTransfer(after, before, status = null) {
     elementList = json["transfers"];
     cursor = json["cursor"];
     
+    let rows = [];
     for (let transfer of elementList){
       zeroTransfers = false;
-      i += 1;
-      
-      let transactionIds = transfer["transactionIds"];
-      sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(transfer["created"]));
-      sheet.getRange('B' + i.toString()).setValue(safeText(transfer["id"]));
-      sheet.getRange('C' + i.toString()).setValue(stringToCurrency(transfer["amount"]));
-      sheet.getRange('D' + i.toString()).setValue(safeText(transferStatusEnToPt(transfer["status"])));
-      sheet.getRange('E' + i.toString()).setValue(safeText(transfer["name"]));
-      sheet.getRange('F' + i.toString()).setValue(safeText(transfer["taxId"]));
-      sheet.getRange('G' + i.toString()).setValue(safeText(transfer["bankCode"]));
-      sheet.getRange('H' + i.toString()).setValue(safeText(transfer["branchCode"]));
-      sheet.getRange('I' + i.toString()).setValue(safeText(transfer["accountNumber"]));
-      sheet.getRange('J' + i.toString()).setValue(safeText(transactionIds.join(",")));
+      rows.push([
+        formatToLocalDatetime(transfer["created"]),
+        transfer["id"],
+        stringToCurrency(transfer["amount"]),
+        transferStatusEnToPt(transfer["status"]),
+        transfer["name"],
+        transfer["taxId"],
+        transfer["bankCode"],
+        transfer["branchCode"],
+        transfer["accountNumber"],
+        transfer["transactionIds"].join(","),
+      ]);
     }
+    writeRows_(sheet, i + 1, 1, rows);
+    i += rows.length;
   } while (cursor);
   if (zeroTransfers) {
     Browser.msgBox("Nenhuma transferência encontrada para o período selecionado!");

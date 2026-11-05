@@ -34,23 +34,26 @@ function ViewCharge(after, before, status) {
     elementList = json["boletos"];
     cursor = json["cursor"];
 
+    let rows = [];
     for (let charge of elementList){
       zeroCharges = false;
-      i += 1;
       let pdfLink = '=HYPERLINK("' + hostname + "/boleto/" + formulaText(charge["id"]) + '/pdf", "PDF")';
-      let tags = charge["tags"];
-      sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(charge["created"]));
-      sheet.getRange('B' + i.toString()).setValue(safeText(charge["name"]));
-      sheet.getRange('C' + i.toString()).setValue(safeText(charge["taxId"]));
-      sheet.getRange('D' + i.toString()).setValue(safeText(ChargeStatusEnToPt(charge["status"])));
-      sheet.getRange('E' + i.toString()).setValue(stringToCurrency(charge["amount"]));
-      sheet.getRange('F' + i.toString()).setValue(formatToLocalDatetime(charge["due"]));
-      sheet.getRange('G' + i.toString()).setValue(safeText(charge["line"]));
-      sheet.getRange('H' + i.toString()).setValue(safeText(charge["id"]));
-      sheet.getRange('I' + i.toString()).setValue(stringToCurrency(charge["fee"]));
-      sheet.getRange('J' + i.toString()).setValue(safeText(tags.join(",")));
-      sheet.getRange('K' + i.toString()).setValue(pdfLink);
+      rows.push([
+        formatToLocalDatetime(charge["created"]),
+        charge["name"],
+        charge["taxId"],
+        ChargeStatusEnToPt(charge["status"]),
+        stringToCurrency(charge["amount"]),
+        formatToLocalDatetime(charge["due"]),
+        charge["line"],
+        charge["id"],
+        stringToCurrency(charge["fee"]),
+        charge["tags"].join(","),
+        new LinkFormula(pdfLink),
+      ]);
     }
+    writeRows_(sheet, i + 1, 1, rows);
+    i += rows.length;
   } while (cursor);
   if (zeroCharges) {
     Browser.msgBox("Nenhum boleto encontrado para o período selecionado!");

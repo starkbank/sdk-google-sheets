@@ -82,44 +82,32 @@ function ViewInvoice(after, before, status) {
     //   }
     // }
 
+    let rows = [];
     for (let invoice of elementList){
 
       zeroCharges = false;
-      i += 1;
       let pdfLink = '=HYPERLINK("'+ formulaText(invoice["pdf"]) +'", "PDF")';
-      let tags = invoice["tags"];
-      sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(invoice["created"]));
-      sheet.getRange('B' + i.toString()).setValue(safeText(invoice["name"]));
-      sheet.getRange('C' + i.toString()).setValue(safeText(invoice["taxId"]));
-      sheet.getRange('D' + i.toString()).setValue(safeText(InvoiceStatusEnToPt(invoice["status"])));
-      sheet.getRange('E' + i.toString()).setValue(stringToCurrency(invoice["amount"]));
-      sheet.getRange('F' + i.toString()).setValue(stringToCurrency(invoice["nominalAmount"]));
-      if (invoice["discountAmount"]) {
-        sheet.getRange('G' + i.toString()).setValue(stringToCurrency(invoice["discountAmount"]));
-      }
-      sheet.getRange('H' + i.toString()).setValue(stringToCurrency(invoice["fineAmount"]));
-      sheet.getRange('I' + i.toString()).setValue(stringToCurrency(invoice["interestAmount"]));
-      sheet.getRange('J' + i.toString()).setValue(formatToLocalDatetime(invoice["due"]));
-      sheet.getRange('K' + i.toString()).setValue(safeText(invoice["expiration"]));
-      sheet.getRange('L' + i.toString()).setValue(safeText(invoice["brcode"]));
-      sheet.getRange('M' + i.toString()).setValue(safeText(invoice["id"]));
-      sheet.getRange('N' + i.toString()).setValue(stringToCurrency(invoice["fee"]));
-      sheet.getRange('O' + i.toString()).setValue(safeText(tags.join(",")));
-      sheet.getRange('P' + i.toString()).setValue(pdfLink);
-
-      sheet.getRange('Q' + i.toString()).setValue("NÃO");
-
-      if (invoice["splits"].length > 0) {
-        sheet.getRange('Q' + i.toString()).setValue("SIM")
-        for (let split = 0; split <= 3; split++) {
-          const column = ["R", "S", "T"];
-          try {
-            sheet.getRange(column[split] + i.toString()).setValue(stringToCurrency(invoice["splits"][split]["amount"].toString()));
-          } catch {
-            break
-          }
-        }
-      }
+      // R, S and T show the first three splits.
+      let splitAmounts = invoice["splits"].slice(0, 3).map(split => stringToCurrency(split["amount"].toString()));
+      rows.push([
+        formatToLocalDatetime(invoice["created"]),
+        invoice["name"],
+        invoice["taxId"],
+        InvoiceStatusEnToPt(invoice["status"]),
+        stringToCurrency(invoice["amount"]),
+        stringToCurrency(invoice["nominalAmount"]),
+        invoice["discountAmount"] ? stringToCurrency(invoice["discountAmount"]) : null,
+        stringToCurrency(invoice["fineAmount"]),
+        stringToCurrency(invoice["interestAmount"]),
+        formatToLocalDatetime(invoice["due"]),
+        invoice["expiration"],
+        invoice["brcode"],
+        invoice["id"],
+        stringToCurrency(invoice["fee"]),
+        invoice["tags"].join(","),
+        new LinkFormula(pdfLink),
+        splitAmounts.length > 0 ? "SIM" : "NÃO",
+      ].concat(splitAmounts));
 
       // if (splitByInvoice[invoice["id"]]){
       //   if (splitByInvoice[invoice["id"]].length >= 1){
@@ -143,6 +131,8 @@ function ViewInvoice(after, before, status) {
       //   }
       // }
     }
+    writeRows_(sheet, i + 1, 1, rows);
+    i += rows.length;
   } while (cursor);
   if (zeroCharges) {
     Browser.msgBox("Nenhuma Invoice encontrada para o período selecionado!");
