@@ -104,8 +104,12 @@ for (const [flowName, flow] of Object.entries(requestFlows)) {
       assert.equal(world.alerts.length, 1);
       assert.match(world.alerts[0], /Consulta de Aprovações/);
       assert.doesNotMatch(world.alerts[0], /Todos os itens foram enviados/);
-      assert.deepEqual(history(world, flow), []);
       for (const line of [11, 12, 13]) assert.equal(statusOf(world, flow, line)[0], "Verificar", `row ${line}`);
+      // The requests may exist: the rows stay recorded, so sending them again is refused until the next login.
+      assert.equal(history(world, flow).length, 3);
+      world.alerts.length = 0;
+      run(world, flow.name, "center-1");
+      assert.deepEqual(world.alerts, ["Você está enviando pagamentos duplicados, remova as duplicadas e tente novamente."]);
     });
   }
 
@@ -352,10 +356,24 @@ scenario("customers are created on the v2 route", () => {
   assert.deepEqual(world.browserMessages, ["Clientes cadastrados com sucesso!"]);
 });
 
-scenario("customers: an API error is shown instead of success", () => {
-  const world = customersWorld({status: 400, body: {errors: [{code: "invalidTaxId", message: "Element 1: CPF inválido"}, {code: "x", message: "Limite excedido"}]}});
+scenario("customers: an API error is shown with its row", () => {
+  // The API counts the customers from 1: "Element 1" is row 11.
+  const world = customersWorld({status: 400, body: {errors: [{code: "invalidTaxId", message: "Element 2: CPF inválido"}, {code: "x", message: "Limite excedido"}]}});
 
   assert.deepEqual(world.browserMessages, ["Clientes não cadastrados. \nLinha 12: CPF inválido\nLimite excedido"]);
+});
+
+scenario("customers: blank e-mail, phone and tags are sent the way the API accepts them", () => {
+  const world = newWorld();
+  fill(world, "Cadastro de Clientes", [["Maria", "'012.345.678-90", "", "", "Rua A", "", "Centro", "Rio", "RJ", "'20000-000", ""],
+    ["João", "'98765432100", "", "", "Rua B", "", "Centro", "Rio", "RJ", "'20000-001", "a,,b"]]);
+  world.api.stub("POST", /^\/boleto\/customer$/, () => ({body: {customers: []}}));
+
+  run(world, "createCustomers");
+
+  const [first, second] = posted(world, "/boleto/customer")[0].customers;
+  assert.deepEqual([first.email, first.phone, first.tags], [null, null, []]);
+  assert.deepEqual(second.tags, ["a", "b"]);
 });
 
 scenario("customers: without a session the reason is shown", () => {
@@ -385,7 +403,7 @@ scenario("the duplicate guard keeps every id past 50,000 characters", () => {
 
 scenario("login and sign out reset the whole history", () => {
   const world = newWorld();
-  world.evaluate(`updatePaymentRequestManager(Array.from({length: 2000}, (_, index) => "id-" + index + "-".repeat(40)), "transfer")`);
+  world.evaluate(`recordBatch_(paymentRequestManager(), "transfer", Array.from({length: 2000}, (_, index) => "id-" + index + "-".repeat(40)))`);
   assert.equal(history(world, requestFlows.transfers).length, 2000);
   world.alertAnswer = "YES";
 
@@ -399,7 +417,7 @@ scenario("login and sign out reset the whole history", () => {
 scenario("the history leaves the other cells of its column alone", () => {
   const world = newWorld();
   const sheet = world.workbook.getSheetByName("paymentRequestExternal");
-  world.evaluate(`updatePaymentRequestManager(Array.from({length: 2000}, (_, index) => "id-" + index + "-".repeat(40)), "transfer")`);
+  world.evaluate(`recordBatch_(paymentRequestManager(), "transfer", Array.from({length: 2000}, (_, index) => "id-" + index + "-".repeat(40)))`);
   sheet.getRange("C10").setValue("anotação");
   world.alertAnswer = "YES";
 
@@ -420,6 +438,59 @@ scenario("a history written by the previous version is still read", () => {
 
   assert.deepEqual(world.alerts, ["Você está enviando pagamentos duplicados, remova as duplicadas e tente novamente."]);
   assert.equal(posted(world, "/payment-request").length, 0);
+});
+
+scenario("a history that gets shorter leaves no old cell behind", () => {
+  const world = newWorld();
+  // About 50 characters per id: 1,700 ids fill 2 cells, 2,500 fill 3.
+  const ids = Array.from({length: 2500}, (_, index) => "id-" + index + "-".repeat(40));
+  world.evaluate(`recordBatch_(paymentRequestManager(), "transfer", ${JSON.stringify(ids.slice(0, 1700))})`);
+  world.evaluate(`recordBatch_(paymentRequestManager(), "transfer", ${JSON.stringify(ids.slice(1700))})`);
+  const cellCount = () => Array.from(world.workbook.getSheetByName("paymentRequestExternal").cells.keys()).filter(key => key.endsWith(",3")).length;
+  const longest = cellCount();
+
+  world.evaluate(`forgetBatch_(paymentRequestManager(), "transfer", ${JSON.stringify(ids.slice(1700))})`);
+
+  assert.deepEqual([longest, cellCount()], [3, 2]);
+  assert.deepEqual(history(world, requestFlows.transfers), ids.slice(0, 1700));
+});
+
+scenario("a history cell never ends in half of an emoji", () => {
+  const world = newWorld();
+  // The JSON starts with {"transfer":[" (14 characters): the emoji takes characters 44,999 and 45,000.
+  const id = "x".repeat(45000 - 14 - 1) + "😀" + "fim";
+  world.evaluate(`recordBatch_(paymentRequestManager(), "transfer", [${JSON.stringify(id)}])`);
+
+  const cells = world.workbook.getSheetByName("paymentRequestExternal").cells;
+  for (const key of Array.from(cells.keys()).filter(key => key.endsWith(",3"))) {
+    const text = cells.get(key);
+    assert.ok(!/[\uD800-\uDBFF]$/.test(text), `${key} ends in a lone high surrogate`);
+  }
+  assert.deepEqual(history(world, requestFlows.transfers), [id]);
+});
+
+scenario("a login or sign out during a sending leaves the history alone", () => {
+  const world = newWorld();
+  world.evaluate(`recordBatch_(paymentRequestManager(), "transfer", ["id-1"])`);
+  world.sendingInProgress = true;
+  world.alertAnswer = "YES";
+
+  run(world, "signOut");
+
+  world.sendingInProgress = false;
+  assert.deepEqual(history(world, requestFlows.transfers), ["id-1"]);
+});
+
+scenario("pix keys: answering OK with no key to move erases nothing", () => {
+  const world = newWorld();
+  fill(world, "Transferência com Aprovação", rows(3, index => [`Antigo ${index}`, "'012", 1, "'341", "'0001", "'1", "", "", "", "", "", "Enviado", ""]));
+  fill(world, "Consulta de Chave PIX", [["a@b.com", 10, "", "Pagamento", "", "Já consultado", "x", "1", "2", "3", "email"]]);
+  world.alertAnswer = "OK";
+
+  run(world, "getDictKey");
+
+  assert.equal(transferCells(world).get("11,1"), "Antigo 0");
+  assert.equal(transferCells(world).get("13,12"), "Enviado");
 });
 
 for (const [flowName, flow] of Object.entries(requestFlows)) {

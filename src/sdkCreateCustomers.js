@@ -16,13 +16,14 @@ function createCustomers()
             zipCode: cellOf_(row, 'J')
         };
 
-        let tags = cellOf_(row, 'K').split(",");
+        // The API refuses empty tags, and takes a missing e-mail or phone only as null.
+        let tags = String(cellOf_(row, 'K')).split(",").filter(tag => tag.trim() !== "");
     
         let customer = {
             name: cellOf_(row, 'A'),
             taxId: cellOf_(row, 'B'),
-            email: cellOf_(row, 'C'),
-            phone: cellOf_(row, 'D'),
+            email: cellOf_(row, 'C') === "" ? null : cellOf_(row, 'C'),
+            phone: cellOf_(row, 'D') === "" ? null : cellOf_(row, 'D'),
             tags: tags,
             address: address
         };
@@ -52,11 +53,11 @@ function createCustomers()
         return;
     }
 
-    // "Element 0: ..." is the first customer, the one in row 11.
+    // The API counts the customers from 1: "Element 1: ..." is the one in row 11.
     let message = "Clientes não cadastrados. ";
     for (let suberror of json["errors"]) {
         let element = /^Element (\d+):(.*)$/.exec(suberror["message"]);
-        message += "\n" + (element ? "Linha " + (11 + parseInt(element[1])) + ":" + element[2] : suberror["message"]);
+        message += "\n" + (element ? "Linha " + (10 + parseInt(element[1])) + ":" + element[2] : suberror["message"]);
     }
     Browser.msgBox(message);
 }

@@ -93,13 +93,14 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
 }
 
 function managePaymentRequestTransfer(centerId) {
-    withSendingLock_(() => sendPaymentRequestTransfers_(centerId));
+    sendWithLock_(() => sendPaymentRequestTransfers_(centerId));
 }
 
 function sendPaymentRequestTransfers_(centerId) {
     let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Transferência com Aprovação');
     formatHeader(sheet);
-    let externalOrdersList = paymentRequestManager().transfer;
+    let history = paymentRequestManager();
+    let externalOrdersList = history.transfer.slice();
     let extOrderListLen = externalOrdersList.length;
     let query = {}
     let ordersList = createPaymentRequestArray(centerId, sheet, externalOrdersList);
@@ -118,13 +119,14 @@ function sendPaymentRequestTransfers_(centerId) {
         let ordersBatch = ordersList.slice((batch * batchSize), (batch * batchSize) + batchSize);
         let checkIds = externalOrdersList.slice(extOrderListLen + (batch * batchSize), (extOrderListLen + (batch * batchSize) + batchSize));
         let firstLine = 11 + batch * batchSize;
+        recordBatch_(history, "transfer", checkIds);
         let request = sendPaymentRequestBatch(ordersBatch, query);
         if (request["outcome"] == "sent") {
             confirmOrders(sheet, firstLine, ordersBatch.length, statusColumns);
-            updatePaymentRequestManager(checkIds, "transfer")
             continue;
         }
         if (request["outcome"] == "rejected") {
+            forgetBatch_(history, "transfer", checkIds);
             failedBatchs += 1;
             returnMessage = returnMessage + failOrders(sheet, firstLine, ordersBatch.length, request["errors"], statusColumns);
             continue;

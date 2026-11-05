@@ -95,7 +95,7 @@ function confirmOrders(sheet, firstLine, chunkLen, statusColumns) {
 }
 
 function markUncertainOrders_(sheet, firstLine, chunkLen, statusColumns) {
-    let statuses = Array.from({length: chunkLen}, () => ["Verificar", "Confira em Consulta de Aprovações antes de enviar de novo"]);
+    let statuses = Array.from({length: chunkLen}, () => ["Verificar", "Confira em Consulta de Aprovações"]);
     writeRows_(sheet, firstLine, statusColumns.first, statuses);
 }
 
@@ -132,7 +132,7 @@ function sendOutcomeMessage_(batchCount, failedBatchs, uncertainBatchs, returnMe
         return
     }
     if (uncertainBatchs > 0) {
-        let uncertain = "Não foi possível confirmar o envio de alguns itens: eles estão marcados como \"Verificar\". Confira em \"Consulta de Aprovações\" antes de enviá-los de novo.";
+        let uncertain = "Não foi possível confirmar o envio de alguns itens: eles estão marcados como \"Verificar\". Confira em \"Consulta de Aprovações\". Para não serem criados duas vezes, eles são recusados como duplicados até o próximo login.";
         sendMessage(returnMessage ? uncertain + "\n\n" + returnMessage : uncertain);
         return
     }
@@ -165,43 +165,66 @@ function historyCells_(sheet) {
     return end == -1 ? cells : cells.slice(0, end);
 }
 
-function updatePaymentRequestManager(array, type) {
-    let json = paymentRequestManager()
-    json[type].push(...array)
-    writePaymentRequestHistory_(json);
+// A batch joins the history before its request, so a run that stops after it (or gets no answer) cannot
+// send it twice. The flows read the history once: under the document lock nobody else writes it.
+function recordBatch_(history, type, ids) {
+    history[type].push(...ids);
+    writePaymentRequestHistory_(history);
 }
 
-// The history only grows, so its cells overwrite the previous ones; resetPaymentRequestHistory_ clears the rest.
+// A batch the API refused was not created: its rows may be sent again.
+function forgetBatch_(history, type, ids) {
+    let refused = new Set(ids);
+    history[type] = history[type].filter(id => !refused.has(id));
+    writePaymentRequestHistory_(history);
+}
+
 function writePaymentRequestHistory_(json) {
+    let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
+    let previousCount = historyCells_(sheet).length;
     let text = JSON.stringify(json);
     let cells = [];
-    for (let start = 0; start < text.length; start += historyCellLength) {
-        cells.push(["j" + text.slice(start, start + historyCellLength)]);
+    for (let start = 0; start < text.length;) {
+        let end = Math.min(start + historyCellLength, text.length);
+        // Both halves of an emoji stay in one cell: Sheets may not keep half of one.
+        if (end < text.length && /[\uD800-\uDBFF]/.test(text[end - 1])) {
+            end -= 1;
+        }
+        cells.push(["j" + text.slice(start, end)]);
+        start = end;
     }
-    writeRows_(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal'), 1, 3, cells);
+    writeRows_(sheet, 1, 3, cells);
+    // A shorter history leaves cells of the longer one below it.
+    if (previousCount > cells.length) {
+        sheet.getRange(cells.length + 1, 3, previousCount - cells.length, 1).clearContent();
+    }
 }
 
-// Login and sign out start an empty history.
+// Login and sign out start an empty history. While someone is sending it is left as it is: a guard
+// that remembers too much refuses rows, one that forgets lets them be created twice.
 function resetPaymentRequestHistory_() {
-    let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
-    let chunkCount = historyCells_(sheet).length;
-    if (chunkCount > 1) {
-        sheet.getRange(2, 3, chunkCount - 1, 1).clearContent();
+    if (!withDocumentLock_(() => writePaymentRequestHistory_({"transfer": [], "boleto": []}))) {
+        Logger.log("The payment request history was not reset: a sending was in progress");
     }
-    writePaymentRequestHistory_({"transfer": [], "boleto": []});
 }
 
 // One sending at a time per spreadsheet: two people sending the same rows at once would both pass the
-// duplicate guard, which reads the history before sending and records it after.
-function withSendingLock_(send) {
+// duplicate guard, which reads the history before sending. False when someone else holds the lock.
+function withDocumentLock_(work) {
     let lock = LockService.getDocumentLock();
     if (!lock.tryLock(30000)) {
-        sendMessage("Outro envio está em andamento nesta planilha. Tente novamente em alguns instantes.");
-        return;
+        return false;
     }
     try {
-        send();
+        work();
     } finally {
         lock.releaseLock();
+    }
+    return true;
+}
+
+function sendWithLock_(send) {
+    if (!withDocumentLock_(send)) {
+        sendMessage("Outro envio está em andamento nesta planilha. Tente novamente em alguns instantes.");
     }
 }

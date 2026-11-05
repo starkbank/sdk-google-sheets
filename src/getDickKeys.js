@@ -72,7 +72,7 @@ function getDictKey()
       'Foram encontradas ' + jsonData.length + ' Chaves Pix válidas. Deseja mover para a aba de Transferências com Aprovação? Dados na aba de Transferências com Aprovação serão apagados.',
       ui.ButtonSet.OK_CANCEL);
     
-      if (resultado == ui.Button.OK) {
+      if (resultado == ui.Button.OK && jsonData.length > 0) {
         sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Transferência com Aprovação");
         sheet.activate();
         

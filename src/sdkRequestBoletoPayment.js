@@ -1,6 +1,6 @@
 function executeBoletoPayment(centerId)
 {
-    withSendingLock_(() => sendBoletoPaymentRequests_(centerId));
+    sendWithLock_(() => sendBoletoPaymentRequests_(centerId));
 }
 
 function sendBoletoPaymentRequests_(centerId)
@@ -9,7 +9,8 @@ function sendBoletoPaymentRequests_(centerId)
     let user = new getDefaultUser();
     formatHeader(sheet);
     clearCollumns(sheet, 6, 7);
-    let externalOrdersList = paymentRequestManager().boleto;
+    let history = paymentRequestManager();
+    let externalOrdersList = history.boleto.slice();
     let extOrderListLen = externalOrdersList.length;
     let ordersList = createPaymentRequestArrayBoleto(centerId, sheet, externalOrdersList);
     let batchSize = 100;
@@ -27,15 +28,16 @@ function sendBoletoPaymentRequests_(centerId)
     for (let batch = 0; batch < batchCount; batch++) {
       let ordersBatch = ordersList.slice((batch * batchSize), (batch * batchSize) + batchSize);
       let firstLine = 11 + batch * batchSize;
-      let request = sendPaymentRequestBatch(ordersBatch, query);
       let checkIds = externalOrdersList.slice(extOrderListLen + (batch * batchSize), (extOrderListLen + (batch * batchSize) + batchSize));
+      recordBatch_(history, "boleto", checkIds);
+      let request = sendPaymentRequestBatch(ordersBatch, query);
 
       if (request["outcome"] == "sent") {
           confirmOrders(sheet, firstLine, ordersBatch.length, statusColumns);
-          updatePaymentRequestManager(checkIds, "boleto")
           continue;
       }
       if (request["outcome"] == "rejected") {
+          forgetBatch_(history, "boleto", checkIds);
           failedBatchs += 1;
           returnMessage = returnMessage + failOrders(sheet, firstLine, ordersBatch.length, request["errors"], statusColumns);
           continue;
