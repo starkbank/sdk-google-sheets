@@ -56,16 +56,8 @@ function ViewChargePayment(after, before, status = null) {
 function ChargePaymentDownloadAllDrive(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Pagamento Boleto');
   let paymentDriveFolder = getDriveFolderOrCreate("boleto-payment", getDriveFolderOrCreate("starkbank"));
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let paymentId = sheet.getRange('B' + i.toString()).getValue();
-    let paymentStatus = sheet.getRange('D' + i.toString()).getValue();
-    if (paymentStatus === "sucesso") {
-      let fileName = paymentId + ".pdf";
-      let pdfContent = ChargePaymentDownload(paymentId);
-      let pdfFile = paymentDriveFolder.createFile(pdfContent);
-      pdfFile.setName(fileName);
-    }
-  }
+  let ids = readRows_(sheet, 4).filter(row => cellOf_(row, 'D') === "sucesso").map(row => cellOf_(row, 'B'));
+  savePdfsToDrive_(paymentDriveFolder, ids, id => "/boleto-payment/" + pathSegment(id) + "/pdf");
   Browser.msgBox("Arquivos baixados para Google Drive na pasta starkbank/boleto-payment");
 }
 

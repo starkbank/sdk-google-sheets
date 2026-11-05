@@ -64,13 +64,8 @@ function ViewCharge(after, before, status) {
 function ChargeDownloadAllDrive(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Boleto');
   let chargeDriveFolder = getDriveFolderOrCreate("boleto", getDriveFolderOrCreate("starkbank"));
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let chargeId = sheet.getRange('H' + i.toString()).getValue();
-    let fileName = chargeId + ".pdf";
-    let pdfContent = ChargeDownload(chargeId);
-    let pdfFile = chargeDriveFolder.createFile(pdfContent);
-    pdfFile.setName(fileName);
-  }
+  let ids = readRows_(sheet, 8).map(row => cellOf_(row, 'H'));
+  savePdfsToDrive_(chargeDriveFolder, ids, id => "/boleto/" + pathSegment(id) + "/pdf");
   Browser.msgBox("Arquivos baixados para Google Drive na pasta starkbank/boleto");
 }
 

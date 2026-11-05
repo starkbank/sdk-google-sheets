@@ -218,7 +218,7 @@ function unprotectedUrlBuilders(code) {
   const problems = [];
   for (const statement of blankComments(code).split(/;|\n\s*\n/)) {
     const text = statement.trim().replace(/\s+/g, " ");
-    const buildsAnUrl = /\b(fetch|fetchBuffer|maskFetch)\(|\b(path|url|endpoint)\s*=[^=]/.test(text);
+    const buildsAnUrl = /\b(fetch|fetchBuffer|maskFetch|fetchAllWithSession_)\(|\b(path|paths|url|endpoint)\s*=[^=]/.test(text);
     const startsAPath = /["'`]\/[A-Za-z$-]/.test(text);
     const addsAValue = /["'`]\s*\+|\+\s*["'`(]|\$\{|\.concat\(/.test(text);
     if (buildsAnUrl && startsAPath && addsAValue && !text.includes("HYPERLINK") && !/pathSegment\(|queryValue\(/.test(text)) problems.push(text);

@@ -200,6 +200,16 @@ function getDriveFolderOrCreate(folderName, rootFolder = null){
   }
 }
 
+// Downloads the PDFs parallelRequestCount at a time and saves each one as <id>.pdf, in the order of the ids.
+function savePdfsToDrive_(folder, ids, pathOf) {
+  for (let start = 0; start < ids.length; start += parallelRequestCount) {
+    let chunk = ids.slice(start, start + parallelRequestCount);
+    let paths = chunk.map(pathOf);
+    let responses = fetchAllWithSession_(paths, 'application/pdf');
+    chunk.forEach((id, index) => folder.createFile(pdfFromResponse_(responses[index])[0]).setName(id + ".pdf"));
+  }
+}
+
 function clearAll(){
   for (sheet of SpreadsheetApp.getActiveSpreadsheet().getSheets()) {
     clearGreeting(sheet);

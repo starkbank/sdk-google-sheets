@@ -4,50 +4,52 @@ function getDictKey()
   let errorsCount = 0;
   var jsonData = [];
   clearCollumns(sheet, 11, 11)
-  for(let i=11; i<=sheet.getLastRow(); i++) 
-  {
-    var keyId = sheet.getRange('A' + i.toString()).getValue()
+  // The rows without a name (column F) yet are looked up, parallelRequestCount at a time.
+  let lookups = [];
+  readRows_(sheet, 6).forEach((row, index) => {
+    var keyId = cellOf_(row, 'A')
 
     if (keyId.length == 13) 
     {
       keyId = "+" + keyId
     }
 
-    if(sheet.getRange('F' + i.toString()).getValue() == "") {
-      json = parseResponse(fetch("/dict-key/" + pathSegment(keyId), method = 'GET'));
+    if(cellOf_(row, 'F') == "") {
+      lookups.push({line: 11 + index, keyId: keyId, row: row});
+    }
+  });
+
+  for (let start = 0; start < lookups.length; start += parallelRequestCount) {
+    let chunk = lookups.slice(start, start + parallelRequestCount);
+    let paths = chunk.map(lookup => "/dict-key/" + pathSegment(lookup.keyId));
+    let responses = fetchAllWithSession_(paths, 'application/json');
+    let keyRows = [];
+    chunk.forEach((lookup, index) => {
+      json = parseResponse(responses[index]);
       
       if (json[1] != 200) {
-        if (json[0]["errors"][0]["code"] == "invalidPixKey") 
-        {
-          errorsCount += 1;
-          sheet.getRange('K' + i.toString()).setValue("A chave informada não corresponde a nenhum dos padrões conhecidos (e-mail, número de celular no formato E164 — ex: 5511988887777, CPF, CNPJ ou EVP) ou não está vinculada a nenhuma conta ativa.");
-        }
-        if (json[0]["errors"][0]["code"] != "invalidPixKey")
-        {
-          errorsCount += 1;
-          sheet.getRange('K' + i.toString()).setValue(safeText(json[0]["errors"][0]["message"]));
-        }
+        errorsCount += 1;
+        keyRows.push({line: lookup.line, column: 11, values: [dictKeyError_(json[0]["errors"][0])]});
       }
       if(json[1] == 200) {
         json = json[0]
-  
-        sheet.getRange('F' + i.toString()).setValue(safeText(json["key"]["name"]))
-        sheet.getRange('G' + i.toString()).setValue(safeText(json["key"]["taxId"]))
-        sheet.getRange('H' + i.toString()).setValue(safeText(json["key"]["ispb"]))
-        sheet.getRange('I' + i.toString()).setValue(safeText(json["key"]["branchCode"]))
-        sheet.getRange('J' + i.toString()).setValue(safeText(json["key"]["accountNumber"]))
-        sheet.getRange('K' + i.toString()).setValue(safeText(json["key"]["type"]))
-    
-        var amount = sheet.getRange('B' + i.toString()).getValue();
+        keyRows.push({line: lookup.line, column: 6, values: [
+          json["key"]["name"],
+          json["key"]["taxId"],
+          json["key"]["ispb"],
+          json["key"]["branchCode"],
+          json["key"]["accountNumber"],
+          json["key"]["type"],
+        ]});
     
         jsonData.push(
           {
-            id: i,
-            keyId: keyId,
-            tags: sheet.getRange('C' + i.toString()).getValue(),
-            description: sheet.getRange('D' + i.toString()).getValue(),
-            displayDescription: sheet.getRange('E' + i.toString()).getValue(),
-            amount: amount,
+            id: lookup.line,
+            keyId: lookup.keyId,
+            tags: cellOf_(lookup.row, 'C'),
+            description: cellOf_(lookup.row, 'D'),
+            displayDescription: cellOf_(lookup.row, 'E'),
+            amount: cellOf_(lookup.row, 'B'),
             taxId: json["key"]["taxId"],
             name: json["key"]["name"],
             ispb: json["key"]["ispb"],
@@ -56,8 +58,9 @@ function getDictKey()
             accountType: json["key"]["accountType"]
           }
         );
-        } 
-    }
+      }
+    });
+    writeKeyRows_(sheet, keyRows);
   }
 
   var ui = SpreadsheetApp.getUi();
@@ -72,21 +75,9 @@ function getDictKey()
         sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Transferência com Aprovação");
         sheet.activate();
         
-        var key = -11;
-    
-        for (let i=11; i<=jsonData.length + 10; i++) 
-        {
-          sheet.getRange('A' + i.toString()).setValue(safeText(jsonData[i + key]["name"]))
-          sheet.getRange('B' + i.toString()).setValue(safeText(jsonData[i + key]["taxId"]))
-          sheet.getRange('C' + i.toString()).setValue(safeText(jsonData[i + key]["amount"]))
-          sheet.getRange('D' + i.toString()).setValue(safeText(jsonData[i + key]["ispb"]))
-          sheet.getRange('E' + i.toString()).setValue(safeText(jsonData[i + key]["branchCode"]))
-          sheet.getRange('F' + i.toString()).setValue(safeText(jsonData[i + key]["accountNumber"]))
-          sheet.getRange('H' + i.toString()).setValue(safeText(jsonData[i + key]["accountType"]))
-          sheet.getRange('I' + i.toString()).setValue(safeText(jsonData[i + key]["tags"]))
-          sheet.getRange('J' + i.toString()).setValue(safeText(jsonData[i + key]["description"]))
-          sheet.getRange('K' + i.toString()).setValue(safeText(jsonData[i + key]["displayDescription"]))
-        }
+        // Column G (the schedule) is left as it is.
+        writeRows_(sheet, 11, 1, jsonData.map(data => [data["name"], data["taxId"], data["amount"], data["ispb"], data["branchCode"], data["accountNumber"]]));
+        writeRows_(sheet, 11, 8, jsonData.map(data => [data["accountType"], data["tags"], data["description"], data["displayDescription"]]));
     
       } else {
         return
@@ -97,5 +88,29 @@ function getDictKey()
       'Algumas chaves estão incorretas, verifique as informações e tente novamente.?',
       'Foram encontradas ' + errorsCount + ' Chaves Pix invválidas.',
       ui.ButtonSet.OK)
+  }
+}
+
+function dictKeyError_(error) {
+  if (error["code"] == "invalidPixKey") {
+    return "A chave informada não corresponde a nenhum dos padrões conhecidos (e-mail, número de celular no formato E164 — ex: 5511988887777, CPF, CNPJ ou EVP) ou não está vinculada a nenhuma conta ativa.";
+  }
+  return error["message"];
+}
+
+// Writes the looked up rows, one call per run of consecutive rows that start at the same column: a key
+// found fills F to K, a key with an error only K.
+function writeKeyRows_(sheet, keyRows) {
+  let run = [];
+  for (let keyRow of keyRows) {
+    let previous = run[run.length - 1];
+    if (previous && (previous.line + 1 != keyRow.line || previous.column != keyRow.column)) {
+      writeRows_(sheet, run[0].line, run[0].column, run.map(item => item.values));
+      run = [];
+    }
+    run.push(keyRow);
+  }
+  if (run.length > 0) {
+    writeRows_(sheet, run[0].line, run[0].column, run.map(item => item.values));
   }
 }

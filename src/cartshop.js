@@ -204,7 +204,7 @@ function redirect() {
   let user = new getDefaultUser();
   var ws = user.workspace.toLowerCase();
   var env = user.environment.toLowerCase();
-  var cartId = String(user.cartId).toLowerCase();
+  var cartId = String(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Credentials').getRange('C6').getValue()).toLowerCase();
   // The environments are the ones of getHostname().
   if (!/^[a-z0-9_-]+$/.test(ws) || !["production", "sandbox", "development"].includes(env) || !/^[a-z0-9_-]*$/.test(cartId)) {
     throw JSON.stringify({"message": "Não foi possível abrir o carrinho: workspace, ambiente ou carrinho inválidos."});

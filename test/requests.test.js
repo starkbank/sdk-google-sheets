@@ -181,6 +181,79 @@ scenario("every request URL built from a variable goes through pathSegment or qu
   assert.deepEqual(missing, []);
 });
 
+function pixKeyWorld(rows, answers) {
+  const session = loggedInWorld();
+  session.api.stub("GET", /^\/dict-key\/.+$/, request => {
+    const key = decodeURIComponent(request.path.replace("/dict-key/", ""));
+    return answers[key] || {status: 400, body: {errors: [{code: "invalidPixKey", message: "chave inválida"}]}};
+  });
+  const sheet = session.workbook.getSheetByName("Consulta de Chave PIX");
+  rows.forEach((values, index) => values.forEach((value, column) => sheet.getRange(11 + index, column + 1).setValue(value)));
+  session.alertAnswer = "CANCEL";
+  return {session, sheet};
+}
+
+const pixAnswer = name => ({body: {key: {name, taxId: "012.345.678-90", ispb: "18236120", branchCode: "0001", accountNumber: "1", type: "email", accountType: "checking"}}});
+
+scenario("parallel requests are signed like single ones", () => {
+  const keys = Array.from({length: 12}, (_, index) => `pessoa${index}+x@b.com`);
+  const {session} = pixKeyWorld(keys.map(key => [key, 1, "", "Pagamento", ""]), Object.fromEntries(keys.map(key => [key, pixAnswer(key)])));
+
+  session.invoke("getDictKey");
+  session.evaluate(`fetch("/dict-key/" + pathSegment(${JSON.stringify(keys[0])}))`);
+
+  const lookups = session.api.requests.filter(request => request.path.startsWith("/dict-key/"));
+  assert.equal(lookups.length, keys.length + 1);
+  assert.ok(lookups.every(request => request.signatureValid), "a request was not signed with the session");
+  assert.deepEqual(lookups.slice(0, keys.length).map(request => request.path), keys.map(key => `/dict-key/${pathPart(key)}`));
+  const single = lookups[keys.length];
+  for (const request of lookups.slice(0, keys.length)) {
+    assert.deepEqual(request.query, {});
+    assert.equal(request.method, single.method);
+    assert.equal(request.payload, single.payload);
+    const constant = headers => Object.fromEntries(Object.entries(headers).filter(([name]) => !["Access-Time", "Access-Signature"].includes(name)));
+    assert.deepEqual(constant(request.headers), constant(single.headers));
+  }
+});
+
+scenario("a failed answer in the middle stays on its own row", () => {
+  // 12 rows: a filled one (row 13) and an unknown key (row 15) inside the first chunk of 10, a short last chunk.
+  const keys = Array.from({length: 12}, (_, index) => `k${index}@b.com`);
+  const rows = keys.map(key => [key, 1, "", "Pagamento", ""]);
+  rows[2] = [keys[2], 1, "", "Pagamento", "", "Já consultado", "x", "y", "z", "w"];
+  const answers = Object.fromEntries(keys.filter((key, index) => index !== 4).map(key => [key, pixAnswer(`Nome ${key}`)]));
+  const {session, sheet} = pixKeyWorld(rows, answers);
+
+  session.invoke("getDictKey");
+
+  for (let index = 0; index < keys.length; index++) {
+    const row = 11 + index;
+    if (index === 2) {
+      assert.equal(sheet.cells.get(`${row},6`), "Já consultado");
+      continue;
+    }
+    if (index === 4) {
+      assert.equal(sheet.cells.has(`${row},6`), false);
+      assert.match(String(sheet.cells.get(`${row},11`)), /não corresponde/);
+      continue;
+    }
+    assert.equal(sheet.cells.get(`${row},6`), `Nome ${keys[index]}`, `row ${row}`);
+    assert.equal(sheet.cells.get(`${row},11`), "email", `row ${row}`);
+  }
+  assert.equal(session.api.requests.filter(request => request.path.startsWith("/dict-key/")).length, keys.length - 1);
+});
+
+scenario("logged out, parallel lookups send nothing", () => {
+  const session = newLoginWorld();
+  const sheet = session.workbook.getSheetByName("Consulta de Chave PIX");
+  sheet.getRange("A11").setValue("a@b.com");
+
+  const message = JSON.parse(session.invokeExpectingError("getDictKey")).message;
+
+  assert.equal(message, "Erro de autenticação! Por favor, faça login novamente.");
+  assert.deepEqual(session.api.requests.filter(request => request.path.startsWith("/dict-key/")), []);
+});
+
 scenario("the URL check catches the ways a value could reach a request unprotected", () => {
   const slips = [
     'fetch("/dict-key/" + keyId)',
@@ -189,6 +262,8 @@ scenario("the URL check catches the ways a value could reach a request unprotect
     'let url = "/dict-key"+ key; fetch(url)',
     'fetch("/dict-key/".concat(key))',
     'const endpoint = `/${name}/${id}`',
+    'fetchAllWithSession_(ids.map(id => "/dict-key/" + id), "application/json")',
+    'let paths = ids.map(id => `/transfer/${id}/pdf`)',
   ];
   for (const code of slips) assert.equal(unprotectedUrlBuilders(code).length, 1, `not caught: ${code}`);
   const fine = [

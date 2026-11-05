@@ -724,18 +724,28 @@ function createWorld({memberPublicKeyPem = null} = {}) {
     UrlFetchApp: {
       fetch(url, options) {
         countCall(serviceCalls, "UrlFetchApp.fetch");
-        return response(api.handle(url, options));
+        return answer(api.handle(url, options), options);
       },
-      // Like Apps Script: every request is {url, ...options} and the answers keep the order of the requests.
+      // Like Apps Script: every request is {url, ...options}, the answers keep the order of the requests,
+      // and an error answer without muteHttpExceptions makes the whole call throw.
       fetchAll(requests) {
         countCall(serviceCalls, "UrlFetchApp.fetchAll");
-        return requests.map(({url, ...options}) => response(api.handle(url, options)));
+        const answers = requests.map(({url, ...options}) => api.handle(url, options));
+        return answers.map((answered, index) => answer(answered, requests[index]));
       },
     },
     DriveApp: {
       getRootFolder: () => driveFolder("root"),
     },
   };
+
+  // Without muteHttpExceptions, Apps Script throws on an error answer instead of returning it.
+  function answer(answered, options) {
+    if (answered.status >= 400 && !(options && options.muteHttpExceptions)) {
+      throw new Error(`Request failed returned code ${answered.status}. Truncated server response: ${answered.body}`);
+    }
+    return response(answered);
+  }
 
   function response({status, body}) {
     return {

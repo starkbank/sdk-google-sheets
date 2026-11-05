@@ -81,17 +81,8 @@ function TransferDownload(id) {
 function TransferDownloadAllDrive(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Transferência');
   let transferDriveFolder = getDriveFolderOrCreate("transfer", getDriveFolderOrCreate("starkbank"));
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let transferId = sheet.getRange('B' + i.toString()).getValue();
-    let transferStatus = sheet.getRange('D' + i.toString()).getValue();
-    if (transferStatus === "sucesso") {
-      let fileName = transferId + ".pdf";
-      let pdfContent = TransferDownload(transferId);
-      let blob = pdfContent[0];
-      let pdfFile = transferDriveFolder.createFile(blob);
-      pdfFile.setName(fileName);
-    }
-  }
+  let ids = readRows_(sheet, 4).filter(row => cellOf_(row, 'D') === "sucesso").map(row => cellOf_(row, 'B'));
+  savePdfsToDrive_(transferDriveFolder, ids, id => "/transfer/" + pathSegment(id) + "/pdf");
   Browser.msgBox("Arquivos baixados para Google Drive na pasta starkbank/transfer");
 }
 
