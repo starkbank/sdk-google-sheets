@@ -34,34 +34,29 @@ function createCustomers()
         customers: customers
     };
 
+    let response = null;
     try {
-        fetch("/charge/customer", method = 'POST', payload, null);
-        Browser.msgBox("Clientes cadastrados com sucesso!");
+        response = parseResponse(fetch("/boleto/customer", method = 'POST', payload, null));
     } catch(e) {
-        let message = "Clientes não cadastrados. ";
-        let parsed = JSON.parse(e);
-        let message2 = parsed["message"];
-        if(message2.includes("Element")) {
-            let splitMessage = message2.split(":");
-            splitMessage[0] = splitMessage[0].replace("Element ", "");
-            splitMessage[0] = "Linha " + (10 - (-splitMessage[0]));
-            message += splitMessage.join(":");
+        // Without a session the SDK throws its own message as JSON text, before anything is sent.
+        if (typeof e !== "string") {
+            throw e;
         }
-
-        if("errors" in parsed)
-        {
-            for(let suberror of parsed["errors"])
-            {
-                let suberrorMessage = suberror["message"];
-                let splitMessage = suberrorMessage.split(":");
-                splitMessage[0] = splitMessage[0].replace("Element ", "");
-                splitMessage[0] = "Linha " + (10 - (-splitMessage[0]));
-                let newMessage = splitMessage.join(":");
-                message += "\n" + newMessage;
-            }
-        }
-        Browser.msgBox(message);
-
+        Browser.msgBox("Clientes não cadastrados. " + JSON.parse(e)["message"]);
+        return;
     }
 
+    let [json, status] = response;
+    if (status == 200) {
+        Browser.msgBox("Clientes cadastrados com sucesso!");
+        return;
+    }
+
+    // "Element 0: ..." is the first customer, the one in row 11.
+    let message = "Clientes não cadastrados. ";
+    for (let suberror of json["errors"]) {
+        let element = /^Element (\d+):(.*)$/.exec(suberror["message"]);
+        message += "\n" + (element ? "Linha " + (11 + parseInt(element[1])) + ":" + element[2] : suberror["message"]);
+    }
+    Browser.msgBox(message);
 }

@@ -332,4 +332,40 @@ scenario("boleto events: a fractional fine splits fine and interest right", () =
   assert.deepEqual([cells.get("11,8"), cells.get("11,9")], [3.75, 1.25]);
 });
 
+const customerRow = ["Maria", "'012.345.678-90", "maria@example.com", "'+5511999999999", "Rua A", "", "Centro", "Rio", "RJ", "'20000-000", "vip"];
+
+function customersWorld(answer) {
+  const world = newWorld();
+  fill(world, "Cadastro de Clientes", [customerRow, customerRow]);
+  if (answer) world.api.stub("POST", /^\/boleto\/customer$/, () => answer);
+  run(world, "createCustomers");
+  return world;
+}
+
+scenario("customers are created on the v2 route", () => {
+  const world = customersWorld({body: {customers: []}});
+
+  const payloads = posted(world, "/boleto/customer");
+  assert.equal(payloads.length, 1);
+  assert.deepEqual(payloads[0].customers[0], {name: "Maria", taxId: "012.345.678-90", email: "maria@example.com", phone: "+5511999999999", tags: ["vip"],
+    address: {streetLine1: "Rua A", streetLine2: "", district: "Centro", city: "Rio", stateCode: "RJ", zipCode: "20000-000"}});
+  assert.deepEqual(world.browserMessages, ["Clientes cadastrados com sucesso!"]);
+});
+
+scenario("customers: an API error is shown instead of success", () => {
+  const world = customersWorld({status: 400, body: {errors: [{code: "invalidTaxId", message: "Element 1: CPF inválido"}, {code: "x", message: "Limite excedido"}]}});
+
+  assert.deepEqual(world.browserMessages, ["Clientes não cadastrados. \nLinha 12: CPF inválido\nLimite excedido"]);
+});
+
+scenario("customers: without a session the reason is shown", () => {
+  const world = newWorld();
+  world.properties.user.deleteAllProperties();
+  fill(world, "Cadastro de Clientes", [customerRow]);
+
+  run(world, "createCustomers");
+
+  assert.deepEqual(world.browserMessages, ["Clientes não cadastrados. Erro de autenticação! Por favor, faça login novamente."]);
+});
+
 runScenarios();

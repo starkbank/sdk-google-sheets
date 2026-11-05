@@ -2896,7 +2896,7 @@
   "requests": [
    {
     "method": "POST",
-    "path": "/charge/customer",
+    "path": "/boleto/customer",
     "query": {},
     "payload": {
      "customers": [

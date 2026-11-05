@@ -206,6 +206,7 @@ function customerCreationFlow() {
   fill(world, "Cadastro de Clientes", [
     ["Maria", "012.345.678-90", "maria@example.com", "'+5511999999999", "Rua A", "", "Centro", "São Paulo", "SP", "'01000-000", "vip,sp"],
   ]);
+  world.api.stub("POST", /^\/boleto\/customer$/, () => ({body: {customers: []}}));
   run(world, "createCustomers");
   return world;
 }
