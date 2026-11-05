@@ -9,41 +9,36 @@ function executeBoletoPayment(centerId)
     let ordersList = createPaymentRequestArrayBoleto(centerId, sheet, externalOrdersList);
     let batchSize = 100;
     let failedBatchs = 0;
+    let uncertainBatchs = 0;
     let returnMessage = "";
     let query = {}
+    const statusColumns = {first: 6, notSent: "Não enviado."};
 
     if(ordersList == null) {
       return
     }
 
-    for (let batch = 0; batch<Math.ceil(ordersList.length/batchSize); batch++) {
+    let batchCount = Math.ceil(ordersList.length/batchSize);
+    for (let batch = 0; batch < batchCount; batch++) {
       let ordersBatch = ordersList.slice((batch * batchSize), (batch * batchSize) + batchSize);
+      let firstLine = 11 + batch * batchSize;
       let request = sendPaymentRequestBatch(ordersBatch, query);
       let checkIds = externalOrdersList.slice(extOrderListLen + (batch * batchSize), (extOrderListLen + (batch * batchSize) + batchSize));
 
-      switch (request["status"]) {
-          case 200:
-              confirmOrders(sheet, batch, ordersBatch.length, batchSize, "F");
-              updatePaymentRequestManager(checkIds, "boleto")
-              break;
-          case 400:
-              failedBatchs += 1;
-              returnMessage = returnMessage + failOrders(sheet, batch, batchSize, Array.from(request["content"]["errors"]), "F", "G");
-              break;
+      if (request["outcome"] == "sent") {
+          confirmOrders(sheet, firstLine, ordersBatch.length, statusColumns);
+          updatePaymentRequestManager(checkIds, "boleto")
+          continue;
       }
+      if (request["outcome"] == "rejected") {
+          failedBatchs += 1;
+          returnMessage = returnMessage + failOrders(sheet, firstLine, ordersBatch.length, request["errors"], statusColumns);
+          continue;
+      }
+      uncertainBatchs += 1;
+      markUncertainOrders_(sheet, firstLine, ordersBatch.length, statusColumns);
   }
-  if(failedBatchs == 0) {
-    sendMessage("Todos os itens foram enviados.");
-    return
-  }
-  if(failedBatchs < ordersList.length/batchSize) {
-      sendMessage("Falha no envio de alguns itens, verifique a situação de suas solicitações." + "\n\n" + returnMessage);
-      return
-  }
-  if(failedBatchs == ordersList.length/batchSize) {
-    sendMessage("Falha no envio, verifique a situação de suas solicitações." + "/n/n" + returnMessage);
-    return
-  }
+  sendOutcomeMessage_(batchCount, failedBatchs, uncertainBatchs, returnMessage);
 }
 
 function createPaymentRequestArrayBoleto(centerId, sheet, linesList)

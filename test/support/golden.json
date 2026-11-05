@@ -2250,7 +2250,9 @@
    }
   ],
   "messages": [],
-  "alerts": [],
+  "alerts": [
+   "Falha no envio, verifique a situação de suas solicitações.\n\nErro - Linha 11: linha inválida\n"
+  ],
   "dialogs": [],
   "logs": [],
   "driveFiles": [],

@@ -475,7 +475,8 @@ class StarkApi {
     this.workspaces.set(username, [{id, username}]);
   }
 
-  // Adds an endpoint that answers {status, body} (body is turned into JSON) for signed requests.
+  // Adds an endpoint that answers {status, body} (body is turned into JSON) for signed requests; {status, raw}
+  // answers raw text (a gateway's HTML page) and {throws} makes the request itself fail (no answer).
   stub(method, pathPattern, handler) {
     this.stubs.push({method, pathPattern, handler});
   }
@@ -587,8 +588,9 @@ class StarkApi {
 
     for (const {method: stubMethod, pathPattern, handler} of this.stubs) {
       if (stubMethod === method && pathPattern.test(pathName)) {
-        const {status = 200, body} = handler(request);
-        return {status, body: JSON.stringify(body)};
+        const {status = 200, body, raw, throws} = handler(request);
+        if (throws) throw new Error(throws);
+        return {status, body: raw !== undefined ? raw : JSON.stringify(body)};
       }
     }
 

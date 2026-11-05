@@ -24,6 +24,7 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 - the script declares the permissions it asks for (spreadsheet in use, dialogs, external requests and Google Drive) instead of leaving Apps Script to infer them, and no longer asks for access to all spreadsheets; everyone has to authorize the script once more after updating
 - the unused development screens (`teste()` and `teste.html`) were removed
 ### Fixed
+- payment requests (transfers and boleto payments): a batch the API refuses with any 4xx is reported as failed (401, 403 and 429 were reported as sent), a batch with no clear answer (5xx, a gateway page or no answer) is marked "Verificar" and the message asks to check "Consulta de Aprovações" before sending those rows again, and a refused boleto batch shows its message (it showed nothing)
 - invoices and split receivers past the first 100 rows are created: each batch of 100 carried every earlier row too, so the API refused it, and running again created the first 100 a second time
 - generate ECDSA private keys and signature nonces locally
 - sign out now revokes the session on the API (it never did: the request was built with an undefined variable and the error was swallowed)
