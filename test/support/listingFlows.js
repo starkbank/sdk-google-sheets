@@ -186,5 +186,5 @@ function downloadFlow(ids = {charge: "6001", transfer: "5001", chargePayment: "4
 
 module.exports = {
   legitimate, dictKeys, transferFlow, chargeFlow, invoiceFlow, dictKeyFlow, statementFlow, chargePaymentFlow, customersFlow, paymentRequestFlow,
-  downloadFlow, loggedInWorld,
+  downloadFlow, loggedInWorld, paged, CREATED, CREATED_LATE,
 };
