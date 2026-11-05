@@ -179,4 +179,74 @@ scenario("numbers in text columns are sent as text", () => {
     [["123", "12345678909", [{key: "Pedido", value: "55"}]]]);
 });
 
+const pixKeyAnswers = {
+  "a@b.com": {key: {name: "Fulano", taxId: "012.345.678-90", ispb: "00000000", branchCode: "0001", accountNumber: "0012", type: "email", accountType: "checking"}},
+  "+5511999999999": {key: {name: "Empresa", taxId: "12.345.678/0001-90", ispb: "18236120", branchCode: "1234", accountNumber: "777", type: "phone", accountType: "payment"}},
+  "maria@uol.com": {key: {name: "Maria", taxId: "98765432100", ispb: "60701190", branchCode: "4321", accountNumber: "1", type: "email", accountType: "savings"}},
+};
+
+function pixKeysWorld(keyRows, answer = "OK") {
+  const world = newWorld();
+  world.api.stub("GET", /^\/dict-key\/.+$/, request => {
+    const key = decodeURIComponent(request.path.replace("/dict-key/", ""));
+    return pixKeyAnswers[key] ? {body: pixKeyAnswers[key]} : {status: 400, body: {errors: [{code: "invalidPixKey", message: "chave inválida"}]}};
+  });
+  fill(world, "Transferência com Aprovação", rows(5, index => [`Antigo ${index}`, "'012", 1, "'341", "'0001", "'1", date(2024, 5, 1), "", "a", "b", "c", "Enviado", "motivo"]));
+  fill(world, "Consulta de Chave PIX", keyRows);
+  world.alertAnswer = answer;
+  run(world, "getDictKey");
+  return world;
+}
+
+function transferCells(world) {
+  return world.workbook.getSheetByName("Transferência com Aprovação").cells;
+}
+
+scenario("moving keys erases the older transfer rows and their statuses", () => {
+  const world = pixKeysWorld([["a@b.com", 10, "t", "Pagamento A", "Fatura A"], ["maria@uol.com", 20, "", "Pagamento M", ""]]);
+  const cells = transferCells(world);
+
+  assert.equal(cells.get("11,1"), "Fulano");
+  assert.equal(cells.get("12,1"), "Maria");
+  for (const column of [7, 12, 13]) {
+    assert.equal(cells.has(`11,${column}`), false, `column ${column}`);
+    assert.equal(cells.has(`12,${column}`), false, `column ${column}`);
+  }
+  for (const line of [13, 14, 15]) {
+    for (let column = 1; column <= 13; column++) assert.equal(cells.has(`${line},${column}`), false, `${line},${column}`);
+  }
+});
+
+scenario("cancelling the move erases nothing", () => {
+  const world = pixKeysWorld([["a@b.com", 10, "t", "Pagamento A", "Fatura A"]], "CANCEL");
+  const cells = transferCells(world);
+
+  for (let line = 11; line <= 15; line++) {
+    assert.equal(cells.get(`${line},1`), `Antigo ${line - 11}`);
+    assert.equal(cells.get(`${line},12`), "Enviado");
+  }
+});
+
+scenario("one invalid key is reported", () => {
+  const world = pixKeysWorld([["a@b.com", 10, "", "Pagamento A", ""], ["nao-existe@b.com", 5, "", "Pagamento X", ""]]);
+
+  assert.deepEqual(world.alerts, ["Algumas chaves estão incorretas, verifique as informações e tente novamente."]);
+  assert.equal(transferCells(world).get("11,1"), "Antigo 0");
+});
+
+scenario("only a 13-digit key gets a +", () => {
+  const world = pixKeysWorld([["maria@uol.com", 1, "", "Pagamento", ""], [5511999999999, 1, "", "Pagamento", ""], ["'5511999999999", 1, "", "Pagamento", ""]], "CANCEL");
+
+  const paths = world.api.requests.filter(request => request.path.startsWith("/dict-key/")).map(request => decodeURIComponent(request.path));
+  assert.deepEqual(paths, ["/dict-key/maria@uol.com", "/dict-key/+5511999999999", "/dict-key/+5511999999999"]);
+});
+
+scenario("bank code, branch and account keep their leading zeros", () => {
+  const world = pixKeysWorld([["a@b.com", 10, "", "Pagamento A", ""]]);
+  const cells = transferCells(world);
+
+  assert.deepEqual([cells.get("11,4"), cells.get("11,5"), cells.get("11,6")], ["00000000", "0001", "0012"]);
+  assert.equal(cells.get("11,3"), 10);
+});
+
 runScenarios();

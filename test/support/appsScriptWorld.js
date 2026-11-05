@@ -174,11 +174,14 @@ class FakeRange {
     return typeof value === "string" && (value.startsWith("=") || (/^[+-]/.test(value) && !/^[+-][\d\s().,%$+-]*$/.test(value)));
   }
 
-  // One cell, the way Sheets reads a value that is set (setValue and setValues read values alike).
+  // One cell, the way Sheets reads a value that is set (setValue and setValues read values alike). A cell
+  // formatted as plain text ("@") keeps text as it is: "0001" stays "0001".
   writeCell(key, value) {
     this.sheet.formulaCells.delete(key);
     if (value === null || value === undefined || value === "") {
       this.sheet.cells.delete(key);
+    } else if (typeof value === "string" && this.sheet.textCells.has(key)) {
+      this.sheet.cells.set(key, value.startsWith("'") ? value.slice(1) : value);
     } else if (typeof value === "string" && value.startsWith("'")) {
       this.sheet.cells.set(key, value.slice(1));
     } else {
@@ -235,6 +238,15 @@ class FakeRange {
     return this;
   }
 
+  setNumberFormat(format) {
+    this.count("setNumberFormat");
+    for (const key of this.cellKeys()) {
+      if (format === "@") this.sheet.textCells.add(key);
+      if (format !== "@") this.sheet.textCells.delete(key);
+    }
+    return this;
+  }
+
   clear() {
     this.count("clear");
     for (const key of this.cellKeys()) {
@@ -256,6 +268,7 @@ class FakeSheet {
     this.readOnly = false;
     this.protectedCells = new Set();
     this.formulaCells = new Set();
+    this.textCells = new Set();
   }
 
   // Every cell as "row,column|kind|value" (kind: f = formula, t = text, n = number, b = boolean),
