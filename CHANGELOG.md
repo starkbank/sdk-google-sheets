@@ -24,6 +24,7 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 - the script declares the permissions it asks for (spreadsheet in use, dialogs, external requests and Google Drive) instead of leaving Apps Script to infer them, and no longer asks for access to all spreadsheets; everyone has to authorize the script once more after updating
 - the unused development screens (`teste()` and `teste.html`) were removed
 ### Fixed
+- invoices and split receivers past the first 100 rows are created: each batch of 100 carried every earlier row too, so the API refused it, and running again created the first 100 a second time
 - generate ECDSA private keys and signature nonces locally
 - sign out now revokes the session on the API (it never did: the request was built with an undefined variable and the error was swallowed)
 ### Security

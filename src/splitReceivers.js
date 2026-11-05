@@ -10,6 +10,7 @@ function SplitReceivers() {
     const rows = readRows_(sheet, 7);
     const lastLine = initialLine + rows.length - 1;
     for (let batchInitialLine = initialLine; batchInitialLine <= lastLine; batchInitialLine = line){
+        splitReceivers = [];
         for (line = batchInitialLine; line < batchInitialLine + batchSize && line <= lastLine; line++){
             let row = rows[line - initialLine];
             splitReceiver = {
