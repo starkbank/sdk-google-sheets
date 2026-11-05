@@ -61,19 +61,23 @@ function createPaymentRequestArrayBoleto(centerId, sheet, linesList)
             taxId: cellOf_(row, 'B')
         };
 
-        if (cellOf_(row, 'D').length > 1) {
-          paymentItem["description"] = removeDiacritics(cellOf_(row, 'D'))
+        let description = removeDiacritics(cellOf_(row, 'D'));
+        if (description.length > 1) {
+          paymentItem["description"] = description
         }
 
-        if (cellOf_(row, 'E').length > 1) {
-          paymentItem["tags"] = removeDiacritics(cellOf_(row, 'E').split(","))
+        let tags = removeDiacritics(cellOf_(row, 'E'));
+        if (tags.length > 1) {
+          paymentItem["tags"] = tags.split(",")
         }
 
-        if (cellOf_(row, 'C').length > 1) {
-          boleto["due"] = formatToLocalDatetime(cellOf_(row, 'C'))
+        // A date cell (a Date) or a date typed as text.
+        let due = cellOf_(row, 'C');
+        if (due !== "") {
+          boleto["due"] = formatToLocalDatetime(due)
         }
 
-        let barCodeOrLine = cellOf_(row, 'A');
+        let barCodeOrLine = String(cellOf_(row, 'A'));
         barCodeOrLine = barCodeOrLine.replace(/[^0-9]/g, '');
         if(barCodeOrLine.length > 44)
         {

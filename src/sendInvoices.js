@@ -15,7 +15,7 @@ function sendInvoices() {
             let row = rows[line - initialLine];
             invoice = {
                  amount: parseInt(Math.round(100*cellOf_(row, 'C')), 10),
-                 taxId: cellOf_(row, 'B'),
+                 taxId: String(cellOf_(row, 'B')),
                  name: removeDiacritics(cellOf_(row, 'A')),
             };
 

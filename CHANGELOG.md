@@ -25,6 +25,9 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 - the unused development screens (`teste()` and `teste.html`) were removed
 ### Fixed
 - payment requests (transfers and boleto payments): a batch the API refuses with any 4xx is reported as failed (401, 403 and 429 were reported as sent), a batch with no clear answer (5xx, a gateway page or no answer) is marked "Verificar" and the message asks to check "Consulta de Aprovações" before sending those rows again, and a refused boleto batch shows its message (it showed nothing)
+- boleto payment requests with tags are sent (the flow crashed), and a schedule date typed as a date cell is sent as the payment's due date (it was dropped, so the payment was due right away)
+- a date typed as text ("2024-04-10") is sent as that day in transfers and boleto payments (it went out as the day before)
+- a tax id, branch, account, name or description that Sheets holds as a number no longer makes the transfer, boleto payment and invoice flows crash, and the invoice tax id is sent as text
 - invoices and split receivers past the first 100 rows are created: each batch of 100 carried every earlier row too, so the API refused it, and running again created the first 100 a second time
 - generate ECDSA private keys and signature nonces locally
 - sign out now revokes the session on the API (it never did: the request was built with an undefined variable and the error was swallowed)

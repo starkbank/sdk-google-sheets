@@ -128,4 +128,55 @@ for (const [flowName, flow] of Object.entries(requestFlows)) {
   });
 }
 
+function sentRequests(world) {
+  return posted(world, "/payment-request").flatMap(payload => payload.requests);
+}
+
+function sendRows(flow, rowsToSend) {
+  const world = newWorld();
+  fill(world, flow.sheet, rowsToSend);
+  world.api.stub("POST", /^\/payment-request$/, () => ({body: {requests: []}}));
+  world.api.stub("POST", /^\/invoice$/, () => ({body: {invoices: []}}));
+  run(world, flow.name, "center-1");
+  return world;
+}
+
+const line = "'34191.09008 61207.727808 71444.640008 5 91990000015000";
+
+scenario("boleto payments: tags are sent as a list", () => {
+  const world = sendRows(requestFlows.boletos, [[line, "'012.345.678-90", "", "Conta", "açaí, b"]]);
+
+  assert.deepEqual(world.outcomes.map(outcome => outcome.error), [undefined]);
+  assert.deepEqual(sentRequests(world).map(request => request.payment.tags), [["acai", " b"]]);
+});
+
+scenario("boleto payments: a date cell is sent as its day", () => {
+  const world = sendRows(requestFlows.boletos, [[line, "'012.345.678-90", date(2024, 4, 11), "Conta", ""]]);
+
+  assert.deepEqual(sentRequests(world).map(request => request.due), ["2024-04-11"]);
+});
+
+scenario("a date typed as text keeps its day", () => {
+  const boletos = sendRows(requestFlows.boletos, [[line, "'012.345.678-90", "2024-04-10", "Conta", ""]]);
+  const transfers = sendRows(requestFlows.transfers, [["Ana", "'012.345.678-90", 10, "'341", "'0001", "'1", "2024-04-10", "", "", "", ""]]);
+
+  assert.deepEqual(sentRequests(boletos).map(request => request.due), ["2024-04-10"]);
+  assert.deepEqual(sentRequests(transfers).map(request => request.due), ["2024-04-10"]);
+});
+
+scenario("numbers in text columns are sent as text", () => {
+  const transfers = sendRows(requestFlows.transfers, [["Ana", 1234567890, 10, 341, 1234, 98765, "", "", "", 2024, ""]]);
+  const boletos = sendRows(requestFlows.boletos, [[line, "'012.345.678-90", "", 2024, ""]]);
+  const invoices = sendRows({name: "sendInvoices", sheet: "Emissão de Invoice Pix"}, [[123, 12345678909, 10, "", "", "", "", "Pedido", 55, "", "", "", ""]]);
+
+  assert.deepEqual(transfers.outcomes.map(outcome => outcome.error), [undefined]);
+  assert.deepEqual(sentRequests(transfers).map(request => request.payment), [
+    {name: "Ana", taxId: "1234567890", amount: 1000, bankCode: "341", branchCode: "1234", accountNumber: "98765", description: "2024"},
+  ]);
+  assert.deepEqual(sentRequests(boletos).map(request => request.payment.description), ["2024"]);
+  assert.deepEqual(invoices.outcomes.map(outcome => outcome.error), [undefined]);
+  assert.deepEqual(posted(invoices, "/invoice").flatMap(payload => payload.invoices).map(invoice => [invoice.name, invoice.taxId, invoice.descriptions]),
+    [["123", "12345678909", [{key: "Pedido", value: "55"}]]]);
+});
+
 runScenarios();
