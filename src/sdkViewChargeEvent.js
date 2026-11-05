@@ -33,7 +33,7 @@ function viewChargeEvents(after, before, eventOption)
         json = parseResponse(fetch("/boleto/log", method = 'GET', null, query));
 
         if (json[1] != 200) {
-          throw new Error(json[0]["errors"][0]["message"])
+          throw JSON.stringify({"message": json[0]["errors"][0]["message"]})
         }
 
         elementsList = json[0]["logs"];
@@ -104,7 +104,7 @@ function getCreatedLogs(idsList, chargeIdLineAmountDict)
         json = parseResponse(fetch("/boleto/log", method='GET', null, query));
 
         if (json[1] != 200) {
-          throw new Error(json[0]["errors"][0]["message"])
+          throw JSON.stringify({"message": json[0]["errors"][0]["message"]})
         }
 
         elementsList = json[0]["logs"];

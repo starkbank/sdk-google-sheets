@@ -29,6 +29,7 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 - a date typed as text ("2024-04-10") is sent as that day in transfers and boleto payments (it went out as the day before)
 - a tax id, branch, account, name or description that Sheets holds as a number no longer makes the transfer, boleto payment and invoice flows crash, and the invoice tax id is sent as text
 - Pix keys moved to "Transferência com Aprovação" erase the older rows of the tab, with their schedule, status and reason, as the question says (they stayed below the new rows and went out with the next sending); bank code, branch and account keep their leading zeros (ISPB 00000000, branch 0001); a single invalid key is reported; only a 13-digit phone number gets a "+", also when Sheets holds it as a number (an e-mail of 13 characters got one too)
+- the dialogs of the listings (statement, transfers, boletos, boleto history, boleto payments, invoices, approvals and splits) show the error the API answered (it was lost, and the transfer listing crashed after showing it); a split search with no result shows its message and closes like the other listings
 - invoices and split receivers past the first 100 rows are created: each batch of 100 carried every earlier row too, so the API refused it, and running again created the first 100 a second time
 - generate ECDSA private keys and signature nonces locally
 - sign out now revokes the session on the API (it never did: the request was built with an undefined variable and the error was swallowed)

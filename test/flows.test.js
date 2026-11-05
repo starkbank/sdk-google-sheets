@@ -249,4 +249,38 @@ scenario("bank code, branch and account keep their leading zeros", () => {
   assert.equal(cells.get("11,3"), 10);
 });
 
+const dialogListings = [
+  ["ViewStatement", ["2024-03-01", "2024-03-31"], /^\/transaction$/],
+  ["ViewTransfer", ["2024-03-01", "2024-03-31", ""], /^\/transfer$/],
+  ["ViewCharge", ["2024-03-01", "2024-03-31", ""], /^\/boleto$/],
+  ["ViewChargePayment", ["2024-03-01", "2024-03-31", ""], /^\/boleto-payment$/],
+  ["ViewInvoice", ["2024-03-01", "2024-03-31", ""], /^\/invoice$/],
+  ["ViewPaymentRequest", ["2024-03-01", "2024-03-31", "", "center-1", "transfer"], /^\/payment-request$/],
+  ["viewChargeEvents", ["2024-03-01", "2024-03-31", "paid"], /^\/boleto\/log$/],
+  ["viewSplits", ["2024-03-01", "2024-03-31", ""], /^\/split$/],
+];
+
+for (const [name, args, route] of dialogListings) {
+  scenario(`an API error in ${name} reaches the dialog as its message`, () => {
+    const world = newWorld();
+    world.api.stub("GET", route, () => ({status: 400, body: {errors: [{code: "invalidDate", message: "Data inválida"}]}}));
+
+    const message = world.invokeExpectingError(name, ...args);
+
+    // The dialogs show JSON.parse(error.message).message.
+    assert.equal(JSON.parse(message).message, "Data inválida");
+    assert.deepEqual(world.browserMessages, []);
+  });
+}
+
+scenario("splits: no split found is a message, not an error", () => {
+  const world = newWorld();
+  world.api.stub("GET", /^\/split$/, () => ({body: {splits: [], cursor: null}}));
+
+  run(world, "viewSplits", "2024-03-01", "2024-03-31", "");
+
+  assert.deepEqual(world.outcomes.map(outcome => outcome.error), [undefined]);
+  assert.deepEqual(world.browserMessages, ["Nenhum Split foi encontrado!"]);
+});
+
 runScenarios();

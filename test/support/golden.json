@@ -1271,7 +1271,7 @@
   "outcomes": [
    {
     "name": "viewChargeEvents",
-    "error": "Erro interno"
+    "error": "{\"message\":\"Erro interno\"}"
    }
   ]
  },
