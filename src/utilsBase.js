@@ -223,9 +223,9 @@ function clearAll(){
   }
 }
 
-function clearSheet(sheet){
+function clearSheet(sheet, width = 20){
   try {
-    sheet.getRange(11, 1, sheet.getLastRow()-10, 20).clearContent();
+    sheet.getRange(11, 1, sheet.getLastRow()-10, width).clearContent();
   } catch (e) {
     
   }

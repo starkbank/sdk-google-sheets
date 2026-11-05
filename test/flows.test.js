@@ -283,4 +283,53 @@ scenario("splits: no split found is a message, not an error", () => {
   assert.deepEqual(world.browserMessages, ["Nenhum Split foi encontrado!"]);
 });
 
+function boletoEventsWorld(logs, nominal = {}, fine = 2) {
+  const world = newWorld();
+  world.api.stub("GET", /^\/boleto\/log$/, request => request.query.types === "registered"
+    ? {body: {logs: request.query.boletoIds.split(",").map(id => ({boleto: {id, amount: nominal[id], fine}})), cursor: null}}
+    : {body: {logs, cursor: null}});
+  return world;
+}
+
+function boletoLog(id, amount) {
+  return {created: "2024-03-05T14:30:00.000000+00:00", boleto: {id, status: "paid", name: "Ana", taxId: "012.345.678-90", amount, fee: 0, tags: [],
+    created: "2024-03-01T10:00:00.000000+00:00", due: "2024-04-10T02:59:59.999999+00:00", barCode: "0", streetLine1: "Rua", streetLine2: "", district: "Centro",
+    city: "Rio", stateCode: "RJ", zipCode: "20000-000"}};
+}
+
+function historyCells(world) {
+  return world.workbook.getSheetByName("Histórico de Boletos Emitidos").cells;
+}
+
+scenario("boleto events: a new search clears all 22 columns", () => {
+  const world = boletoEventsWorld([boletoLog("6001", 15000)], {"6001": 15000});
+  fill(world, "Histórico de Boletos Emitidos", rows(3, index => Array.from({length: 22}, (_, column) => `antigo ${index}.${column}`)));
+
+  run(world, "viewChargeEvents", "2024-03-01", "2024-03-31", "paid");
+
+  const cells = historyCells(world);
+  for (const line of [12, 13]) {
+    for (let column = 1; column <= 22; column++) assert.equal(cells.has(`${line},${column}`), false, `${line},${column}`);
+  }
+});
+
+scenario("boleto events: every row of a repeated boleto gets its amounts", () => {
+  const world = boletoEventsWorld([boletoLog("6001", 15500), boletoLog("6001", 15600)], {"6001": 15000});
+
+  run(world, "viewChargeEvents", "2024-03-01", "2024-03-31", "paid");
+
+  const cells = historyCells(world);
+  assert.deepEqual([6, 7, 8, 9].map(column => cells.get(`11,${column}`)), [150, undefined, 3, 2]);
+  assert.deepEqual([6, 7, 8, 9].map(column => cells.get(`12,${column}`)), [150, undefined, 3, 3]);
+});
+
+scenario("boleto events: a fractional fine splits fine and interest right", () => {
+  const world = boletoEventsWorld([boletoLog("6001", 15500)], {"6001": 15000}, 2.5);
+
+  run(world, "viewChargeEvents", "2024-03-01", "2024-03-31", "paid");
+
+  const cells = historyCells(world);
+  assert.deepEqual([cells.get("11,8"), cells.get("11,9")], [3.75, 1.25]);
+});
+
 runScenarios();
