@@ -1,5 +1,10 @@
 function executeBoletoPayment(centerId)
 {
+    withSendingLock_(() => sendBoletoPaymentRequests_(centerId));
+}
+
+function sendBoletoPaymentRequests_(centerId)
+{
     let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Pagamento de Boletos');
     let user = new getDefaultUser();
     formatHeader(sheet);

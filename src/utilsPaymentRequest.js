@@ -143,14 +143,65 @@ function sendOutcomeMessage_(batchCount, failedBatchs, uncertainBatchs, returnMe
     sendMessage("Falha no envio de alguns itens, verifique a situação de suas solicitações." + "\n\n" + returnMessage);
 }
 
+// The ids already sent ({"transfer": [...], "boleto": [...]}) live in column C of paymentRequestExternal as
+// JSON split over cells, since a cell holds at most 50,000 characters. Every cell starts with "j", so
+// Sheets keeps it as text whatever the slice of JSON starts with ("=", "'", digits).
+const historyCellLength = 45000;
+
 function paymentRequestManager() {
-    let externalOrders = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal').getRange('C1').getValue();
-    let json = JSON.parse(externalOrders.toString());
-    return json
-  }
+    let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
+    let cells = historyCells_(sheet);
+    // Versions before the split kept the whole JSON in C1, without "j".
+    if (cells.length == 0) {
+        return JSON.parse(String(sheet.getRange(1, 3).getValue()));
+    }
+    return JSON.parse(cells.map(cell => cell.slice(1)).join(""));
+}
+
+// The cells of the history: the run of "j" cells from C1 down. Other cells of the column are not touched.
+function historyCells_(sheet) {
+    let cells = sheet.getRange(1, 3, Math.max(1, sheet.getLastRow()), 1).getValues().map(row => String(row[0]));
+    let end = cells.findIndex(cell => !cell.startsWith("j"));
+    return end == -1 ? cells : cells.slice(0, end);
+}
 
 function updatePaymentRequestManager(array, type) {
     let json = paymentRequestManager()
     json[type].push(...array)
-    SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal').getRange('C1').setValue(JSON.stringify(json));
+    writePaymentRequestHistory_(json);
+}
+
+// The history only grows, so its cells overwrite the previous ones; resetPaymentRequestHistory_ clears the rest.
+function writePaymentRequestHistory_(json) {
+    let text = JSON.stringify(json);
+    let cells = [];
+    for (let start = 0; start < text.length; start += historyCellLength) {
+        cells.push(["j" + text.slice(start, start + historyCellLength)]);
+    }
+    writeRows_(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal'), 1, 3, cells);
+}
+
+// Login and sign out start an empty history.
+function resetPaymentRequestHistory_() {
+    let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
+    let chunkCount = historyCells_(sheet).length;
+    if (chunkCount > 1) {
+        sheet.getRange(2, 3, chunkCount - 1, 1).clearContent();
+    }
+    writePaymentRequestHistory_({"transfer": [], "boleto": []});
+}
+
+// One sending at a time per spreadsheet: two people sending the same rows at once would both pass the
+// duplicate guard, which reads the history before sending and records it after.
+function withSendingLock_(send) {
+    let lock = LockService.getDocumentLock();
+    if (!lock.tryLock(30000)) {
+        sendMessage("Outro envio está em andamento nesta planilha. Tente novamente em alguns instantes.");
+        return;
+    }
+    try {
+        send();
+    } finally {
+        lock.releaseLock();
+    }
 }

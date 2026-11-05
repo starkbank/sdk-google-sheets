@@ -175,8 +175,11 @@ class FakeRange {
   }
 
   // One cell, the way Sheets reads a value that is set (setValue and setValues read values alike). A cell
-  // formatted as plain text ("@") keeps text as it is: "0001" stays "0001".
+  // formatted as plain text ("@") keeps text as it is: "0001" stays "0001". A cell holds 50,000 characters.
   writeCell(key, value) {
+    if (typeof value === "string" && value.length > 50000) {
+      throw new Error("Your input contains more than the maximum of 50000 characters in a single cell.");
+    }
     this.sheet.formulaCells.delete(key);
     if (value === null || value === undefined || value === "") {
       this.sheet.cells.delete(key);
@@ -751,6 +754,13 @@ function createWorld({memberPublicKeyPem = null} = {}) {
     },
     DriveApp: {
       getRootFolder: () => driveFolder("root"),
+    },
+    // world.sendingInProgress makes the document lock unavailable, as if someone else were sending.
+    LockService: {
+      getDocumentLock: () => ({
+        tryLock: () => !world.sendingInProgress,
+        releaseLock() {},
+      }),
     },
   };
 

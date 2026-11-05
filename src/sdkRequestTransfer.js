@@ -93,6 +93,10 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
 }
 
 function managePaymentRequestTransfer(centerId) {
+    withSendingLock_(() => sendPaymentRequestTransfers_(centerId));
+}
+
+function sendPaymentRequestTransfers_(centerId) {
     let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Transferência com Aprovação');
     formatHeader(sheet);
     let externalOrdersList = paymentRequestManager().transfer;

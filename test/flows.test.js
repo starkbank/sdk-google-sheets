@@ -68,7 +68,7 @@ function statusOf(world, flow, line) {
 }
 
 function history(world, flow) {
-  return JSON.parse(world.workbook.getSheetByName("paymentRequestExternal").cells.get("1,3"))[flow.history];
+  return world.evaluate("paymentRequestManager()")[flow.history];
 }
 
 const rejections = {
@@ -367,5 +367,74 @@ scenario("customers: without a session the reason is shown", () => {
 
   assert.deepEqual(world.browserMessages, ["Clientes não cadastrados. Erro de autenticação! Por favor, faça login novamente."]);
 });
+
+scenario("the duplicate guard keeps every id past 50,000 characters", () => {
+  const world = newWorld();
+  const flow = requestFlows.transfers;
+  fill(world, flow.sheet, rows(1000, index => [`Pessoa com um nome bem comprido ${index}`, "'012.345.678-90", 10 + index, "'341", "'0001", `'${index}`, "", "", "fornecedor", "Pagamento", ""]));
+  world.api.stub("POST", /^\/payment-request$/, () => ({body: {requests: []}}));
+
+  run(world, flow.name, "center-1");
+  run(world, flow.name, "center-1");
+
+  assert.deepEqual(world.outcomes.map(outcome => outcome.error), [undefined, undefined]);
+  assert.equal(posted(world, "/payment-request").length, 10);
+  assert.equal(history(world, flow).length, 1000);
+  assert.deepEqual(world.alerts, ["Todos os itens foram enviados.", "Você está enviando pagamentos duplicados, remova as duplicadas e tente novamente."]);
+});
+
+scenario("login and sign out reset the whole history", () => {
+  const world = newWorld();
+  world.evaluate(`updatePaymentRequestManager(Array.from({length: 2000}, (_, index) => "id-" + index + "-".repeat(40)), "transfer")`);
+  assert.equal(history(world, requestFlows.transfers).length, 2000);
+  world.alertAnswer = "YES";
+
+  run(world, "signOut");
+
+  assert.deepEqual(world.evaluate("paymentRequestManager()"), {transfer: [], boleto: []});
+  const cells = world.workbook.getSheetByName("paymentRequestExternal").cells;
+  assert.deepEqual(Array.from(cells.keys()).filter(key => key.endsWith(",3")), ["1,3"]);
+});
+
+scenario("the history leaves the other cells of its column alone", () => {
+  const world = newWorld();
+  const sheet = world.workbook.getSheetByName("paymentRequestExternal");
+  world.evaluate(`updatePaymentRequestManager(Array.from({length: 2000}, (_, index) => "id-" + index + "-".repeat(40)), "transfer")`);
+  sheet.getRange("C10").setValue("anotação");
+  world.alertAnswer = "YES";
+
+  run(world, "signOut");
+
+  assert.equal(sheet.cells.get("10,3"), "anotação");
+  assert.deepEqual(world.evaluate("paymentRequestManager()"), {transfer: [], boleto: []});
+});
+
+scenario("a history written by the previous version is still read", () => {
+  const world = newWorld();
+  const flow = requestFlows.boletos;
+  const lineId = "34191090086120772780871444640008591990000015000";
+  world.workbook.getSheetByName("paymentRequestExternal").getRange("C1").setValue(JSON.stringify({transfer: [], boleto: [lineId]}));
+  fill(world, flow.sheet, [[`'${lineId}`, "'012.345.678-90", "", "Conta", ""]]);
+
+  run(world, flow.name, "center-1");
+
+  assert.deepEqual(world.alerts, ["Você está enviando pagamentos duplicados, remova as duplicadas e tente novamente."]);
+  assert.equal(posted(world, "/payment-request").length, 0);
+});
+
+for (const [flowName, flow] of Object.entries(requestFlows)) {
+  scenario(`${flowName}: a second sender waits for the first`, () => {
+    const world = newWorld();
+    fill(world, flow.sheet, rows(2, flow.rowOf));
+    world.api.stub("POST", /^\/payment-request$/, () => ({body: {requests: []}}));
+    world.sendingInProgress = true;
+
+    run(world, flow.name, "center-1");
+
+    assert.deepEqual(world.alerts, ["Outro envio está em andamento nesta planilha. Tente novamente em alguns instantes."]);
+    assert.equal(posted(world, "/payment-request").length, 0);
+    assert.equal(statusOf(world, flow, 11)[0], undefined);
+  });
+}
 
 runScenarios();

