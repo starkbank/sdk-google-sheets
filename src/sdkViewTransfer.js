@@ -57,9 +57,9 @@ function ViewTransfer(after, before, status = null) {
 function getTransferDownloadList(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Transferência');
   let idList = [];
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let transferId = sheet.getRange('B' + i.toString()).getValue();
-    let transferStatus = sheet.getRange('D' + i.toString()).getValue();
+  for (let row of readRows_(sheet, 4)){
+    let transferId = cellOf_(row, 'B');
+    let transferStatus = cellOf_(row, 'D');
     if (transferStatus === "sucesso") {
       idList.push(transferId);
     }

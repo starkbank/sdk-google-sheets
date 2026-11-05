@@ -67,6 +67,20 @@ function safeText(value) {
   return startsAFormula ? "'" + value : value;
 }
 
+// Rows 11 to the last one, `width` columns from A, in a single call.
+function readRows_(sheet, width) {
+  let lastRow = sheet.getLastRow();
+  if (lastRow < 11) {
+    return [];
+  }
+  return sheet.getRange(11, 1, lastRow - 10, width).getValues();
+}
+
+// The value of a column (its letter, A to Z) in a row read by readRows_.
+function cellOf_(row, letter) {
+  return row[letter.charCodeAt(0) - 65];
+}
+
 // For the parts of a formula built by the SDK that are written inside quotes.
 function formulaText(value) {
   return String(value).replace(/"/g, '""');

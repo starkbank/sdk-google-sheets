@@ -5,30 +5,33 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
     let initialLine = 11;
     let duplicatedPayments = 0;
     let emptyLines = 0;
+    // The ids sent before and the ones of the rows above, for a membership check per row.
+    let seenIds = new Set(externalOrdersList);
+    let statuses = [];
 
     clearCollumns(sheet, 12, 13);
-    for (let line = initialLine; line <= sheet.getLastRow(); line++) {
-        let customerName = removeDiacritics(sheet.getRange('A' + line.toString()).getValue());
-        let taxId = removeDiacritics(sheet.getRange('B' + line.toString()).getValue());
-        let amount = parseInt(Math.round(100 * sheet.getRange('C' + line.toString()).getValue()), 10);
-        let bankCode = removeDiacritics((sheet.getRange('D' + line.toString()).getValue()).toString());
-        let branchCode = removeDiacritics(sheet.getRange('E' + line.toString()).getValue());
-        let accountNumber = removeDiacritics(sheet.getRange('F' + line.toString()).getValue());
-        let schedule = sheet.getRange('G' + line.toString()).getValue();
-        let tags = removeDiacritics(sheet.getRange('I' + line.toString()).getValue().toString());
-        let description = removeDiacritics(sheet.getRange('J' + line.toString()).getValue().toString());
-        let displayDescription = removeDiacritics(sheet.getRange('K' + line.toString()).getValue().toString());
+    for (let row of readRows_(sheet, 11)) {
+        let customerName = removeDiacritics(cellOf_(row, 'A'));
+        let taxId = removeDiacritics(cellOf_(row, 'B'));
+        let amount = parseInt(Math.round(100 * cellOf_(row, 'C')), 10);
+        let bankCode = removeDiacritics((cellOf_(row, 'D')).toString());
+        let branchCode = removeDiacritics(cellOf_(row, 'E'));
+        let accountNumber = removeDiacritics(cellOf_(row, 'F'));
+        let schedule = cellOf_(row, 'G');
+        let tags = removeDiacritics(cellOf_(row, 'I').toString());
+        let description = removeDiacritics(cellOf_(row, 'J').toString());
+        let displayDescription = removeDiacritics(cellOf_(row, 'K').toString());
         
         let externalId = calculateExternalId(amount, customerName, taxId, bankCode, branchCode, accountNumber, tags, description);
-        sheet.getRange(`L${line}`).setValue("Não enviado");
+        statuses.push(["Não enviado"]);
 
-        if(externalOrdersList.includes(externalId)) {
+        if(seenIds.has(externalId)) {
             duplicatedPayments +=1;
-            sheet.getRange(`L${line}`).setValue("Pagamento duplicado");
+            statuses[statuses.length - 1] = ["Pagamento duplicado"];
             externalOrdersList.push(externalId);
         }
 
-        if(!externalOrdersList.includes(externalId)) {
+        if(!seenIds.has(externalId)) {
             payment = {
                 name: customerName,
                 taxId: taxId,
@@ -38,7 +41,7 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
                 accountNumber: accountNumber
             };
     
-            accountType = sheet.getRange('H' + line.toString()).getValue();
+            accountType = cellOf_(row, 'H');
             if (accountType) {
                 payment["accountType"] = accountType;
             }
@@ -66,12 +69,14 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
             }
             if(customerName=="" && taxId=="" && bankCode=="" && branchCode=="" && accountNumber=="") {
               emptyLines += 1;
-              sheet.getRange(`L${line}`).setValue("Pagamentos incompletos.");
+              statuses[statuses.length - 1] = ["Pagamentos incompletos."];
             }
             externalOrdersList.push(externalId)
+            seenIds.add(externalId)
             requestsList.push(request);
         }
     }
+    writeRows_(sheet, initialLine, 12, statuses);
     if(duplicatedPayments>0 && emptyLines>0) {
       sendMessage("Existem pagamentos duplicados e linhas incompletas, verifique os pagamentos e tente novamente.");
       return null

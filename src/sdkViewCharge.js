@@ -99,12 +99,7 @@ function ChargeDownloadAllLocal(){
 
 function getChargeDownloadList(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Boleto');
-  let idList = [];
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let chargeId = sheet.getRange('H' + i.toString()).getValue();
-    idList.push(chargeId);
-  }
-  return idList;
+  return readRows_(sheet, 8).map(row => cellOf_(row, 'H'));
 }
 
 

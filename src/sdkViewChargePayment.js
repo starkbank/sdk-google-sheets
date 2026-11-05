@@ -95,9 +95,9 @@ function ChargePaymentDownloadAllLocal(){
 function getChargePaymentDownloadList(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Pagamento Boleto');
   let idList = [];
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let paymentId = sheet.getRange('B' + i.toString()).getValue();
-    let paymentStatus = sheet.getRange('D' + i.toString()).getValue();
+  for (let row of readRows_(sheet, 4)){
+    let paymentId = cellOf_(row, 'B');
+    let paymentStatus = cellOf_(row, 'D');
     if (paymentStatus === "sucesso") {
       idList.push(paymentId);
     }

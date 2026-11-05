@@ -7,39 +7,42 @@ function sendInvoices() {
     
     const initialLine = 11;
     const batchSize = 100;
-    for (let batchInitialLine = initialLine; batchInitialLine <= sheet.getLastRow(); batchInitialLine = line){
-        for (line = batchInitialLine; line < batchInitialLine + batchSize && line <= sheet.getLastRow(); line++){
+    const rows = readRows_(sheet, 13);
+    const lastLine = initialLine + rows.length - 1;
+    for (let batchInitialLine = initialLine; batchInitialLine <= lastLine; batchInitialLine = line){
+        for (line = batchInitialLine; line < batchInitialLine + batchSize && line <= lastLine; line++){
+            let row = rows[line - initialLine];
             invoice = {
-                 amount: parseInt(Math.round(100*sheet.getRange('C' + line.toString()).getValue()), 10),
-                 taxId: sheet.getRange('B' + line.toString()).getValue(),
-                 name: removeDiacritics(sheet.getRange('A' + line.toString()).getValue()),
+                 amount: parseInt(Math.round(100*cellOf_(row, 'C')), 10),
+                 taxId: cellOf_(row, 'B'),
+                 name: removeDiacritics(cellOf_(row, 'A')),
             };
 
             var descriptions = []
-            var due = sheet.getRange('D' + line.toString()).getValue()
-            var expiration = sheet.getRange('G' + line.toString()).getValue()
-            var fine = sheet.getRange('E' + line.toString()).getValue()
-            var interest = sheet.getRange('F' + line.toString()).getValue()
+            var due = cellOf_(row, 'D')
+            var expiration = cellOf_(row, 'G')
+            var fine = cellOf_(row, 'E')
+            var interest = cellOf_(row, 'F')
 
 
-            if (sheet.getRange('H' + line.toString()).getValue()) {
+            if (cellOf_(row, 'H')) {
               descriptions.push({
-                "key": removeDiacritics(sheet.getRange('H' + line.toString()).getValue()),
-                "value": removeDiacritics(sheet.getRange('I' + line.toString()).getValue().toString())
+                "key": removeDiacritics(cellOf_(row, 'H')),
+                "value": removeDiacritics(cellOf_(row, 'I').toString())
               })
             }
 
-            if (sheet.getRange('J' + line.toString()).getValue()) {
+            if (cellOf_(row, 'J')) {
               descriptions.push({
-                "key": removeDiacritics(sheet.getRange('J' + line.toString()).getValue()),
-                "value": removeDiacritics(sheet.getRange('K' + line.toString()).getValue().toString())
+                "key": removeDiacritics(cellOf_(row, 'J')),
+                "value": removeDiacritics(cellOf_(row, 'K').toString())
               })
             }
 
-            if (sheet.getRange('L' + line.toString()).getValue()) {
+            if (cellOf_(row, 'L')) {
               descriptions.push({
-                "key": removeDiacritics(sheet.getRange('L' + line.toString()).getValue()),
-                "value": removeDiacritics(sheet.getRange('M' + line.toString()).getValue().toString())
+                "key": removeDiacritics(cellOf_(row, 'L')),
+                "value": removeDiacritics(cellOf_(row, 'M').toString())
               })
             }
 

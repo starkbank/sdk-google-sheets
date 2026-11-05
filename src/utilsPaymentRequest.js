@@ -65,9 +65,8 @@ function sendPaymentRequestBatch(payload, query) {
 }
 
 function confirmOrders(sheet, batch, chunkLen, batchSize, coll) {
-    for (let sentOrder = 0; sentOrder < chunkLen; sentOrder++) {
-        sheet.getRange(coll + (sentOrder + 11 + (batch * batchSize)).toString()).setValue("Enviado")
-    }
+    let statuses = Array.from({length: chunkLen}, () => ["Enviado"]);
+    writeRows_(sheet, 11 + (batch * batchSize), coll.charCodeAt(0) - 64, statuses);
 }
 
 function failOrders(sheet, batch, batchSize, errors, colStat, colReas) {
