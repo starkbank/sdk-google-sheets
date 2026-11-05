@@ -141,11 +141,42 @@ function unprotectedCalls(code, file = "") {
   return findSetValueCalls(code).filter(({argument}) => !isWrapped(argument) && !isSafeByForm(argument, file));
 }
 
+// [start, end) of the body of `function <name>(...) {...}`, or null when the file has no such function.
+function functionBody(scanned, name) {
+  const declaration = scanned.indexOf(`function ${name}(`);
+  if (declaration === -1) return null;
+  const open = scanned.indexOf("{", closingParenthesis(scanned, declaration + `function ${name}(`.length));
+  let depth = 0;
+  let quote = null;
+  for (let index = open; index < scanned.length; index++) {
+    const char = scanned[index];
+    if (quote) {
+      if (char === "\\") index++;
+      else if (char === quote) quote = null;
+    } else if (char === '"' || char === "'" || char === "`") {
+      quote = char;
+    } else if (char === "{") {
+      depth++;
+    } else if (char === "}" && --depth === 0) {
+      return [open, index + 1];
+    }
+  }
+  return null;
+}
+
+// The one place that may write several cells at once: writeRows_ in utilsBase.js, which puts every
+// value through safeText (or writes a LinkFormula, checked by unsafeLinkFormulas).
+function isTheRowWriter(scanned, file, index) {
+  const body = file === "utilsBase.js" ? functionBody(scanned, "writeRows_") : null;
+  return Boolean(body) && index > body[0] && index < body[1];
+}
+
 // Ways of writing into cells that this audit does not understand: a new one must be reviewed.
-function unauditedWrites(code) {
+function unauditedWrites(code, file = "") {
   const scanned = blankComments(code);
   const found = [];
   for (const match of scanned.matchAll(/\.(setValues|setFormula|setFormulas|setNote|setNotes|setRichTextValue|setRichTextValues|appendRow|insertSheet|copyTo)\s*\(/g)) {
+    if (match[1] === "setValues" && isTheRowWriter(scanned, file, match.index)) continue;
     found.push(match[0]);
   }
   for (const match of scanned.matchAll(/\bsetValue\b(?!\s*\()|\.setValue\s*\(/g)) {
@@ -169,6 +200,26 @@ function unescapedLinkFormulas(code) {
   return problems;
 }
 
+// LinkFormula is written as a formula by writeRows_, so it may only carry pdfLink, the link that
+// unescapedLinkFormulas checks. Its declaration and `instanceof LinkFormula` are the other uses allowed.
+function unsafeLinkFormulas(code) {
+  const scanned = blankComments(code);
+  const problems = [];
+  for (const match of scanned.matchAll(/\bLinkFormula\b/g)) {
+    const before = scanned.slice(0, match.index);
+    if (/function\s+$/.test(before) || /instanceof\s+$/.test(before)) continue;
+    const call = /new\s+$/.test(before) ? scanned.slice(match.index).match(/^LinkFormula\s*\(/) : null;
+    if (!call) {
+      problems.push("LinkFormula");
+      continue;
+    }
+    const start = match.index + call[0].length;
+    const argument = code.slice(start, closingParenthesis(scanned, start)).trim();
+    if (argument !== "pdfLink") problems.push(argument);
+  }
+  return problems;
+}
+
 // Statements that build a request URL out of a variable without pathSegment()/queryValue(): the
 // statement mentions a fetch call (or a path/url variable), a literal that starts like a path, and
 // something added to it (concatenation or a template placeholder). Link formulas are checked apart.
@@ -184,4 +235,4 @@ function unprotectedUrlBuilders(code) {
   return problems;
 }
 
-module.exports = {blankComments, isSafeByForm, unprotectedCalls, unauditedWrites, unescapedLinkFormulas, unprotectedUrlBuilders};
+module.exports = {blankComments, isSafeByForm, unprotectedCalls, unauditedWrites, unescapedLinkFormulas, unsafeLinkFormulas, unprotectedUrlBuilders};

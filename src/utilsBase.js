@@ -72,6 +72,39 @@ function formulaText(value) {
   return String(value).replace(/"/g, '""');
 }
 
+// A link formula built by the SDK with every received part escaped by formulaText(): the only value
+// writeRows_ writes as a formula.
+function LinkFormula(text) {
+  this.text = text;
+}
+
+// Writes rows of values from (firstRow, firstColumn) in a single call: each call to a range is a round
+// trip, and a page has up to 100 rows. Short rows are padded with empty cells.
+function writeRows_(sheet, firstRow, firstColumn, rows) {
+  let width = Math.max(0, ...rows.map(row => row.length));
+  if (width == 0) {
+    return;
+  }
+  let values = rows.map(row => Array.from({length: width}, (_, column) => cellValue_(row[column])));
+  sheet.getRange(firstRow, firstColumn, values.length, width).setValues(values);
+}
+
+// Text goes through safeText, so nothing that came from the API or from other cells is read as a
+// formula. Lists and objects are refused: Sheets would write them as text that safeText never saw.
+function cellValue_(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+  if (value instanceof LinkFormula) {
+    return value.text;
+  }
+  let isDate = Object.prototype.toString.call(value) === "[object Date]";
+  if (!isDate && !["string", "number", "boolean"].includes(typeof value)) {
+    throw new Error("A list or an object cannot be written to a cell");
+  }
+  return safeText(value);
+}
+
 
 function stringToCurrency(string) {
   return parseInt(string, 10)/100;
@@ -107,9 +140,8 @@ function getHeaderColumns(sheet){
 function formatHeader(sheet) {
   let headers = getHeaderColumns(sheet);
   sheet.setFrozenRows(10);
-  for (let i = 0; i < headers.length; i++) {
-    sheet.getRange(10, i+1).setValue(headers[i]).setBackground("#0070e0").setFontColor("#ffffff");
-  }
+  writeRows_(sheet, 10, 1, [headers]);
+  sheet.getRange(10, 1, 1, headers.length).setBackground("#0070e0").setFontColor("#ffffff");
 }
 
 
@@ -117,7 +149,6 @@ function SetAllGreetings(){
   user = new getDefaultUser();
   for (sheet of SpreadsheetApp.getActiveSpreadsheet().getSheets()) {
     if (sheet.getSheetName().toLowerCase() != "credentials") {
-      clearGreeting(sheet)
       DisplayGreeting(user, sheet);
     }
   }
@@ -125,22 +156,21 @@ function SetAllGreetings(){
 }
 
 
+// A2:A7, the balance line (A7) left empty until getBalance writes it.
 function DisplayGreeting(user, sheet) {
-  sheet.getRange("A2").setValue("Olá, " + user.name + "!");
-  sheet.getRange("A3").setValue("Workspace: " + user.workspace);
-  sheet.getRange("A4").setValue("ID do Workspace: " + user.workspaceId);
-  sheet.getRange("A5").setValue("E-mail: " + user.email);
-  sheet.getRange("A6").setValue("Ambiente: " + user.environment);
+  writeRows_(sheet, 2, 1, [
+    ["Olá, " + user.name + "!"],
+    ["Workspace: " + user.workspace],
+    ["ID do Workspace: " + user.workspaceId],
+    ["E-mail: " + user.email],
+    ["Ambiente: " + user.environment],
+    [""],
+  ]);
 }
 
 function clearGreeting(sheet) {
   if (sheet.getSheetName().toLowerCase() != "credentials") {
-    sheet.getRange("A2").setValue(null);
-    sheet.getRange("A3").setValue(null);
-    sheet.getRange("A4").setValue(null);
-    sheet.getRange("A5").setValue(null);
-    sheet.getRange("A6").setValue(null);
-    sheet.getRange("A7").setValue(null);
+    sheet.getRange("A2:A7").clearContent();
   }
 }
 

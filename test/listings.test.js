@@ -10,7 +10,7 @@ const {
   paymentRequestFlow,
 } = require("./support/listingFlows");
 const {newLoginWorld} = require("./support/login");
-const {unprotectedCalls, unauditedWrites, unescapedLinkFormulas, isSafeByForm} = require("./support/setValueAudit");
+const {unprotectedCalls, unauditedWrites, unescapedLinkFormulas, unsafeLinkFormulas, isSafeByForm} = require("./support/setValueAudit");
 const {createScenarioRunner} = require("./support/scenarios");
 
 const {scenario, run} = createScenarioRunner("Listings");
@@ -218,9 +218,80 @@ scenario("every cell write of text that may come from outside goes through safeT
 scenario("no other way of writing into cells escapes the audit", () => {
   const found = [];
   for (const {file, code} of sourceFiles()) {
-    for (const write of unauditedWrites(code)) found.push(`${file}: ${write}`);
+    for (const write of unauditedWrites(code, file)) found.push(`${file}: ${write}`);
   }
   assert.deepEqual(found, []);
+});
+
+scenario("only writeRows_ writes several cells at once", () => {
+  const writer = "function writeRows_(sheet, firstRow, firstColumn, rows) {\n  sheet.getRange(1, 1, 1, 1).setValues(rows);\n}\n";
+
+  assert.deepEqual(unauditedWrites(writer, "utilsBase.js"), []);
+  assert.equal(unauditedWrites(writer, "sdkViewStatement.js").length, 1);
+  assert.equal(unauditedWrites(`${writer}function other() {\n  range.setValues([[hostile]]);\n}\n`, "utilsBase.js").length, 1);
+  assert.equal(unauditedWrites("function writeRows_() {}\nrange.setValues([[hostile]]);", "utilsBase.js").length, 1);
+});
+
+scenario("a link formula is only built from pdfLink", () => {
+  const found = [];
+  for (const {file, code} of sourceFiles()) {
+    for (const argument of unsafeLinkFormulas(code)) found.push(`${file}: ${argument}`);
+  }
+  assert.deepEqual(found, []);
+
+  assert.deepEqual(unsafeLinkFormulas("rows.push([new LinkFormula(pdfLink)]);"), []);
+  assert.deepEqual(unsafeLinkFormulas("rows.push([new LinkFormula(hostile)]);"), ["hostile"]);
+  assert.deepEqual(unsafeLinkFormulas('rows.push([new LinkFormula("=" + hostile)]);'), ['"=" + hostile']);
+  assert.deepEqual(unsafeLinkFormulas("const make = LinkFormula; make(hostile);"), ["LinkFormula"]);
+});
+
+function writeRowsWorld() {
+  const world = newLoginWorld();
+  const sheet = world.workbook.getSheetByName("Extrato");
+  for (const [row, column] of [[10, 2], [11, 1], [11, 6], [13, 2]]) sheet.getRange(row, column).setValue("sentinela");
+  return {world, sheet};
+}
+
+scenario("writeRows_ writes text from outside as text and only link formulas as formulas", () => {
+  const {world, sheet} = writeRowsWorld();
+  const link = '=HYPERLINK("https://example.com/a""b", "PDF")';
+
+  world.evaluate(`writeRows_(SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Extrato"), 11, 2, [
+    [${JSON.stringify(HOSTILE[0])}, new LinkFormula(${JSON.stringify(link)}), 5, null],
+    [${JSON.stringify(HOSTILE[1])}],
+  ])`);
+
+  assert.deepEqual(Array.from(sheet.formulaCells), ["11,3"]);
+  assert.equal(sheet.cells.get("11,2"), HOSTILE[0]);
+  assert.equal(sheet.cells.get("11,3"), link);
+  assert.equal(sheet.cells.get("11,4"), 5);
+  assert.equal(sheet.cells.has("11,5"), false);
+  assert.equal(sheet.cells.get("12,2"), HOSTILE[1]);
+  for (const column of [3, 4, 5]) assert.equal(sheet.cells.has(`12,${column}`), false);
+  for (const key of ["10,2", "11,1", "11,6", "13,2"]) assert.equal(sheet.cells.get(key), "sentinela", key);
+});
+
+scenario("writeRows_ refuses lists and objects", () => {
+  const {world, sheet} = writeRowsWorld();
+  const sheetCode = 'SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Extrato")';
+
+  for (const value of [`[${JSON.stringify(HOSTILE[0])}]`, `{name: ${JSON.stringify(HOSTILE[0])}}`]) {
+    assert.throws(() => world.evaluate(`writeRows_(${sheetCode}, 11, 2, [[${value}]])`), /cannot be written/);
+  }
+  assert.deepEqual(Array.from(sheet.formulaCells), []);
+  assert.equal(sheet.cells.has("11,2"), false);
+  world.evaluate(`writeRows_(${sheetCode}, 11, 2, [[new Date(0), true, "x"]])`);
+  assert.equal(sheet.cells.get("11,4"), "x");
+});
+
+scenario("writeRows_ makes no call for no rows", () => {
+  const {world} = writeRowsWorld();
+  world.resetServiceCalls();
+
+  world.evaluate('writeRows_(SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Extrato"), 11, 1, [])');
+
+  assert.equal(world.sheetCalls(), 1);
+  assert.deepEqual(Object.keys(world.serviceCalls).filter(name => name.startsWith("range.") || name === "sheet.getRange"), []);
 });
 
 scenario("every link formula is made of fixed text, the environment hostname and escaped parts", () => {
