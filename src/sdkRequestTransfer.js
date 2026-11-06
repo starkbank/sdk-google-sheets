@@ -93,48 +93,48 @@ function createPaymentRequestArray(centerId, sheet, externalOrdersList) {
 }
 
 function managePaymentRequestTransfer(centerId) {
+    sendWithLock_(() => sendPaymentRequestTransfers_(centerId));
+}
+
+function sendPaymentRequestTransfers_(centerId) {
     let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Transferência com Aprovação');
     formatHeader(sheet);
-    let externalOrdersList = paymentRequestManager().transfer;
+    let history = paymentRequestManager();
+    let externalOrdersList = history.transfer.slice();
     let extOrderListLen = externalOrdersList.length;
     let query = {}
     let ordersList = createPaymentRequestArray(centerId, sheet, externalOrdersList);
     let batchSize = 100;
     let failedBatchs = 0;
+    let uncertainBatchs = 0;
     let returnMessage = "";
+    const statusColumns = {first: 12, notSent: "Não enviado"};
 
     if(ordersList == null) {
         return
     }
     
-    for (let batch = 0; batch < Math.ceil(ordersList.length/batchSize); batch++) {
+    let batchCount = Math.ceil(ordersList.length/batchSize);
+    for (let batch = 0; batch < batchCount; batch++) {
         let ordersBatch = ordersList.slice((batch * batchSize), (batch * batchSize) + batchSize);
         let checkIds = externalOrdersList.slice(extOrderListLen + (batch * batchSize), (extOrderListLen + (batch * batchSize) + batchSize));
+        let firstLine = 11 + batch * batchSize;
+        recordBatch_(history, "transfer", checkIds);
         let request = sendPaymentRequestBatch(ordersBatch, query);
-        switch (request["status"]) {
-            case 200:
-                confirmOrders(sheet, batch, ordersBatch.length, batchSize, "L");
-                updatePaymentRequestManager(checkIds, "transfer")
-                break;
-            case 500:
-            case 400:
-                failedBatchs += 1;
-                returnMessage = returnMessage + failOrders(sheet, batch, batchSize, Array.from(request["content"]["errors"]), "L", "M");
-                break;
+        if (request["outcome"] == "sent") {
+            confirmOrders(sheet, firstLine, ordersBatch.length, statusColumns);
+            continue;
         }
+        if (request["outcome"] == "rejected") {
+            forgetBatch_(history, "transfer", checkIds);
+            failedBatchs += 1;
+            returnMessage = returnMessage + failOrders(sheet, firstLine, ordersBatch.length, request["errors"], statusColumns);
+            continue;
+        }
+        uncertainBatchs += 1;
+        markUncertainOrders_(sheet, firstLine, ordersBatch.length, statusColumns);
     }
-    if(failedBatchs == 0) {
-        sendMessage("Todos os itens foram enviados.");
-        return
-    }
-    if(failedBatchs == Math.ceil(ordersList.length/batchSize)) {
-        sendMessage("Falha no envio, verifique a situação de suas solicitações." + "\n\n" + returnMessage);
-        return
-    }
-    if(failedBatchs < Math.ceil(ordersList.length/batchSize)) {
-        sendMessage("Falha no envio de alguns itens, verifique a situação de suas solicitações." + "\n\n" + returnMessage);
-        return
-    }
+    sendOutcomeMessage_(batchCount, failedBatchs, uncertainBatchs, returnMessage);
 }
 
 function selectCenterDialog() {

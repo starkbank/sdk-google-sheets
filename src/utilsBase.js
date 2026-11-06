@@ -1,5 +1,7 @@
+// Cells also hold numbers (a tax id typed without punctuation): they are read as text.
 function removeDiacritics(inputString) {
   if (inputString != null) {
+    inputString = String(inputString);
     var diacriticsMap = {
       'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
       'ã': 'a', 'õ': 'o', 'ç': 'c', 'ñ': 'n',
@@ -126,6 +128,10 @@ function stringToCurrency(string) {
 
 
 function formatToLocalDatetime(string){
+  // A date typed as text is already the day: new Date() reads "2024-04-10" as midnight UTC, the day before in GMT-3.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(string)) {
+    return string;
+  }
   return Utilities.formatDate(new Date(string), "GMT-3", "yyyy-MM-dd");
 }
 
@@ -217,9 +223,9 @@ function clearAll(){
   }
 }
 
-function clearSheet(sheet){
+function clearSheet(sheet, width = 20){
   try {
-    sheet.getRange(11, 1, sheet.getLastRow()-10, 20).clearContent();
+    sheet.getRange(11, 1, sheet.getLastRow()-10, width).clearContent();
   } catch (e) {
     
   }

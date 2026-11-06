@@ -22,7 +22,7 @@ function ViewTransfer(after, before, status = null) {
     json = parseResponse(fetch("/transfer", method = 'GET', null, query));
 
     if (json[1] != 200) {
-      Browser.msgBox(json[0]["errors"][0]["message"])
+      throw JSON.stringify({"message": json[0]["errors"][0]["message"]})
     }
 
     json = json[0]

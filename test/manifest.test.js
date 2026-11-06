@@ -30,9 +30,11 @@ const SERVICES = {
   CacheService: [],
   Utilities: [],
   Logger: [],
+  // The document lock keeps two people from sending payment requests from one spreadsheet at once; it needs no scope.
+  LockService: [],
 };
 // Services that would need permissions the SDK does not have: using one has to be a decision.
-const NOT_USED = ["GmailApp", "MailApp", "CalendarApp", "DocumentApp", "SlidesApp", "FormApp", "ContactsApp", "ScriptApp", "Session", "LockService", "CardService", "GroupsApp", "UserSymbolTable"];
+const NOT_USED = ["GmailApp", "MailApp", "CalendarApp", "DocumentApp", "SlidesApp", "FormApp", "ContactsApp", "ScriptApp", "Session", "CardService", "GroupsApp", "UserSymbolTable"];
 
 function code() {
   return fs.readdirSync(srcDir).filter(file => file.endsWith(".js") && !file.startsWith("ecdsa"))

@@ -1,49 +1,51 @@
 function executeBoletoPayment(centerId)
 {
+    sendWithLock_(() => sendBoletoPaymentRequests_(centerId));
+}
+
+function sendBoletoPaymentRequests_(centerId)
+{
     let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Pagamento de Boletos');
     let user = new getDefaultUser();
     formatHeader(sheet);
     clearCollumns(sheet, 6, 7);
-    let externalOrdersList = paymentRequestManager().boleto;
+    let history = paymentRequestManager();
+    let externalOrdersList = history.boleto.slice();
     let extOrderListLen = externalOrdersList.length;
     let ordersList = createPaymentRequestArrayBoleto(centerId, sheet, externalOrdersList);
     let batchSize = 100;
     let failedBatchs = 0;
+    let uncertainBatchs = 0;
     let returnMessage = "";
     let query = {}
+    const statusColumns = {first: 6, notSent: "Não enviado."};
 
     if(ordersList == null) {
       return
     }
 
-    for (let batch = 0; batch<Math.ceil(ordersList.length/batchSize); batch++) {
+    let batchCount = Math.ceil(ordersList.length/batchSize);
+    for (let batch = 0; batch < batchCount; batch++) {
       let ordersBatch = ordersList.slice((batch * batchSize), (batch * batchSize) + batchSize);
-      let request = sendPaymentRequestBatch(ordersBatch, query);
+      let firstLine = 11 + batch * batchSize;
       let checkIds = externalOrdersList.slice(extOrderListLen + (batch * batchSize), (extOrderListLen + (batch * batchSize) + batchSize));
+      recordBatch_(history, "boleto", checkIds);
+      let request = sendPaymentRequestBatch(ordersBatch, query);
 
-      switch (request["status"]) {
-          case 200:
-              confirmOrders(sheet, batch, ordersBatch.length, batchSize, "F");
-              updatePaymentRequestManager(checkIds, "boleto")
-              break;
-          case 400:
-              failedBatchs += 1;
-              returnMessage = returnMessage + failOrders(sheet, batch, batchSize, Array.from(request["content"]["errors"]), "F", "G");
-              break;
+      if (request["outcome"] == "sent") {
+          confirmOrders(sheet, firstLine, ordersBatch.length, statusColumns);
+          continue;
       }
+      if (request["outcome"] == "rejected") {
+          forgetBatch_(history, "boleto", checkIds);
+          failedBatchs += 1;
+          returnMessage = returnMessage + failOrders(sheet, firstLine, ordersBatch.length, request["errors"], statusColumns);
+          continue;
+      }
+      uncertainBatchs += 1;
+      markUncertainOrders_(sheet, firstLine, ordersBatch.length, statusColumns);
   }
-  if(failedBatchs == 0) {
-    sendMessage("Todos os itens foram enviados.");
-    return
-  }
-  if(failedBatchs < ordersList.length/batchSize) {
-      sendMessage("Falha no envio de alguns itens, verifique a situação de suas solicitações." + "\n\n" + returnMessage);
-      return
-  }
-  if(failedBatchs == ordersList.length/batchSize) {
-    sendMessage("Falha no envio, verifique a situação de suas solicitações." + "/n/n" + returnMessage);
-    return
-  }
+  sendOutcomeMessage_(batchCount, failedBatchs, uncertainBatchs, returnMessage);
 }
 
 function createPaymentRequestArrayBoleto(centerId, sheet, linesList)
@@ -66,19 +68,23 @@ function createPaymentRequestArrayBoleto(centerId, sheet, linesList)
             taxId: cellOf_(row, 'B')
         };
 
-        if (cellOf_(row, 'D').length > 1) {
-          paymentItem["description"] = removeDiacritics(cellOf_(row, 'D'))
+        let description = removeDiacritics(cellOf_(row, 'D'));
+        if (description.length > 1) {
+          paymentItem["description"] = description
         }
 
-        if (cellOf_(row, 'E').length > 1) {
-          paymentItem["tags"] = removeDiacritics(cellOf_(row, 'E').split(","))
+        let tags = removeDiacritics(cellOf_(row, 'E'));
+        if (tags.length > 1) {
+          paymentItem["tags"] = tags.split(",")
         }
 
-        if (cellOf_(row, 'C').length > 1) {
-          boleto["due"] = formatToLocalDatetime(cellOf_(row, 'C'))
+        // A date cell (a Date) or a date typed as text.
+        let due = cellOf_(row, 'C');
+        if (due !== "") {
+          boleto["due"] = formatToLocalDatetime(due)
         }
 
-        let barCodeOrLine = cellOf_(row, 'A');
+        let barCodeOrLine = String(cellOf_(row, 'A'));
         barCodeOrLine = barCodeOrLine.replace(/[^0-9]/g, '');
         if(barCodeOrLine.length > 44)
         {

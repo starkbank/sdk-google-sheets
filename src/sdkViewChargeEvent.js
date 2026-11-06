@@ -20,7 +20,8 @@ function viewChargeEvents(after, before, eventOption)
 
     query["types"] = eventOption;
 
-    clearSheet(sheet);
+    // The history has 22 columns (A to V).
+    clearSheet(sheet, 22);
     formatHeader(sheet);
 
     let user = new getDefaultUser();
@@ -33,7 +34,7 @@ function viewChargeEvents(after, before, eventOption)
         json = parseResponse(fetch("/boleto/log", method = 'GET', null, query));
 
         if (json[1] != 200) {
-          throw new Error(json[0]["errors"][0]["message"])
+          throw JSON.stringify({"message": json[0]["errors"][0]["message"]})
         }
 
         elementsList = json[0]["logs"];
@@ -48,7 +49,8 @@ function viewChargeEvents(after, before, eventOption)
             let charge = log["boleto"];
             let pdfLink = '=HYPERLINK("' + hostname + "/boleto/" + formulaText(charge["id"]) + '/pdf", "PDF")';
             idsList.push(charge["id"]);
-            chargeIdLineAmountDict[charge["id"]] = [rows.length, parseInt(charge["amount"])];
+            // A boleto may have several events in the page: each row keeps its own amount.
+            chargeIdLineAmountDict[charge["id"]] = (chargeIdLineAmountDict[charge["id"]] || []).concat([[rows.length, parseInt(charge["amount"])]]);
             rows.push([
                 formatToLocalDatetime(log["created"]),
                 eventEntoPt(charge["status"]),
@@ -88,7 +90,7 @@ function viewChargeEvents(after, before, eventOption)
     }
 }
 
-// Columns F to I of each row of the page, in the order of chargeIdLineAmountDict's row indexes.
+// Columns F to I of each row of the page; chargeIdLineAmountDict has, by boleto id, the [row index, amount] of each of its rows.
 function getCreatedLogs(idsList, chargeIdLineAmountDict)
 {
     let cursor = "";
@@ -104,7 +106,7 @@ function getCreatedLogs(idsList, chargeIdLineAmountDict)
         json = parseResponse(fetch("/boleto/log", method='GET', null, query));
 
         if (json[1] != 200) {
-          throw new Error(json[0]["errors"][0]["message"])
+          throw JSON.stringify({"message": json[0]["errors"][0]["message"]})
         }
 
         elementsList = json[0]["logs"];
@@ -114,26 +116,31 @@ function getCreatedLogs(idsList, chargeIdLineAmountDict)
         {
             let charge = log["boleto"];
             
-            let amountRow = amountRows[chargeIdLineAmountDict[charge["id"]][0]];
-            let amount = chargeIdLineAmountDict[charge["id"]][1] / 100.0;
-            let nominalAmount = parseInt(charge["amount"]) / 100.0;
-            let deltaAmount = amount - nominalAmount;
-            amountRow[0] = nominalAmount;
-
-            if(deltaAmount < 0) {
-                amountRow[1] = deltaAmount;
-            } 
-            else if(deltaAmount > 0) {
-                let fine = parseInt(charge["fine"]) * nominalAmount/100;
-                let interest = amount - fine - nominalAmount;
-                amountRow[2] = fine;
-                amountRow[3] = interest;
-            }            
+            for (let [index, amountCents] of chargeIdLineAmountDict[charge["id"]]) {
+                fillAmounts_(amountRows[index], amountCents / 100.0, charge);
+            }
         }
 
     } while(cursor);
 
     return amountRows;
+}
+
+// Nominal amount (F), and the discount (G) or the fine (H) and interest (I) that make the paid amount.
+function fillAmounts_(amountRow, amount, charge)
+{
+    let nominalAmount = parseInt(charge["amount"]) / 100.0;
+    let deltaAmount = amount - nominalAmount;
+    amountRow[0] = nominalAmount;
+    if(deltaAmount < 0) {
+        amountRow[1] = deltaAmount;
+        return;
+    }
+    if(deltaAmount > 0) {
+        let fine = parseFloat(charge["fine"]) * nominalAmount/100;
+        amountRow[2] = fine;
+        amountRow[3] = amount - fine - nominalAmount;
+    }
 }
 
 function eventEntoPt(event)

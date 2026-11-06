@@ -9,7 +9,8 @@ function getDictKey()
   readRows_(sheet, 6).forEach((row, index) => {
     var keyId = cellOf_(row, 'A')
 
-    if (keyId.length == 13) 
+    // A cell phone number without its "+" (Sheets may hold it as a number); an e-mail of 13 characters is not one.
+    if (/^\d{13}$/.test(String(keyId))) 
     {
       keyId = "+" + keyId
     }
@@ -71,11 +72,18 @@ function getDictKey()
       'Foram encontradas ' + jsonData.length + ' Chaves Pix válidas. Deseja mover para a aba de Transferências com Aprovação? Dados na aba de Transferências com Aprovação serão apagados.',
       ui.ButtonSet.OK_CANCEL);
     
-      if (resultado == ui.Button.OK) {
+      if (resultado == ui.Button.OK && jsonData.length > 0) {
         sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Transferência com Aprovação");
         sheet.activate();
         
-        // Column G (the schedule) is left as it is.
+        // As the question says, the tab is erased: its rows with their schedule (G), status (L) and reason (M).
+        if (sheet.getLastRow() >= 11) {
+          clearCollumns(sheet, 1, 13);
+        }
+        // Bank code, branch and account are text: "00000000" or "0001" must not become numbers.
+        if (jsonData.length > 0) {
+          sheet.getRange(11, 4, jsonData.length, 3).setNumberFormat("@");
+        }
         writeRows_(sheet, 11, 1, jsonData.map(data => [data["name"], data["taxId"], data["amount"], data["ispb"], data["branchCode"], data["accountNumber"]]));
         writeRows_(sheet, 11, 8, jsonData.map(data => [data["accountType"], data["tags"], data["description"], data["displayDescription"]]));
     
@@ -83,10 +91,10 @@ function getDictKey()
         return
       }    
   }
-  if(errorsCount > 1){
+  if(errorsCount > 0){
     ui.alert(
-      'Algumas chaves estão incorretas, verifique as informações e tente novamente.?',
-      'Foram encontradas ' + errorsCount + ' Chaves Pix invválidas.',
+      'Algumas chaves estão incorretas, verifique as informações e tente novamente.',
+      'Foram encontradas ' + errorsCount + ' Chaves Pix inválidas.',
       ui.ButtonSet.OK)
   }
 }

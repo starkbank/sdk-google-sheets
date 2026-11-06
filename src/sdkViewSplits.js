@@ -21,12 +21,11 @@ function viewSplits(after, before, status = null) {
     let splits = parseResponse(fetch("/split", method = 'GET', null, query));
 
     if (splits[1] != 200) {
-      Browser.msgBox(splits[0]["errors"][0]["message"])
-      throw new Error()
+      throw JSON.stringify({"message": splits[0]["errors"][0]["message"]})
     }
     if (splits[0]["splits"].length<1) {
       Browser.msgBox("Nenhum Split foi encontrado!");
-      throw new Error()
+      return
     }
 
     splits = splits[0];

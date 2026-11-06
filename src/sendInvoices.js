@@ -10,11 +10,12 @@ function sendInvoices() {
     const rows = readRows_(sheet, 13);
     const lastLine = initialLine + rows.length - 1;
     for (let batchInitialLine = initialLine; batchInitialLine <= lastLine; batchInitialLine = line){
+        invoices = [];
         for (line = batchInitialLine; line < batchInitialLine + batchSize && line <= lastLine; line++){
             let row = rows[line - initialLine];
             invoice = {
                  amount: parseInt(Math.round(100*cellOf_(row, 'C')), 10),
-                 taxId: cellOf_(row, 'B'),
+                 taxId: String(cellOf_(row, 'B')),
                  name: removeDiacritics(cellOf_(row, 'A')),
             };
 

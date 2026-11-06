@@ -56,20 +56,51 @@ function checkLogin() {
     };
 }
 
+// What became of a batch: "sent"; "rejected" (a 4xx answer: nothing was created); or "unknown" (a 5xx
+// answer, an answer that is not JSON, or none at all): the requests may exist, so the person checks
+// them before sending those rows again.
 function sendPaymentRequestBatch(payload, query) {
-    let [json, status] = parseResponse(fetch("/payment-request", method = 'POST', {"requests": payload}, query))
-    return {
-        "status": status,
-        "content": json
+    let response = null;
+    try {
+        response = fetch("/payment-request", method = 'POST', {"requests": payload}, query)
+    } catch (error) {
+        // Without a session the SDK throws its own message as text, before anything is sent.
+        if (typeof error === "string") {
+            throw error;
+        }
+        return {"outcome": "unknown", "errors": []}
+    }
+    let status = response.getResponseCode();
+    if (status == 200) {
+        return {"outcome": "sent", "errors": []}
+    }
+    if (status >= 400 && status < 500) {
+        let errors = errorsOf_(response);
+        return {"outcome": "rejected", "errors": errors.length > 0 ? errors : [{"code": "httpError", "message": "A API recusou o envio (status " + status + ")."}]}
+    }
+    return {"outcome": "unknown", "errors": []}
+}
+
+function errorsOf_(response) {
+    try {
+        return Array.from(JSON.parse(response.getContentText())["errors"] || []);
+    } catch (error) {
+        return [];
     }
 }
 
-function confirmOrders(sheet, batch, chunkLen, batchSize, coll) {
-    let statuses = Array.from({length: chunkLen}, () => ["Enviado"]);
-    writeRows_(sheet, 11 + (batch * batchSize), coll.charCodeAt(0) - 64, statuses);
+// statusColumns: {first: the status column (the reason is the next one), notSent: the status of a row not sent}.
+function confirmOrders(sheet, firstLine, chunkLen, statusColumns) {
+    writeRows_(sheet, firstLine, statusColumns.first, Array.from({length: chunkLen}, () => ["Enviado"]));
 }
 
-function failOrders(sheet, batch, batchSize, errors, colStat, colReas) {
+function markUncertainOrders_(sheet, firstLine, chunkLen, statusColumns) {
+    let statuses = Array.from({length: chunkLen}, () => ["Verificar", "Confira em Consulta de Aprovações"]);
+    writeRows_(sheet, firstLine, statusColumns.first, statuses);
+}
+
+function failOrders(sheet, firstLine, chunkLen, errors, statusColumns) {
+    let statuses = Array.from({length: chunkLen}, () => [statusColumns.notSent, ""]);
     let errorMessages = ""
     errors.forEach(
         error => {
@@ -78,27 +109,122 @@ function failOrders(sheet, batch, batchSize, errors, colStat, colReas) {
                 return;
             };
             let message = error.message + "\n"
-            if (/Element [0-9]*:/.test(error.message)) {
-                let requestNumber = parseInt(error.message.split('Element ').pop().split(':')[0]);
-                let lineNumber = parseInt(requestNumber)
-                message = "Erro - Linha " + (requestNumber + 11 + (batch * batchSize)).toString() + ":" + error.message.split(':')[1] + "\n";
-                sheet.getRange(`${colReas}${(lineNumber + 11 + (batch * batchSize)).toString()}`).setValue(safeText(error.message.split(':')[1]))
-                sheet.getRange(`${colStat}${(lineNumber + 11 + (batch * batchSize)).toString()}`).setValue("Falha")
+            let element = /Element ([0-9]+):/.exec(error.message);
+            if (element) {
+                let index = parseInt(element[1]);
+                message = "Erro - Linha " + (index + firstLine).toString() + ":" + error.message.split(':')[1] + "\n";
+                if (index < chunkLen) {
+                    statuses[index] = ["Falha", error.message.split(':')[1]];
+                }
             };
             errorMessages = errorMessages.concat(message);
             }
     )
+    writeRows_(sheet, firstLine, statusColumns.first, statuses);
     return errorMessages
 }
 
-function paymentRequestManager() {
-    let externalOrders = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal').getRange('C1').getValue();
-    let json = JSON.parse(externalOrders.toString());
-    return json
-  }
+// One message for the whole sending: everything sent, some or all batches refused, or batches whose
+// outcome is unknown and must be checked before they are sent again.
+function sendOutcomeMessage_(batchCount, failedBatchs, uncertainBatchs, returnMessage) {
+    if (failedBatchs == 0 && uncertainBatchs == 0) {
+        sendMessage("Todos os itens foram enviados.");
+        return
+    }
+    if (uncertainBatchs > 0) {
+        let uncertain = "Não foi possível confirmar o envio de alguns itens: eles estão marcados como \"Verificar\". Confira em \"Consulta de Aprovações\". Para não serem criados duas vezes, eles são recusados como duplicados até o próximo login.";
+        sendMessage(returnMessage ? uncertain + "\n\n" + returnMessage : uncertain);
+        return
+    }
+    if (failedBatchs == batchCount) {
+        sendMessage("Falha no envio, verifique a situação de suas solicitações." + "\n\n" + returnMessage);
+        return
+    }
+    sendMessage("Falha no envio de alguns itens, verifique a situação de suas solicitações." + "\n\n" + returnMessage);
+}
 
-function updatePaymentRequestManager(array, type) {
-    let json = paymentRequestManager()
-    json[type].push(...array)
-    SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal').getRange('C1').setValue(JSON.stringify(json));
+// The ids already sent ({"transfer": [...], "boleto": [...]}) live in column C of paymentRequestExternal as
+// JSON split over cells, since a cell holds at most 50,000 characters. Every cell starts with "j", so
+// Sheets keeps it as text whatever the slice of JSON starts with ("=", "'", digits).
+const historyCellLength = 45000;
+
+function paymentRequestManager() {
+    let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
+    let cells = historyCells_(sheet);
+    // Versions before the split kept the whole JSON in C1, without "j".
+    if (cells.length == 0) {
+        return JSON.parse(String(sheet.getRange(1, 3).getValue()));
+    }
+    return JSON.parse(cells.map(cell => cell.slice(1)).join(""));
+}
+
+// The cells of the history: the run of "j" cells from C1 down. Other cells of the column are not touched.
+function historyCells_(sheet) {
+    let cells = sheet.getRange(1, 3, Math.max(1, sheet.getLastRow()), 1).getValues().map(row => String(row[0]));
+    let end = cells.findIndex(cell => !cell.startsWith("j"));
+    return end == -1 ? cells : cells.slice(0, end);
+}
+
+// A batch joins the history before its request, so a run that stops after it (or gets no answer) cannot
+// send it twice. The flows read the history once: under the document lock nobody else writes it.
+function recordBatch_(history, type, ids) {
+    history[type].push(...ids);
+    writePaymentRequestHistory_(history);
+}
+
+// A batch the API refused was not created: its rows may be sent again.
+function forgetBatch_(history, type, ids) {
+    let refused = new Set(ids);
+    history[type] = history[type].filter(id => !refused.has(id));
+    writePaymentRequestHistory_(history);
+}
+
+function writePaymentRequestHistory_(json) {
+    let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
+    let previousCount = historyCells_(sheet).length;
+    let text = JSON.stringify(json);
+    let cells = [];
+    for (let start = 0; start < text.length;) {
+        let end = Math.min(start + historyCellLength, text.length);
+        // Both halves of an emoji stay in one cell: Sheets may not keep half of one.
+        if (end < text.length && /[\uD800-\uDBFF]/.test(text[end - 1])) {
+            end -= 1;
+        }
+        cells.push(["j" + text.slice(start, end)]);
+        start = end;
+    }
+    writeRows_(sheet, 1, 3, cells);
+    // A shorter history leaves cells of the longer one below it.
+    if (previousCount > cells.length) {
+        sheet.getRange(cells.length + 1, 3, previousCount - cells.length, 1).clearContent();
+    }
+}
+
+// Login and sign out start an empty history. While someone is sending it is left as it is: a guard
+// that remembers too much refuses rows, one that forgets lets them be created twice.
+function resetPaymentRequestHistory_() {
+    if (!withDocumentLock_(() => writePaymentRequestHistory_({"transfer": [], "boleto": []}))) {
+        Logger.log("The payment request history was not reset: a sending was in progress");
+    }
+}
+
+// One sending at a time per spreadsheet: two people sending the same rows at once would both pass the
+// duplicate guard, which reads the history before sending. False when someone else holds the lock.
+function withDocumentLock_(work) {
+    let lock = LockService.getDocumentLock();
+    if (!lock.tryLock(30000)) {
+        return false;
+    }
+    try {
+        work();
+    } finally {
+        lock.releaseLock();
+    }
+    return true;
+}
+
+function sendWithLock_(send) {
+    if (!withDocumentLock_(send)) {
+        sendMessage("Outro envio está em andamento nesta planilha. Tente novamente em alguns instantes.");
+    }
 }

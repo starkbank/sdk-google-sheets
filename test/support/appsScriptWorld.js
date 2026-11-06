@@ -174,11 +174,17 @@ class FakeRange {
     return typeof value === "string" && (value.startsWith("=") || (/^[+-]/.test(value) && !/^[+-][\d\s().,%$+-]*$/.test(value)));
   }
 
-  // One cell, the way Sheets reads a value that is set (setValue and setValues read values alike).
+  // One cell, the way Sheets reads a value that is set (setValue and setValues read values alike). A cell
+  // formatted as plain text ("@") keeps text as it is: "0001" stays "0001". A cell holds 50,000 characters.
   writeCell(key, value) {
+    if (typeof value === "string" && value.length > 50000) {
+      throw new Error("Your input contains more than the maximum of 50000 characters in a single cell.");
+    }
     this.sheet.formulaCells.delete(key);
     if (value === null || value === undefined || value === "") {
       this.sheet.cells.delete(key);
+    } else if (typeof value === "string" && this.sheet.textCells.has(key)) {
+      this.sheet.cells.set(key, value.startsWith("'") ? value.slice(1) : value);
     } else if (typeof value === "string" && value.startsWith("'")) {
       this.sheet.cells.set(key, value.slice(1));
     } else {
@@ -235,6 +241,15 @@ class FakeRange {
     return this;
   }
 
+  setNumberFormat(format) {
+    this.count("setNumberFormat");
+    for (const key of this.cellKeys()) {
+      if (format === "@") this.sheet.textCells.add(key);
+      if (format !== "@") this.sheet.textCells.delete(key);
+    }
+    return this;
+  }
+
   clear() {
     this.count("clear");
     for (const key of this.cellKeys()) {
@@ -256,6 +271,7 @@ class FakeSheet {
     this.readOnly = false;
     this.protectedCells = new Set();
     this.formulaCells = new Set();
+    this.textCells = new Set();
   }
 
   // Every cell as "row,column|kind|value" (kind: f = formula, t = text, n = number, b = boolean),
@@ -475,7 +491,8 @@ class StarkApi {
     this.workspaces.set(username, [{id, username}]);
   }
 
-  // Adds an endpoint that answers {status, body} (body is turned into JSON) for signed requests.
+  // Adds an endpoint that answers {status, body} (body is turned into JSON) for signed requests; {status, raw}
+  // answers raw text (a gateway's HTML page) and {throws} makes the request itself fail (no answer).
   stub(method, pathPattern, handler) {
     this.stubs.push({method, pathPattern, handler});
   }
@@ -587,8 +604,9 @@ class StarkApi {
 
     for (const {method: stubMethod, pathPattern, handler} of this.stubs) {
       if (stubMethod === method && pathPattern.test(pathName)) {
-        const {status = 200, body} = handler(request);
-        return {status, body: JSON.stringify(body)};
+        const {status = 200, body, raw, throws} = handler(request);
+        if (throws) throw new Error(throws);
+        return {status, body: raw !== undefined ? raw : JSON.stringify(body)};
       }
     }
 
@@ -736,6 +754,13 @@ function createWorld({memberPublicKeyPem = null} = {}) {
     },
     DriveApp: {
       getRootFolder: () => driveFolder("root"),
+    },
+    // world.sendingInProgress makes the document lock unavailable, as if someone else were sending.
+    LockService: {
+      getDocumentLock: () => ({
+        tryLock: () => !world.sendingInProgress,
+        releaseLock() {},
+      }),
     },
   };
 

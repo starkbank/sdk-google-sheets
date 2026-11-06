@@ -143,8 +143,7 @@ function postSessionChallenge() {
     })
     SessionStore.clearHandshake()
 
-    let paymentRequestExternalIdsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
-    paymentRequestExternalIdsheet.getRange("C1").setValue("{\"transfer\": [], \"boleto\": []}")
+    resetPaymentRequestHistory_();
   }
 
 }
@@ -308,7 +307,6 @@ function signOut(displayMessage = true) {
     sheet.getRange("D11").setValue("Ex: (11) 99999-9999")
     sheet.getRange("J11").setValue("Ex: 20018-183")
 
-    let paymentRequestExternalIdsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paymentRequestExternal');
-    paymentRequestExternalIdsheet.getRange("C1").setValue("{\"transfer\": [], \"boleto\": []}")
+    resetPaymentRequestHistory_();
   }
 }

