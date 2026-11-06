@@ -35,120 +35,60 @@ function ViewPaymentRequest(after, before, status, centerId, type) {
     elementList = json["requests"];
     cursor = json["cursor"];
 
+    let rows = [];
+    let header = null;
     for (let payment of elementList){
       zeroCharges = false;
-      i += 1;
-      let tags = payment["tags"];
-      sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(payment["created"]));
-      sheet.getRange('B' + i.toString()).setValue(safeText(payment["type"]));
-      sheet.getRange('C' + i.toString()).setValue(safeText(payment["description"]));
-      sheet.getRange('D' + i.toString()).setValue(stringToCurrency(payment["amount"]));
-      sheet.getRange('E' + i.toString()).setValue(safeText(payment["actions"][1]["name"]));
-      sheet.getRange('F' + i.toString()).setValue(safeText(payment["status"]));
-      sheet.getRange('G' + i.toString()).setValue(safeText(payment["id"]));
-      sheet.getRange('H' + i.toString()).setValue(safeText(tags.join(",")));
-
-      if (payment["type"] == "transfer") {
-        sheet.getRange('I10').setValue("Nome");
-        sheet.getRange('K10').setValue("Codigo do Banco/ISPB");
-        sheet.getRange('L10').setValue("Agencia");
-        sheet.getRange('M10').setValue("Conta");
-
-        sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["name"]));
-        sheet.getRange('J' + i.toString()).setValue(safeText(payment["payment"]["taxId"]));
-        sheet.getRange('K' + i.toString()).setValue(safeText(payment["payment"]["bankCode"]));
-        sheet.getRange('L' + i.toString()).setValue(safeText(payment["payment"]["branchCode"]));
-        sheet.getRange('M' + i.toString()).setValue(safeText(payment["payment"]["accountNumber"]));
+      let row = [
+        formatToLocalDatetime(payment["created"]),
+        payment["type"],
+        payment["description"],
+        stringToCurrency(payment["amount"]),
+        payment["actions"][1]["name"],
+        payment["status"],
+        payment["id"],
+        payment["tags"].join(","),
+      ];
+      rows.push(row);
+      let columns = paymentRequestColumns_(payment);
+      if (!columns) {
+        continue;
       }
-
-      if (payment["type"] == "boleto-payment") {
-        sheet.getRange('I10').setValue("Linha Digitavel / Código de Barras");
-        sheet.getRange('K10').setValue("");
-        sheet.getRange('L10').setValue("");
-        sheet.getRange('M10').setValue("");
-
-        sheet.getRange('J' + i.toString()).setValue(safeText(payment["payment"]["taxId"]));
-
-        if (payment["payment"]["line"] != null){
-          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["line"])); 
-        }
-
-        if (payment["payment"]["barCode"] != null){
-          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["barCode"]));
-        }
-      }
-
-      if (payment["type"] == "darf-payment") {
-        sheet.getRange('I10').setValue("Linha Digitavel / Código de Barras");
-        sheet.getRange('K10').setValue("");
-        sheet.getRange('L10').setValue("");
-        sheet.getRange('M10').setValue("");
-
-        sheet.getRange('J' + i.toString()).setValue(safeText(payment["payment"]["taxId"]));
-
-        if (payment["payment"]["line"] != null){
-          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["line"])); 
-        }
-
-        if (payment["payment"]["barCode"] != null){
-          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["barCode"]));
-        }
-      }
-
-      if (payment["type"] == "utility-payment") {
-        sheet.getRange('I10').setValue("Linha Digitavel / Código de Barras");
-        sheet.getRange('K10').setValue("");
-        sheet.getRange('L10').setValue("");
-        sheet.getRange('M10').setValue("");
-
-        if (payment["payment"]["line"] != null){
-          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["line"])); 
-        }
-
-        if (payment["payment"]["barCode"] != null){
-          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["barCode"]));
-        }
-
-      }
-
-      if (payment["type"] == "tax-payment") {
-        sheet.getRange('I10').setValue("Linha Digitavel / Código de Barras");
-        sheet.getRange('K10').setValue("");
-        sheet.getRange('L10').setValue("");
-        sheet.getRange('M10').setValue("");
-
-        if (payment["payment"]["line"] != null){
-          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["line"])); 
-        }
-
-        if (payment["payment"]["barCode"] != null){
-          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["barCode"]));
-        }
-        
-      }
-
-      if (payment["type"] == "brcode-payment") {
-        sheet.getRange('I10').setValue("Linha Digitavel / Código de Barras");
-        sheet.getRange('K10').setValue("");
-        sheet.getRange('L10').setValue("");
-        sheet.getRange('M10').setValue("");
-
-        if (payment["payment"]["line"] != null){
-          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["line"])); 
-        }
-
-        if (payment["payment"]["barCode"] != null){
-          sheet.getRange('I' + i.toString()).setValue(safeText(payment["payment"]["barCode"]));
-        }
-        
-      }
-
-
+      header = columns.header;
+      row.push(...columns.values);
     }
+    // I10 and K10:M10 name the columns of the last row that has them (J10 keeps its label).
+    if (header) {
+      writeRows_(sheet, 10, 9, [[header[0]]]);
+      writeRows_(sheet, 10, 11, [header.slice(1)]);
+    }
+    writeRows_(sheet, i + 1, 1, rows);
+    i += rows.length;
   } while (cursor);
   if (zeroCharges) {
     Browser.msgBox("Nenhum pagamento encontrado para o período selecionado!");
   }
+}
+
+// Columns I to M of a payment request and the header they go under, by type of payment.
+function paymentRequestColumns_(request) {
+  let payment = request["payment"];
+  if (request["type"] == "transfer") {
+    return {
+      header: ["Nome", "Codigo do Banco/ISPB", "Agencia", "Conta"],
+      values: [payment["name"], payment["taxId"], payment["bankCode"], payment["branchCode"], payment["accountNumber"]],
+    };
+  }
+  if (!["boleto-payment", "darf-payment", "utility-payment", "tax-payment", "brcode-payment"].includes(request["type"])) {
+    return null;
+  }
+  // The bar code wins over the line when both come.
+  let line = payment["barCode"] != null ? payment["barCode"] : payment["line"];
+  let taxId = ["boleto-payment", "darf-payment"].includes(request["type"]) ? payment["taxId"] : null;
+  return {
+    header: ["Linha Digitavel / Código de Barras", "", "", ""],
+    values: [line, taxId],
+  };
 }
 
 function selectPaymentRequestDialog() {

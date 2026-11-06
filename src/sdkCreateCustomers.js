@@ -5,24 +5,24 @@ function createCustomers()
 
     formatHeader(sheet);
 
-    for(let i=11; i<=sheet.getLastRow(); i++){
+    for(let row of readRows_(sheet, 11)){
 
         let address = {
-            streetLine1: sheet.getRange('E' + i.toString()).getValue(),
-            streetLine2: sheet.getRange('F' + i.toString()).getValue(),
-            district: sheet.getRange('G' + i.toString()).getValue(),
-            city: sheet.getRange('H' + i.toString()).getValue(),
-            stateCode: sheet.getRange('I' + i.toString()).getValue(),
-            zipCode: sheet.getRange('J' + i.toString()).getValue()
+            streetLine1: cellOf_(row, 'E'),
+            streetLine2: cellOf_(row, 'F'),
+            district: cellOf_(row, 'G'),
+            city: cellOf_(row, 'H'),
+            stateCode: cellOf_(row, 'I'),
+            zipCode: cellOf_(row, 'J')
         };
 
-        let tags = sheet.getRange('K' + i.toString()).getValue().split(",");
+        let tags = cellOf_(row, 'K').split(",");
     
         let customer = {
-            name: sheet.getRange('A' + i.toString()).getValue(),
-            taxId: sheet.getRange('B' + i.toString()).getValue(),
-            email: sheet.getRange('C' + i.toString()).getValue(),
-            phone: sheet.getRange('D' + i.toString()).getValue(),
+            name: cellOf_(row, 'A'),
+            taxId: cellOf_(row, 'B'),
+            email: cellOf_(row, 'C'),
+            phone: cellOf_(row, 'D'),
             tags: tags,
             address: address
         };

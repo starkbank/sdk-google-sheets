@@ -44,16 +44,16 @@ function viewSplits(after, before, status = null) {
       receivers[obj.id] = obj.taxId;
     }
     
-    for (let split of splits){
-      zeroCharges = false;
-      i += 1;
-      sheet.getRange('A' + i.toString()).setValue(safeText(split["created"]));
-      sheet.getRange('B' + i.toString()).setValue(safeText(split["source"]));
-      sheet.getRange('C' + i.toString()).setValue(safeText(split["receiverId"]));
-      sheet.getRange('D' + i.toString()).setValue(safeText(receivers[split.receiverId]));
-      sheet.getRange('E' + i.toString()).setValue(stringToCurrency(split["amount"]));
-      sheet.getRange('F' + i.toString()).setValue(safeText(split["status"]));
-    };
+    let rows = splits.map(split => [
+      split["created"],
+      split["source"],
+      split["receiverId"],
+      receivers[split.receiverId],
+      stringToCurrency(split["amount"]),
+      split["status"],
+    ]);
+    writeRows_(sheet, i + 1, 1, rows);
+    i += rows.length;
   } while (cursor);
 }
 

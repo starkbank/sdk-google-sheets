@@ -30,20 +30,22 @@ function ViewChargePayment(after, before, status = null) {
     elementList = json["payments"];
     cursor = json["cursor"];
     
+    let rows = [];
     for (let payment of elementList){
       zeroPayments = false;
-      i += 1;
-      
-      let tags = payment["tags"];
-      sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(payment["created"]));
-      sheet.getRange('B' + i.toString()).setValue(safeText(payment["id"]));
-      sheet.getRange('C' + i.toString()).setValue(stringToCurrency(payment["amount"]));
-      sheet.getRange('D' + i.toString()).setValue(safeText(ChargePaymentStatusEnToPt(payment["status"])));
-      sheet.getRange('E' + i.toString()).setValue(formatToLocalDatetime(payment["scheduled"]));
-      sheet.getRange('F' + i.toString()).setValue(safeText(payment["line"]));
-      sheet.getRange('G' + i.toString()).setValue(safeText(payment["description"]));
-      sheet.getRange('H' + i.toString()).setValue(safeText(tags.join(",")));
+      rows.push([
+        formatToLocalDatetime(payment["created"]),
+        payment["id"],
+        stringToCurrency(payment["amount"]),
+        ChargePaymentStatusEnToPt(payment["status"]),
+        formatToLocalDatetime(payment["scheduled"]),
+        payment["line"],
+        payment["description"],
+        payment["tags"].join(","),
+      ]);
     }
+    writeRows_(sheet, i + 1, 1, rows);
+    i += rows.length;
   } while (cursor);
   if (zeroPayments) {
     Browser.msgBox("Nenhum pagamento encontrado para o período selecionado!");
@@ -54,16 +56,8 @@ function ViewChargePayment(after, before, status = null) {
 function ChargePaymentDownloadAllDrive(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Pagamento Boleto');
   let paymentDriveFolder = getDriveFolderOrCreate("boleto-payment", getDriveFolderOrCreate("starkbank"));
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let paymentId = sheet.getRange('B' + i.toString()).getValue();
-    let paymentStatus = sheet.getRange('D' + i.toString()).getValue();
-    if (paymentStatus === "sucesso") {
-      let fileName = paymentId + ".pdf";
-      let pdfContent = ChargePaymentDownload(paymentId);
-      let pdfFile = paymentDriveFolder.createFile(pdfContent);
-      pdfFile.setName(fileName);
-    }
-  }
+  let ids = readRows_(sheet, 4).filter(row => cellOf_(row, 'D') === "sucesso").map(row => cellOf_(row, 'B'));
+  savePdfsToDrive_(paymentDriveFolder, ids, id => "/boleto-payment/" + pathSegment(id) + "/pdf");
   Browser.msgBox("Arquivos baixados para Google Drive na pasta starkbank/boleto-payment");
 }
 
@@ -93,9 +87,9 @@ function ChargePaymentDownloadAllLocal(){
 function getChargePaymentDownloadList(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Pagamento Boleto');
   let idList = [];
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let paymentId = sheet.getRange('B' + i.toString()).getValue();
-    let paymentStatus = sheet.getRange('D' + i.toString()).getValue();
+  for (let row of readRows_(sheet, 4)){
+    let paymentId = cellOf_(row, 'B');
+    let paymentStatus = cellOf_(row, 'D');
     if (paymentStatus === "sucesso") {
       idList.push(paymentId);
     }

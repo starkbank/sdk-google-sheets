@@ -7,18 +7,21 @@ function SplitReceivers() {
     
     const initialLine = 11;
     const batchSize = 100;
-    for (let batchInitialLine = initialLine; batchInitialLine <= sheet.getLastRow(); batchInitialLine = line){
-        for (line = batchInitialLine; line < batchInitialLine + batchSize && line <= sheet.getLastRow(); line++){
+    const rows = readRows_(sheet, 7);
+    const lastLine = initialLine + rows.length - 1;
+    for (let batchInitialLine = initialLine; batchInitialLine <= lastLine; batchInitialLine = line){
+        for (line = batchInitialLine; line < batchInitialLine + batchSize && line <= lastLine; line++){
+            let row = rows[line - initialLine];
             splitReceiver = {
-                 name: sheet.getRange('A' + line.toString()).getValue(),
-                 taxId: sheet.getRange('B' + line.toString()).getValue(),
-                 bankCode: sheet.getRange('C' + line.toString()).getValue(),
-                 branchCode: sheet.getRange('D' + line.toString()).getValue(),
-                 accountNumber: sheet.getRange('E' + line.toString()).getValue(),
-                 accountType: sheet.getRange('F' + line.toString()).getValue()
+                 name: cellOf_(row, 'A'),
+                 taxId: cellOf_(row, 'B'),
+                 bankCode: cellOf_(row, 'C'),
+                 branchCode: cellOf_(row, 'D'),
+                 accountNumber: cellOf_(row, 'E'),
+                 accountType: cellOf_(row, 'F')
             };
 
-            tags = removeDiacritics(sheet.getRange('G' + line.toString()).getValue());
+            tags = removeDiacritics(cellOf_(row, 'G'));
             if (tags) {
                 splitReceiver["tags"] = tags.split(",");
                 for (let i = 0; i < splitReceiver["tags"].length; i++) {

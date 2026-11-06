@@ -14,6 +14,8 @@ Given a version number MAJOR.MINOR.PATCH, increment:
 
 ## [Unreleased]
 ### Changed
+- the sheets are read and written with one call per page or batch instead of one call per cell, so listings, payment requests, invoices, split receivers, cards, boletos and customers take a fraction of the time (300 invoices went from about 12,000 calls to the spreadsheet to under 60); Pix key lookups and PDF downloads to Google Drive run 10 at a time
+- a listing page that fails while it is being written (for instance an approval without approver) writes nothing of that page, instead of the rows before the failure
 - session keys and access id are kept in the user's script properties and the login data in the user's cache (10 minutes), instead of the `Credentials` sheet; the password is no longer stored anywhere
 - each person who opens a shared spreadsheet must log in on their own, and everyone has to log in again after updating
 - who the user is (workspace, e-mail, environment, name and workspace id) is kept in the user's script properties with the session, so people who share a spreadsheet no longer overwrite each other's identity; the cells of the `Credentials` sheet only show who logged in last and changing them has no effect

@@ -40,6 +40,9 @@ function getHostname(environment, version = "v2"){
   }[environment.toLowerCase()];
 }
 
+// Requests sent together by fetchAllWithSession_: enough to save time, few enough to stay small.
+const parallelRequestCount = 10;
+
 function maskFetch(path, method='GET', payload=null, query=null, version="v2", environment=null, privateKeyPem=null, challengeId=null, sessionAccessId=null) {
 
     let user = new getDefaultUser();
@@ -50,10 +53,6 @@ function maskFetch(path, method='GET', payload=null, query=null, version="v2", e
         environment = environment || user.environment.toLowerCase();
     }
     let hostname = getHostname(environment, version);
-    let options = {
-        method: method,
-        muteHttpExceptions: true,
-    };
     let url = hostname + path;
     
     if (query) {
@@ -79,25 +78,34 @@ function maskFetch(path, method='GET', payload=null, query=null, version="v2", e
     if (!privateKeyPem) {
       var privateKeyPem = user.privateKey;
     }
-    
-    let accessTime = Math.round((new Date()).getTime() / 1000).toString();
-    options['headers'] = {
-        'Access-Id': accessId,
-        'User-Agent': 'App-StarkBank-GSheets-v0.8.2b',
-        'User-Agent-Override': 'App-StarkBank-GSheets-v0.8.2b',        
-        'PlatFormId' : 'gsheets',
-        'PlatFormVersion' : '0.8.2',
-        'Accept-Language': 'pt-BR',
-        'Content-Type': 'application/json',
-        'Access-Time': accessTime
-    };
 
     let body = ""
     if (payload) {
         body = payload;
     }
 
-    options['payload'] = body;
+    return UrlFetchApp.fetch(url, signedOptions_(method, body, accessId, privateKeyPem, challengeId, 'application/json'));
+}
+
+// Method, payload, headers and signature of a request. muteHttpExceptions keeps an error answer as an
+// answer (without it, fetchAll throws for the whole batch).
+function signedOptions_(method, body, accessId, privateKeyPem, challengeId, contentType) {
+    let accessTime = Math.round((new Date()).getTime() / 1000).toString();
+    let options = {
+        method: method,
+        muteHttpExceptions: true,
+        payload: body,
+        headers: {
+            'Access-Id': accessId,
+            'User-Agent': 'App-StarkBank-GSheets-v0.8.2b',
+            'User-Agent-Override': 'App-StarkBank-GSheets-v0.8.2b',
+            'PlatFormId' : 'gsheets',
+            'PlatFormVersion' : '0.8.2',
+            'Accept-Language': 'pt-BR',
+            'Content-Type': contentType,
+            'Access-Time': accessTime
+        },
+    };
 
     let message = accessId + ':' + accessTime + ':' + body
 
@@ -106,10 +114,23 @@ function maskFetch(path, method='GET', payload=null, query=null, version="v2", e
       options['headers']['Access-Challenge-Ids'] = challengeId
     }
 
-    let signature = easySign(message, privateKeyPem); 
-    options['headers']['Access-Signature'] = signature;
+    options['headers']['Access-Signature'] = easySign(message, privateKeyPem);
+    return options;
+}
 
-    return UrlFetchApp.fetch(url, options);
+// GET requests signed with the session of the user, sent together: the answers come in the order of
+// the paths. Callers send at most parallelRequestCount paths at a time.
+function fetchAllWithSession_(paths, contentType) {
+  if (paths.length == 0) {
+    return [];
+  }
+  let user = new getDefaultUser();
+  if (!user.privateKey) {
+    throw JSON.stringify({"message": "Erro de autenticação! Por favor, faça login novamente."});
+  }
+  let hostname = getHostname(user.environment.toLowerCase(), "v2");
+  let requests = paths.map(path => assign({url: hostname + path}, signedOptions_('GET', "", user.accessId, user.privateKey, null, contentType)));
+  return UrlFetchApp.fetchAll(requests);
 }
 
 function fetch(path, method='GET', payload=null, query=null, version="v2", environment=null, privateKeyPem=null, challengeId=null) {
@@ -141,10 +162,6 @@ function fetchBuffer(path, method='GET', payload=null, query=null, version="v2",
       environment = environment || user.environment.toLowerCase();
   }
   let hostname = getHostname(environment, version);
-  let options = {
-      method: method,
-      muteHttpExceptions: true,
-  };
   let url = hostname + path;
   
   if (query) {
@@ -168,43 +185,20 @@ function fetchBuffer(path, method='GET', payload=null, query=null, version="v2",
   if (!privateKeyPem) {
     var privateKeyPem = user.privateKey;
   }
-  
-  let accessTime = Math.round((new Date()).getTime() / 1000).toString();
-  options['headers'] = {
-      'Access-Id': accessId,
-      'User-Agent': 'App-StarkBank-GSheets-v0.8.2b',
-      'User-Agent-Override': 'App-StarkBank-GSheets-v0.8.2b',        
-      'PlatFormId' : 'gsheets',
-      'PlatFormVersion' : '0.8.2',
-      'Accept-Language': 'pt-BR',
-      'Content-Type': 'application/pdf',
-      'Access-Time': accessTime
-  };
 
   let body = ""
   if (payload) {
       body = payload;
   }
 
-  options['payload'] = body;
+  return pdfFromResponse_(UrlFetchApp.fetch(url, signedOptions_(method, body, accessId, privateKeyPem, challengeId, 'application/pdf')));
+}
 
-  let message = accessId + ':' + accessTime + ':' + body
-
-  if (challengeId) {
-    message += ":" + challengeId
-    options['headers']['Access-Challenge-Ids'] = challengeId
-  }
-
-  let signature = easySign(message, privateKeyPem); 
-  options['headers']['Access-Signature'] = signature;
-
-  response = UrlFetchApp.fetch(url, options);
+// [the PDF, 200], or [the code of the API error, status].
+function pdfFromResponse_(response) {
   let status = response.getResponseCode();
-
   if (status != 200) {
     return [parseResponse(response)[0]["errors"][0]["code"], status]
-  } else {
-    let content = response.getAs("application/pdf");
-    return [content, status]
   }
+  return [response.getAs("application/pdf"), status]
 }

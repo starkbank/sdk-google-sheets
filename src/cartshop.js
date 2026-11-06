@@ -10,8 +10,10 @@ function cartShop() {
 
   const initialLine = 11;
   const batchSize = 100;
+  const rows = readRows_(sheet, 11);
+  const lastLine = initialLine + rows.length - 1;
 
-  if (sheet.getLastRow() - initialLine > 1000) {
+  if (lastLine - initialLine > 1000) {
     Browser.msgBox("Quantidade limite de items no carrinho excedida, faça um carrinho com menos de 1000 itens.");
     throw new Error()
   }
@@ -36,27 +38,28 @@ function cartShop() {
 
   var id = fetchedJson["cart"]["id"];
 
-  for (let batchInitialLine = initialLine; batchInitialLine <= sheet.getLastRow(); batchInitialLine = line) {
+  for (let batchInitialLine = initialLine; batchInitialLine <= lastLine; batchInitialLine = line) {
     orders = [];
     orderNumbers = [];
-    for (line = batchInitialLine; line < batchInitialLine + batchSize && line <= sheet.getLastRow(); line++) {
+    for (line = batchInitialLine; line < batchInitialLine + batchSize && line <= lastLine; line++) {
+      let row = rows[line - initialLine];
       var cartId = id;
-      var kitId = kitSelector[sheet.getRange('A' + line.toString()).getValue()];
-      var displayName2 = removeDiacritics(sheet.getRange('B' + line.toString()).getValue().toString());
-      var holderName = removeDiacritics(sheet.getRange('C' + line.toString()).getValue().toString());
-      var displayName1 = removeDiacritics(sheet.getRange('D' + line.toString()).getValue().toString());
-      var shippingPhone = removeDiacritics(sheet.getRange('E' + line.toString()).getValue().toString().replace(/\u202C/g, ''));
-      var shippingStreetLine1 = removeDiacritics(sheet.getRange('F' + line.toString()).getValue().toString());
-      var shippingStreetLine2 = removeDiacritics(sheet.getRange('G' + line.toString()).getValue().toString());
-      var shippingDistrict = removeDiacritics(sheet.getRange('H' + line.toString()).getValue().toString());
-      var shippingCity = removeDiacritics(sheet.getRange('I' + line.toString()).getValue().toString());
-      var shippingStateCode = sheet.getRange('J' + line.toString()).getValue().toString().trim().toUpperCase();
-      var shippingZipCode = sheet.getRange('K' + line.toString()).getValue().toString();
+      var kitId = kitSelector[cellOf_(row, 'A')];
+      var displayName2 = removeDiacritics(cellOf_(row, 'B').toString());
+      var holderName = removeDiacritics(cellOf_(row, 'C').toString());
+      var displayName1 = removeDiacritics(cellOf_(row, 'D').toString());
+      var shippingPhone = removeDiacritics(cellOf_(row, 'E').toString().replace(/\u202C/g, ''));
+      var shippingStreetLine1 = removeDiacritics(cellOf_(row, 'F').toString());
+      var shippingStreetLine2 = removeDiacritics(cellOf_(row, 'G').toString());
+      var shippingDistrict = removeDiacritics(cellOf_(row, 'H').toString());
+      var shippingCity = removeDiacritics(cellOf_(row, 'I').toString());
+      var shippingStateCode = cellOf_(row, 'J').toString().trim().toUpperCase();
+      var shippingZipCode = cellOf_(row, 'K').toString();
       var shippingCountryCode = "BRA";
 
       let hasError = false;
 
-      if (removeDiacritics(sheet.getRange('A' + line.toString()).getValue().toString()) == "") {
+      if (removeDiacritics(cellOf_(row, 'A').toString()) == "") {
         hasError = true;
       };
 
@@ -165,11 +168,7 @@ function corporateCardKits(kitList) {
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('corporateShopKits');
   var range = sheet.getRange(1, 5, sheet.getMaxRows());
   range.clear();
-  let i = 10;
-  for (let item of kitList) {
-    sheet.getRange('E' + i.toString()).setValue(safeText(item["name"].toString()));
-    i++
-  }
+  writeRows_(sheet, 10, 5, kitList.map(item => [item["name"].toString()]));
 }
 
 function onEdit(e) {
@@ -205,7 +204,7 @@ function redirect() {
   let user = new getDefaultUser();
   var ws = user.workspace.toLowerCase();
   var env = user.environment.toLowerCase();
-  var cartId = String(user.cartId).toLowerCase();
+  var cartId = String(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Credentials').getRange('C6').getValue()).toLowerCase();
   // The environments are the ones of getHostname().
   if (!/^[a-z0-9_-]+$/.test(ws) || !["production", "sandbox", "development"].includes(env) || !/^[a-z0-9_-]*$/.test(cartId)) {
     throw JSON.stringify({"message": "Não foi possível abrir o carrinho: workspace, ambiente ou carrinho inválidos."});

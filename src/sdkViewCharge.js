@@ -34,23 +34,26 @@ function ViewCharge(after, before, status) {
     elementList = json["boletos"];
     cursor = json["cursor"];
 
+    let rows = [];
     for (let charge of elementList){
       zeroCharges = false;
-      i += 1;
       let pdfLink = '=HYPERLINK("' + hostname + "/boleto/" + formulaText(charge["id"]) + '/pdf", "PDF")';
-      let tags = charge["tags"];
-      sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(charge["created"]));
-      sheet.getRange('B' + i.toString()).setValue(safeText(charge["name"]));
-      sheet.getRange('C' + i.toString()).setValue(safeText(charge["taxId"]));
-      sheet.getRange('D' + i.toString()).setValue(safeText(ChargeStatusEnToPt(charge["status"])));
-      sheet.getRange('E' + i.toString()).setValue(stringToCurrency(charge["amount"]));
-      sheet.getRange('F' + i.toString()).setValue(formatToLocalDatetime(charge["due"]));
-      sheet.getRange('G' + i.toString()).setValue(safeText(charge["line"]));
-      sheet.getRange('H' + i.toString()).setValue(safeText(charge["id"]));
-      sheet.getRange('I' + i.toString()).setValue(stringToCurrency(charge["fee"]));
-      sheet.getRange('J' + i.toString()).setValue(safeText(tags.join(",")));
-      sheet.getRange('K' + i.toString()).setValue(pdfLink);
+      rows.push([
+        formatToLocalDatetime(charge["created"]),
+        charge["name"],
+        charge["taxId"],
+        ChargeStatusEnToPt(charge["status"]),
+        stringToCurrency(charge["amount"]),
+        formatToLocalDatetime(charge["due"]),
+        charge["line"],
+        charge["id"],
+        stringToCurrency(charge["fee"]),
+        charge["tags"].join(","),
+        new LinkFormula(pdfLink),
+      ]);
     }
+    writeRows_(sheet, i + 1, 1, rows);
+    i += rows.length;
   } while (cursor);
   if (zeroCharges) {
     Browser.msgBox("Nenhum boleto encontrado para o período selecionado!");
@@ -61,13 +64,8 @@ function ViewCharge(after, before, status) {
 function ChargeDownloadAllDrive(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Boleto');
   let chargeDriveFolder = getDriveFolderOrCreate("boleto", getDriveFolderOrCreate("starkbank"));
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let chargeId = sheet.getRange('H' + i.toString()).getValue();
-    let fileName = chargeId + ".pdf";
-    let pdfContent = ChargeDownload(chargeId);
-    let pdfFile = chargeDriveFolder.createFile(pdfContent);
-    pdfFile.setName(fileName);
-  }
+  let ids = readRows_(sheet, 8).map(row => cellOf_(row, 'H'));
+  savePdfsToDrive_(chargeDriveFolder, ids, id => "/boleto/" + pathSegment(id) + "/pdf");
   Browser.msgBox("Arquivos baixados para Google Drive na pasta starkbank/boleto");
 }
 
@@ -96,12 +94,7 @@ function ChargeDownloadAllLocal(){
 
 function getChargeDownloadList(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Boleto');
-  let idList = [];
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let chargeId = sheet.getRange('H' + i.toString()).getValue();
-    idList.push(chargeId);
-  }
-  return idList;
+  return readRows_(sheet, 8).map(row => cellOf_(row, 'H'));
 }
 
 

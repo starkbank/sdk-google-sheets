@@ -51,31 +51,34 @@ function createPaymentRequestArrayBoleto(centerId, sheet, linesList)
     let payments = [];
     let duplicatedPayments = 0;
     let emptyLines = 0;
+    // The lines sent before and the ones of the rows above, for a membership check per row.
+    let seenLines = new Set(linesList);
+    let statuses = [];
 
-    for(let i=11; i<=sheet.getLastRow(); i++) {
-        sheet.getRange(`F${i}`).setValue("Não enviado.");
+    for(let row of readRows_(sheet, 5)) {
+        statuses.push(["Não enviado.", null]);
         let boleto = {
           centerId: centerId,
           type: "boleto-payment"
         }
 
         let paymentItem  = {
-            taxId: sheet.getRange('B' + i.toString()).getValue()
+            taxId: cellOf_(row, 'B')
         };
 
-        if (sheet.getRange('D' + i.toString()).getValue().length > 1) {
-          paymentItem["description"] = removeDiacritics(sheet.getRange('D' + i.toString()).getValue())
+        if (cellOf_(row, 'D').length > 1) {
+          paymentItem["description"] = removeDiacritics(cellOf_(row, 'D'))
         }
 
-        if (sheet.getRange('E' + i.toString()).getValue().length > 1) {
-          paymentItem["tags"] = removeDiacritics(sheet.getRange('E' + i.toString()).getValue().split(","))
+        if (cellOf_(row, 'E').length > 1) {
+          paymentItem["tags"] = removeDiacritics(cellOf_(row, 'E').split(","))
         }
 
-        if (sheet.getRange('C' + i.toString()).getValue().length > 1) {
-          boleto["due"] = formatToLocalDatetime(sheet.getRange('C' + i.toString()).getValue())
+        if (cellOf_(row, 'C').length > 1) {
+          boleto["due"] = formatToLocalDatetime(cellOf_(row, 'C'))
         }
 
-        let barCodeOrLine = sheet.getRange('A' + i.toString()).getValue();
+        let barCodeOrLine = cellOf_(row, 'A');
         barCodeOrLine = barCodeOrLine.replace(/[^0-9]/g, '');
         if(barCodeOrLine.length > 44)
         {
@@ -88,17 +91,19 @@ function createPaymentRequestArrayBoleto(centerId, sheet, linesList)
 
         boleto["payment"] = paymentItem
 
-        if(linesList.includes(barCodeOrLine)) {
+        if(seenLines.has(barCodeOrLine)) {
           duplicatedPayments +=1;
-          sheet.getRange(`G${i}`).setValue("Pagamento duplicado");
+          statuses[statuses.length - 1][1] = "Pagamento duplicado";
         }
         if(barCodeOrLine == "" || paymentItem["description"] == "" || paymentItem["description"] == undefined) {
           emptyLines +=1;
-          sheet.getRange(`G${i}`).setValue("pagamento incompleto");
+          statuses[statuses.length - 1][1] = "pagamento incompleto";
         }
         linesList.push(barCodeOrLine)
+        seenLines.add(barCodeOrLine)
         payments.push(boleto);
     }
+    writeRows_(sheet, 11, 6, statuses);
 
     if(duplicatedPayments>0 && emptyLines>0) {
       sendMessage("Existem pagamentos duplicados e linhas incompletas, verifique os pagamentos e tente novamente.");

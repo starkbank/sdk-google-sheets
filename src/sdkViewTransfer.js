@@ -30,22 +30,24 @@ function ViewTransfer(after, before, status = null) {
     elementList = json["transfers"];
     cursor = json["cursor"];
     
+    let rows = [];
     for (let transfer of elementList){
       zeroTransfers = false;
-      i += 1;
-      
-      let transactionIds = transfer["transactionIds"];
-      sheet.getRange('A' + i.toString()).setValue(formatToLocalDatetime(transfer["created"]));
-      sheet.getRange('B' + i.toString()).setValue(safeText(transfer["id"]));
-      sheet.getRange('C' + i.toString()).setValue(stringToCurrency(transfer["amount"]));
-      sheet.getRange('D' + i.toString()).setValue(safeText(transferStatusEnToPt(transfer["status"])));
-      sheet.getRange('E' + i.toString()).setValue(safeText(transfer["name"]));
-      sheet.getRange('F' + i.toString()).setValue(safeText(transfer["taxId"]));
-      sheet.getRange('G' + i.toString()).setValue(safeText(transfer["bankCode"]));
-      sheet.getRange('H' + i.toString()).setValue(safeText(transfer["branchCode"]));
-      sheet.getRange('I' + i.toString()).setValue(safeText(transfer["accountNumber"]));
-      sheet.getRange('J' + i.toString()).setValue(safeText(transactionIds.join(",")));
+      rows.push([
+        formatToLocalDatetime(transfer["created"]),
+        transfer["id"],
+        stringToCurrency(transfer["amount"]),
+        transferStatusEnToPt(transfer["status"]),
+        transfer["name"],
+        transfer["taxId"],
+        transfer["bankCode"],
+        transfer["branchCode"],
+        transfer["accountNumber"],
+        transfer["transactionIds"].join(","),
+      ]);
     }
+    writeRows_(sheet, i + 1, 1, rows);
+    i += rows.length;
   } while (cursor);
   if (zeroTransfers) {
     Browser.msgBox("Nenhuma transferência encontrada para o período selecionado!");
@@ -55,9 +57,9 @@ function ViewTransfer(after, before, status = null) {
 function getTransferDownloadList(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Transferência');
   let idList = [];
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let transferId = sheet.getRange('B' + i.toString()).getValue();
-    let transferStatus = sheet.getRange('D' + i.toString()).getValue();
+  for (let row of readRows_(sheet, 4)){
+    let transferId = cellOf_(row, 'B');
+    let transferStatus = cellOf_(row, 'D');
     if (transferStatus === "sucesso") {
       idList.push(transferId);
     }
@@ -79,17 +81,8 @@ function TransferDownload(id) {
 function TransferDownloadAllDrive(){
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Consulta de Transferência');
   let transferDriveFolder = getDriveFolderOrCreate("transfer", getDriveFolderOrCreate("starkbank"));
-  for (let i = 11; i <= sheet.getLastRow(); i++){
-    let transferId = sheet.getRange('B' + i.toString()).getValue();
-    let transferStatus = sheet.getRange('D' + i.toString()).getValue();
-    if (transferStatus === "sucesso") {
-      let fileName = transferId + ".pdf";
-      let pdfContent = TransferDownload(transferId);
-      let blob = pdfContent[0];
-      let pdfFile = transferDriveFolder.createFile(blob);
-      pdfFile.setName(fileName);
-    }
-  }
+  let ids = readRows_(sheet, 4).filter(row => cellOf_(row, 'D') === "sucesso").map(row => cellOf_(row, 'B'));
+  savePdfsToDrive_(transferDriveFolder, ids, id => "/transfer/" + pathSegment(id) + "/pdf");
   Browser.msgBox("Arquivos baixados para Google Drive na pasta starkbank/transfer");
 }
 

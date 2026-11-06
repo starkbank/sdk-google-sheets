@@ -95,6 +95,12 @@ function createUtilities() {
   };
 }
 
+// Counts the calls the SDK makes to the Apps Script services: each one is a round trip in the real
+// platform, so the count (not node time) is what the performance tests budget.
+function countCall(calls, name) {
+  calls[name] = (calls[name] || 0) + 1;
+}
+
 class FakeRange {
   constructor(sheet, row, column, rows = 1, columns = 1) {
     this.sheet = sheet;
@@ -102,6 +108,14 @@ class FakeRange {
     this.column = column;
     this.rows = rows;
     this.columns = columns;
+    // Like Apps Script, a range with no rows or columns cannot be built.
+    if (rows < 1 || columns < 1) {
+      throw new Error("The number of rows and columns in the range must be at least 1");
+    }
+  }
+
+  count(name) {
+    countCall(this.sheet.calls, `range.${name}`);
   }
 
   cellKeys() {
@@ -118,11 +132,13 @@ class FakeRange {
   }
 
   getValue() {
+    this.count("getValue");
     const value = this.sheet.cells.get(`${this.row},${this.column}`);
     return value === undefined ? "" : value;
   }
 
   getValues() {
+    this.count("getValues");
     const grid = [];
     for (let r = this.row; r < this.row + this.rows; r++) {
       const line = [];
@@ -158,23 +174,46 @@ class FakeRange {
     return typeof value === "string" && (value.startsWith("=") || (/^[+-]/.test(value) && !/^[+-][\d\s().,%$+-]*$/.test(value)));
   }
 
+  // One cell, the way Sheets reads a value that is set (setValue and setValues read values alike).
+  writeCell(key, value) {
+    this.sheet.formulaCells.delete(key);
+    if (value === null || value === undefined || value === "") {
+      this.sheet.cells.delete(key);
+    } else if (typeof value === "string" && value.startsWith("'")) {
+      this.sheet.cells.set(key, value.slice(1));
+    } else {
+      this.sheet.cells.set(key, FakeRange.parse(value));
+      if (FakeRange.looksLikeFormula(value)) this.sheet.formulaCells.add(key);
+    }
+  }
+
   setValue(value) {
+    this.count("setValue");
     this.assertEditable();
     for (const key of this.cellKeys()) {
-      this.sheet.formulaCells.delete(key);
-      if (value === null || value === undefined || value === "") {
-        this.sheet.cells.delete(key);
-      } else if (typeof value === "string" && value.startsWith("'")) {
-        this.sheet.cells.set(key, value.slice(1));
-      } else {
-        this.sheet.cells.set(key, FakeRange.parse(value));
-        if (FakeRange.looksLikeFormula(value)) this.sheet.formulaCells.add(key);
-      }
+      this.writeCell(key, value);
     }
     return this;
   }
 
+  // Like Apps Script, the grid must have exactly the rows and columns of the range.
+  setValues(grid) {
+    this.count("setValues");
+    if (!Array.isArray(grid) || grid.length !== this.rows) {
+      throw new Error(`The number of rows in the data does not match the number of rows in the range. The data has ${grid && grid.length} but the range has ${this.rows}.`);
+    }
+    for (const line of grid) {
+      if (!Array.isArray(line) || line.length !== this.columns) {
+        throw new Error(`The number of columns in the data does not match the number of columns in the range. The data has ${line && line.length} but the range has ${this.columns}.`);
+      }
+    }
+    this.assertEditable();
+    grid.forEach((line, r) => line.forEach((value, c) => this.writeCell(`${this.row + r},${this.column + c}`, value)));
+    return this;
+  }
+
   clearContent() {
+    this.count("clearContent");
     this.assertEditable();
     for (const key of this.cellKeys()) {
       this.sheet.cells.delete(key);
@@ -184,6 +223,7 @@ class FakeRange {
   }
 
   setFontColor(color) {
+    this.count("setFontColor");
     for (const key of this.cellKeys()) {
       this.sheet.fontColors.set(key, color);
     }
@@ -191,13 +231,25 @@ class FakeRange {
   }
 
   setBackground() {
+    this.count("setBackground");
+    return this;
+  }
+
+  clear() {
+    this.count("clear");
+    for (const key of this.cellKeys()) {
+      this.sheet.cells.delete(key);
+      this.sheet.formulaCells.delete(key);
+      this.sheet.fontColors.delete(key);
+    }
     return this;
   }
 }
 
 class FakeSheet {
-  constructor(name) {
+  constructor(name, calls) {
     this.name = name;
+    this.calls = calls;
     this.cells = new Map();
     this.fontColors = new Map();
     this.frozenRows = 0;
@@ -241,6 +293,7 @@ class FakeSheet {
   activate() {}
 
   getRange(...args) {
+    countCall(this.calls, "sheet.getRange");
     if (typeof args[0] === "string") {
       const [, letters, digits, endLetters, endDigits] = args[0].match(/^([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?$/);
       const row = Number(digits);
@@ -252,7 +305,17 @@ class FakeSheet {
     return new FakeRange(this, row, column, rows, columns);
   }
 
+  getMaxRows() {
+    countCall(this.calls, "sheet.getMaxRows");
+    return Math.max(1000, this.getLastRowUncounted());
+  }
+
   getLastRow() {
+    countCall(this.calls, "sheet.getLastRow");
+    return this.getLastRowUncounted();
+  }
+
+  getLastRowUncounted() {
     let last = 0;
     for (const key of this.cells.keys()) {
       last = Math.max(last, Number(key.split(",")[0]));
@@ -261,6 +324,7 @@ class FakeSheet {
   }
 
   setFrozenRows(rows) {
+    countCall(this.calls, "sheet.setFrozenRows");
     this.frozenRows = rows;
   }
 
@@ -271,16 +335,30 @@ class FakeSheet {
 }
 
 class FakeWorkbook {
-  constructor(sheetNames) {
-    this.sheets = new Map(sheetNames.map(name => [name, new FakeSheet(name)]));
+  constructor(sheetNames, calls) {
+    this.calls = calls;
+    this.sheets = new Map(sheetNames.map(name => [name, new FakeSheet(name, calls)]));
   }
 
   getSheets() {
+    countCall(this.calls, "spreadsheet.getSheets");
     return Array.from(this.sheets.values());
   }
 
   getSheetByName(name) {
+    countCall(this.calls, "spreadsheet.getSheetByName");
     return this.sheets.get(name) || null;
+  }
+
+  getActiveSheet() {
+    countCall(this.calls, "spreadsheet.getActiveSheet");
+    return this.activeSheet || this.getSheets()[0];
+  }
+
+  setActiveSheet(sheet) {
+    countCall(this.calls, "spreadsheet.setActiveSheet");
+    this.activeSheet = sheet;
+    return sheet;
   }
 }
 
@@ -533,6 +611,7 @@ class StarkApi {
 }
 
 function createWorld({memberPublicKeyPem = null} = {}) {
+  const serviceCalls = {};
   const workbook = new FakeWorkbook([
     "Credentials",
     "paymentRequestExternal",
@@ -547,7 +626,15 @@ function createWorld({memberPublicKeyPem = null} = {}) {
     "Consulta de Pagamento Boleto",
     "Consulta de Clientes",
     "Consulta de Aprovações",
-  ]);
+    "Histórico de Boletos Emitidos",
+    "Split Consultas",
+    "Emissão de Boletos",
+    "Cadastro de Clientes",
+    "Pagamento de Boletos",
+    "Emissão de Invoice Pix",
+    "Split Receivers",
+    "corporateShopKits",
+  ], serviceCalls);
   const api = new StarkApi({memberPublicKeyPem});
   const browserMessages = [];
   const logs = [];
@@ -555,6 +642,16 @@ function createWorld({memberPublicKeyPem = null} = {}) {
   const clock = {now: 0};
   const world = {
     workbook,
+    serviceCalls,
+    // Forgets the calls made so far (for instance while preparing the sheets of a test).
+    resetServiceCalls() { for (const name of Object.keys(serviceCalls)) delete serviceCalls[name]; },
+    // Calls to the spreadsheet, its sheets and ranges.
+    sheetCalls() {
+      return Object.entries(serviceCalls)
+        .filter(([name]) => /^(spreadsheet|sheet|range)\./.test(name))
+        .reduce((total, [, count]) => total + count, 0);
+    },
+    driveFiles: [],
     api,
     browserMessages,
     logs,
@@ -609,28 +706,79 @@ function createWorld({memberPublicKeyPem = null} = {}) {
         evaluate: () => htmlFile(name, expression => vm.runInContext(expression, world.currentContext)),
       }),
     },
-    SpreadsheetApp: {getActiveSpreadsheet: () => workbook, getUi: () => ui},
+    SpreadsheetApp: {
+      getActiveSpreadsheet: () => { countCall(serviceCalls, "SpreadsheetApp.getActiveSpreadsheet"); return workbook; },
+      getActiveSheet: () => workbook.getActiveSheet(),
+      getUi: () => ui,
+    },
     PropertiesService: {
-      getUserProperties: () => world.properties.user,
+      getUserProperties: () => { countCall(serviceCalls, "PropertiesService.getUserProperties"); return world.properties.user; },
       getDocumentProperties: () => world.properties.document,
       getScriptProperties: () => world.properties.script,
     },
     CacheService: {
-      getUserCache: () => world.caches.user,
+      getUserCache: () => { countCall(serviceCalls, "CacheService.getUserCache"); return world.caches.user; },
       getDocumentCache: () => world.caches.document,
       getScriptCache: () => world.caches.script,
     },
     UrlFetchApp: {
       fetch(url, options) {
-        const {status, body} = api.handle(url, options);
-        return {
-          getResponseCode: () => status,
-          getContentText: () => body,
-          getAs: contentType => ({contentType, content: body}),
-        };
+        countCall(serviceCalls, "UrlFetchApp.fetch");
+        return answer(api.handle(url, options), options);
+      },
+      // Like Apps Script: every request is {url, ...options}, the answers keep the order of the requests,
+      // and an error answer without muteHttpExceptions makes the whole call throw.
+      fetchAll(requests) {
+        countCall(serviceCalls, "UrlFetchApp.fetchAll");
+        const answers = requests.map(({url, ...options}) => api.handle(url, options));
+        return answers.map((answered, index) => answer(answered, requests[index]));
       },
     },
+    DriveApp: {
+      getRootFolder: () => driveFolder("root"),
+    },
   };
+
+  // Without muteHttpExceptions, Apps Script throws on an error answer instead of returning it.
+  function answer(answered, options) {
+    if (answered.status >= 400 && !(options && options.muteHttpExceptions)) {
+      throw new Error(`Request failed returned code ${answered.status}. Truncated server response: ${answered.body}`);
+    }
+    return response(answered);
+  }
+
+  function response({status, body}) {
+    return {
+      getResponseCode: () => status,
+      getContentText: () => body,
+      getAs: contentType => ({contentType, content: body}),
+    };
+  }
+
+  // Folders are found by name (or created); files remember their folder and the name they get.
+  function driveFolder(name) {
+    return {
+      name,
+      getFoldersByName(child) {
+        countCall(serviceCalls, "DriveApp.getFoldersByName");
+        const path = `${name}/${child}`;
+        let found = world.driveFolders.has(path);
+        return {next() { if (!found) throw new Error("Cannot retrieve the next object: iterator has reached the end."); found = false; return driveFolder(path); }};
+      },
+      createFolder(child) {
+        countCall(serviceCalls, "DriveApp.createFolder");
+        world.driveFolders.add(`${name}/${child}`);
+        return driveFolder(`${name}/${child}`);
+      },
+      createFile(blob) {
+        countCall(serviceCalls, "DriveApp.createFile");
+        const file = {folder: name, content: blob && blob.content, name: null};
+        world.driveFiles.push(file);
+        return {setName(fileName) { file.name = fileName; return this; }};
+      },
+    };
+  }
+  world.driveFolders = new Set();
 
   // Runs one SDK function in a fresh context (an independent Apps Script execution).
   // Results are returned as plain JSON data so they compare cleanly across vm realms.

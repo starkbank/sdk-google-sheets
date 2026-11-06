@@ -28,21 +28,23 @@ function ViewStatement(after, before) {
     elementList = json["transactions"];
     cursor = json["cursor"];
     
+    let rows = [];
     for (let transact of elementList){
       zeroTransactions = false;
-      i += 1;
-      
       let sign = transact["flow"] === "in" ? 1 : -1;
-      let tags = transact["tags"];
-      sheet.getRange(i, 1).setValue(formatToLocalDatetime(transact["created"]));
-      sheet.getRange(i, 2).setValue(getTransactionType(transact["source"].split("/")[0]));
-      sheet.getRange(i, 3).setValue(sign*stringToCurrency(transact["amount"]));
-      sheet.getRange(i, 4).setValue(stringToCurrency(transact["balance"]));
-      sheet.getRange(i, 5).setValue(safeText(transact["description"]));
-      sheet.getRange(i, 6).setValue(safeText(transact["id"]));
-      sheet.getRange(i, 7).setValue(stringToCurrency(transact["fee"]));
-      sheet.getRange(i, 8).setValue(safeText(tags.join(",")));
+      rows.push([
+        formatToLocalDatetime(transact["created"]),
+        getTransactionType(transact["source"].split("/")[0]),
+        sign*stringToCurrency(transact["amount"]),
+        stringToCurrency(transact["balance"]),
+        transact["description"],
+        transact["id"],
+        stringToCurrency(transact["fee"]),
+        transact["tags"].join(","),
+      ]);
     }
+    writeRows_(sheet, i + 1, 1, rows);
+    i += rows.length;
   } while (cursor);
   if (zeroTransactions) {
     Browser.msgBox("Nenhuma transação encontrada para o período selecionado!");
